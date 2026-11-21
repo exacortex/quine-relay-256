@@ -1,8 +1,11 @@
 PASSED
 image CMD: ["/bin/sh","-c","make check -j 10000"]
-build: 59.1 min (no cache, fresh ubuntu:26.04)
-make check: 27.6 min
-image id: sha256:47335f5ae2dfc681f4da9c938f6e54f37c5dd1b26feb978bc8a7cf8fc9c973d8
-image size: 27.79 GB (40 RootFS layers)
-QR.rb sha256: 36d70b16700a505814e1bd5eb47a54a99ba09b38bd6512f0c9875a75ebfdff1a
+build: 59.1 min (no cache, fresh ubuntu:26.04; Dockerfile unchanged)
+make check: 25.3 min (--network=none offline)
+image id: sha256:0de4a22a3e1960ef57e507416a80b2b71dc104c267efabd780e31cd3ffa75dc7
+image size: 27.81 GB (44 RootFS layers)
+QR.rb sha256: ff759bc61e2bb755dccc48e8ba46c15318a9529a6ac8efe434e8fd238928728d
 U20 parity: OK
+offline network=none: PASS
+canary1 Picat: PASS
+canary1 6502: PASS

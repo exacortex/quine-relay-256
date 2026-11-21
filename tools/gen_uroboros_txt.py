@@ -265,10 +265,10 @@ def main() -> int:
         default=default_out,
         help="Output uroboros.txt path",
     )
-    parser.add_argument("--rows", type=int, default=113, help="Total rows (default: 113)")
-    parser.add_argument("--cols", type=int, default=397, help="Total columns (default: 397)")
+    parser.add_argument("--rows", type=int, default=114, help="Total rows (default: 114)")
+    parser.add_argument("--cols", type=int, default=401, help="Total columns (default: 401)")
     parser.add_argument("--pad-y", type=int, default=10, help="Top/bottom '#' border rows (default: 10)")
-    parser.add_argument("--pad-x", type=int, default=26, help="Left/right '#' border cols (default: 26)")
+    parser.add_argument("--pad-x", type=int, default=25, help="Left/right '#' border cols (default: 25)")
     parser.add_argument(
         "--threshold",
         type=float,

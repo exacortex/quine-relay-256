@@ -346,7 +346,7 @@ QR.asy: QR.aj
 	@echo "################################"
 	@echo
 	ajc QR.aj
-	java QR > QR.asy
+	java -cp .:/usr/share/java/aspectjrt.jar QR > QR.asy
 
 QR.bal: QR.asy
 	@echo
@@ -875,8 +875,7 @@ QR.fish.fish: QR.fsx
 	@echo "##  101: F# -> ><> (Fish)  ##"
 	@echo "#############################"
 	@echo
-	echo '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup><ItemGroup><Compile Include="QR.fsx" /></ItemGroup></Project>' > tmp.fsproj
-	DOTNET_NOLOGO=1 dotnet run --project tmp.fsproj > QR.fish.fish
+	DOTNET_NOLOGO=1 dotnet fsi --quiet --exec QR.fsx > QR.fish.fish
 
 QR.vlang.v: QR.fish.fish
 	@echo
@@ -1648,7 +1647,7 @@ QR.octave: QR.m
 	@echo "##  190: Objective-C -> Octave  ##"
 	@echo "##################################"
 	@echo
-	gcc -o QR QR.m
+	gcc -o QR QR.m -lobjc
 	./QR > QR.octave
 
 QR.ml: QR.octave

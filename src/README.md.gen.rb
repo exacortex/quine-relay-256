@@ -140,7 +140,7 @@ extra_installs = {
   "Pyth" => "`isaacg1/pyth (pinned commit 97cdf30d, sha256-pinned) + python3`",
   "Roc" => "`Roc 0.0.0-alpha1 + offline local basic-cli 0.18.0 (both sha256-pinned)`",
 
-  # Standalone Master-Endoh replacement languages (non-apt; QBE uses apt `qbe`, HOC uses apt `9base`)
+  # Standalone replacement languages (non-apt; QBE uses apt `qbe`, HOC uses apt `9base`)
   "MUMPS" => "`YottaDB r2.06 release tarball (AGPLv3, sha256-pinned)`",
   "GNU APL" => "`GNU APL 2.0 source tarball (GPLv3, sha256-pinned)`",
   "Lobster" => "`Lobster v2026.9 headless CMake build (Apache-2.0, sha256-pinned)`",
@@ -262,7 +262,7 @@ The languages in red are the <%= new_steps.size %> languages added in this fork.
 
 ## The rules every step follows
 
-Yusuke Endoh (mame) reviewed an earlier prototype and named three rules he considers essential to a fair quine relay. Every step here follows all three:
+Yusuke Endoh (mame) reviewed an earlier prototype and shared three no-cheating principles he uses as a matter of craft and fairness. Every step added or modified in this fork follows all three (with the inherited `mame/quine-relay` `sed` and `Mustache` self-operand steps noted transparently below):
 
 1. **No code on the command line.** A command names the program file and sets compiler or interpreter options. It never passes program source or query expressions on the CLI (`node -e '...'`, `printf` shims, etc.).
 2. **No reading files.** Programs do not open their own source, another step's file, or `/dev/stdout`, and do not consume payload via stdin (including Malbolge's `'/'` opcode). All printed text lives inside the program.
@@ -272,7 +272,7 @@ Yusuke Endoh (mame) reviewed an earlier prototype and named three rules he consi
 
 In the spirit of complete transparency, this fork inherits the same minimal toolchain precedents already present in upstream `mame/quine-relay`, and discloses its own minor accommodations explicitly:
 
-- **Inherited from `mame/quine-relay`:** `sed -E -f QR.sed QR.sed` and `mustache QR.mustache QR.mustache` (passing the source file as the template/input operand required by those tools), `Dhall`, `XSLT`, `M4`, `Flex`, `CMake`, `Promela` (`spin -T`), `dc ... || true`, `.NET` `tmp.*proj` project manifests (`F#`, `C#`, `Visual Basic`), `mv` collision backups (`LLVM asm`, `Octave`, `G-Portugol`, `INTERCAL`, `LiveScript`, plus `Simula`), and minimal self-made MIT Ruby interpreters under `vendor/` for classic esolangs.
+- **Inherited from `mame/quine-relay`:** `sed -E -f QR.sed QR.sed` and `mustache QR.mustache QR.mustache` (passing the source file as the template/input operand required by those tools), shell/build steps invoking standard Unix utilities (`bash` calling `sed`, `tcsh`/`zsh` calling `cat`, `ksh` calling `od`, `Makefile` calling `@printf`, `Execline` calling `echo`), `Dhall`, `XSLT`, `M4`, `Flex`, `CMake`, `Promela` (`spin -T`), `dc ... || true`, `.NET` `tmp.*proj` project manifests (`C#`, `Visual Basic`; `F#` now runs offline via `dotnet fsi` with no project file or NuGet access), `mv` collision backups (`LLVM asm`, `Octave`, `G-Portugol`, `INTERCAL`, `LiveScript`, plus `Simula`), and minimal self-made MIT Ruby interpreters under `vendor/` for classic esolangs.
 - **Disclosed fork accommodations:**
   - `Lazy K` (`vendor/lazyk.c`, MIT): `RDSTACK_SIZE` is raised from `100,000` to `10,000,000` (and run with `ulimit -s unlimited`) so the interpreter's reduction stack handles 256-step payloads without altering Lazy K semantics.
   - `Taxi`: compiled with BigZaphod's official upstream `-DNO_GREETINGS` preprocessor flag (suppresses Taxi's startup banner without modifying source).
@@ -286,13 +286,14 @@ All <%= mame_steps.size %> single-implementation languages from Endoh's Ubuntu 2
 
 ## Proof that it works
 
-This repository's [`Dockerfile`](Dockerfile) builds from scratch (`docker build --pull --no-cache`, `FROM ubuntu:26.04`, 59.1 min) and runs `make check -j 10000` (27.6 min):
+This repository's [`Dockerfile`](Dockerfile) builds from scratch (`docker build --pull --no-cache`, `FROM ubuntu:26.04`, 59.1 min) and passes `make check -j 10000` **100% offline (`docker run --rm --network=none`)** in 25.3 min:
 
-- **All <%= RunSteps.size %> languages run in sequence** inside one self-contained Ubuntu 26.04 Docker image with pinned open-source toolchains and bundled `vendor/` interpreters.
+- **All <%= RunSteps.size %> languages run in sequence offline** inside one self-contained Ubuntu 26.04 Docker image with pinned open-source toolchains and bundled `vendor/` interpreters (zero network calls during execution).
 - **Every intermediate file matches [`SHA256SUMS`](SHA256SUMS)** (all <%= RunSteps.size %> of them, verified the same way `mame/quine-relay` checks).
 - **Step <%= RunSteps.size %> (<%= RunSteps[-1].name %>) prints `QR2.rb`, byte-for-byte identical to `QR.rb`** (<%= qr_size %> bytes, SHA-256 `<%= qr_sha %>`).
+- **Canary & dual-interpreter checks:** verified byte-exact on both `Unshackled.c` and `Unshackled-20.c` (`U20 PARITY OK`), plus canary mutations (`Drawn With Code` -> `Drawn With K0de`) verified through `Picat` and `6502 asm`.
 
-The full build log, run log, and verification result live in [`proof/`](proof/). Anyone can reproduce the entire proof with the two Docker commands under Usage.
+The full build log, offline run log, and verification result live in [`proof/`](proof/). Anyone can reproduce the entire proof with the two Docker commands under Usage.
 
 ## What's new in this fork
 
@@ -300,16 +301,16 @@ The full build log, run log, and verification result live in [`proof/`](proof/).
 
 <%= new_steps.map {|s| s.name }.join(", ") %>.
 
-[RELAY-256.md](RELAY-256.md) explains the compression architecture, run-order optimization (~1,100 MB down to 325.45 MB), 64 KB VM ROM budgets, and Malbolge Unshackled generator. [RECORDS.md](RECORDS.md) documents the counting rules and [LANGUAGES.md](LANGUAGES.md) lists all <%= RunSteps.size %> languages in run order.
+[RELAY-256.md](RELAY-256.md) explains the compression architecture, run-order optimization (~1,100 MB down to 316.24 MB), 64 KB VM ROM budgets, and Malbolge Unshackled generator. [RECORDS.md](RECORDS.md) documents the counting rules and [LANGUAGES.md](LANGUAGES.md) lists all <%= RunSteps.size %> languages in run order.
 
 ## Usage
 
 ### Docker (recommended)
 
     $ docker build -t qr .
-    $ docker run --rm qr
+    $ docker run --rm --network=none qr
 
-This installs every Ubuntu package, builds all pinned toolchains and bundled interpreters in `vendor/`, runs all <%= RunSteps.size %> steps in order (unprivileged), and verifies `QR2.rb == QR.rb`. Note that the full image requires roughly ~28 GB of disk space (~40+ GB free during build).
+This installs every Ubuntu package, builds all pinned toolchains and bundled interpreters in `vendor/`, runs all <%= RunSteps.size %> steps offline in order (unprivileged), and verifies `QR2.rb == QR.rb`. Note that the full image requires roughly ~28 GB of disk space (~40+ GB free during build).
 
 ### Ubuntu 26.04
 
@@ -380,7 +381,7 @@ A.
 
 ### This fork
 
-- **256 steps / 256 distinct languages (Master-Endoh clean release), Ubuntu 26.04 (Nov 21, 2026).** This repo. Re-audited from top to bottom: eliminated temp-file/`tail` in `Makefile`, replaced custom mock/subset interpreters with canonical upstream tools, removed proprietary `frink.jar` and banner-patched `Joy`, swapped dialect/config-language gray-zone steps for standalone open-source languages, added in-tree `malbolge-boot.dat.gen.py`, scaled the Ouroboros ASCII art, and documented all upstream precedents transparently.
+- **256 steps / 256 distinct languages (re-audited offline-verified release), Ubuntu 26.04 (Nov 21, 2026).** This repo. Re-audited from top to bottom (including independent `strace` + canary verification): eliminated temp-file/`tail` in `Makefile`, switched `F#` to offline `dotnet fsi` (full 256-step lap passes `docker run --rm --network=none`), chunked `Picat` and `Austral` to eliminate recursive-parser stack overflows, escaped `Murex` `{...}` ANSI brace expansion, expanded `Uxntal` and `6502 asm` Re-Pair dictionaries to 159 non-printable slots (>10.9 KB headroom on all three 64 KB VM ROMs), added genuine language-specific syntax to `AspectJ` (`aspect`), `TypeScript` (type annotations), and `Objective-C` (`@interface`/`@implementation`), replaced custom mock/subset interpreters with canonical upstream tools, removed proprietary `frink.jar` and banner-patched `Joy`, swapped dialect/config-language gray-zone steps for standalone open-source languages, added in-tree `malbolge-boot.dat.gen.py`, scaled the Ouroboros ASCII art (`114x401`), and documented all upstream precedents transparently.
 - **256 steps / 256 distinct languages (initial release), Ubuntu 26.04 (Nov 19, 2026).** First 256-step closed loop with Malbolge Unshackled and clean `Scilab -> sed -> Shakespeare -> S-Lang`; subsequently hardened after an internal line-by-line purity audit.
 - **267 steps / 257 distinct languages, Ubuntu 26.04 (Nov 19, 2026).** Stepping-stone no-cheat milestone prior to dropping the 10 non-distinct entries and adding Malbolge Unshackled.
 - **284 steps (Nov 18, 2026), withdrawn.** Earlier prototype superseded after mame's no-cheat review.

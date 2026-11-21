@@ -258,9 +258,9 @@ class Uxntal < CodeGen
   File = "QR.tal"
   Cmd = "uxnasm QR.tal QR.rom && uxncli QR.rom > OUTFILE && rm -f QR.rom"
   Apt = [nil]
-  Code = %q((b18s,b18v=rp[PREV,128..255];b18d=b18v.scan(/../m).reverse*"";"|0100 ;s @loop LDAk DUP #00 EQU ;done #{74.chr}CN2 ;emit #{74.chr}SR2 INC2 ;loop #{74.chr}MP2 @done POP POP2 #800f DEO BR#{75.chr} @emit DUP #80 LTH ;out #{74.chr}CN2 #80 SUB #00 SWP DUP2 ADD2 ;dict ADD2 LDAk ;emit #{74.chr}SR2 INC2 LDA ;emit #{74.chr}MP2 @out #18 DEO #{74.chr}MP2r\n@dict\n"+b18d.unpack1(72.chr+"*").scan(/../).each_slice(120).map{|b18a|b18a*" "}*N+"\n@s\n"+b18s.unpack1(72.chr+"*").scan(/../).each_slice(120).map{|b18a|b18a*" "}*N+" 00\n"))
+  Code = %q((b18s,b18v=rp[PREV,[*127..255,*1..9,*11..31]];b18d=b18v.scan(/../m).reverse.insert(138,"\0\0")*"";"|0100 ;s @loop LDAk DUP #00 EQU ;done JCN2 ;emit JSR2 INC2 ;loop JMP2 @done POP POP2 #800f DEO BRK @emit DUP #0a EQU ;out JCN2 DUP #20 LTH ;lo JCN2 DUP #7f LTH ;out JCN2 #7f SUB ;go JMP2 @lo #80 ADD @go #00 SWP DUP2 ADD2 ;dict ADD2 LDAk ;emit JSR2 INC2 LDA ;emit JMP2 @out #18 DEO JMP2r\n@dict\n"+b18d.unpack1("H*").scan(/../).each_slice(120).map{|b18a|b18a*" "}*N+"\n@s\n"+b18s.unpack1("H*").scan(/../).each_slice(120).map{|b18a|b18a*" "}*N+" 00\n"))
   def check(prev)
-    raise "Uxntal: NUL or non-ASCII" if prev.include?("\0") || !prev.ascii_only?
+    raise "Uxntal: unsupported control or non-ASCII byte" if prev =~ /[^\n\x20-\x7e]/
   end
 end
 
@@ -269,9 +269,9 @@ class Asm6502 < CodeGen
   File = "QR.s65"
   Cmd = "xa -o QR.o65 QR.s65 && sim65 QR.o65 > OUTFILE && rm -f QR.o65"
   Apt = [["xa65", "cc65"]]
-  Code = %q((b18t,b18w=rp[PREV,128..255];b18p=b18w.scan(/../m).reverse;b18e=b18p.map{|b18x|b18x.getbyte(0)};b18f=b18p.map{|b18x|b18x.getbyte(1)};" .byt \"sim65\",2,0,2,$00,$02,$00,$02\n* = $0200\n ldx \#$ff\n txs\n lda \#$80\n sta $20\n lda #0\n sta $21\n sta $23\n sta 4\n lda #1\n sta $22\n lda #<msg\n sta 0\n lda #>msg\n sta 1\nloop:\n ldy #0\n lda (0),y\n beq done\n jsr emit\n inc 0\n bne loop\n inc 1\n jmp loop\ndone:\n jsr flush\n lda #0\n jmp $fff9\nflush:\n lda 4\n beq flret\n pha\n lda \#$20\n sta 2\n lda #0\n sta 3\n sta 4\n tax\n pla\n jsr $fff7\nflret:\n rts\nemit:\n cmp #128\n bcs pair\n ldx 4\n sta $80,x\n inx\n stx 4\n cpx #128\n beq flush\n rts\npair:\n sec\n sbc #128\n tax\n lda dict1,x\n pha\n lda dict0,x\n jsr emit\n pla\n jmp emit\ndict0:\n"+b18e.each_slice(32).map{|b18a|" .byt "+b18a*","}*N+"\ndict1:\n"+b18f.each_slice(32).map{|b18a|" .byt "+b18a*","}*N+"\nmsg:\n"+(b18t.bytes+[0]).each_slice(32).map{|b18a|" .byt "+b18a*","}*N+N))
+  Code = %q((b18t,b18w=rp[PREV,[*127..255,*1..9,*11..31]];b18p=b18w.scan(/../m).reverse.insert(138,"\0\0");b18e=b18p.map{|b18x|b18x.getbyte(0)};b18f=b18p.map{|b18x|b18x.getbyte(1)};" .byt \"sim65\",2,0,2,$00,$02,$00,$02\n* = $0200\n ldx \#$ff\n txs\n lda \#$80\n sta $20\n lda #0\n sta $21\n sta $23\n sta 4\n lda #1\n sta $22\n lda #<msg\n sta 0\n lda #>msg\n sta 1\nloop:\n ldy #0\n lda (0),y\n beq done\n jsr emit\n inc 0\n bne loop\n inc 1\n jmp loop\ndone:\n jsr flush\n lda #0\n jmp $fff9\nflush:\n lda 4\n beq flret\n pha\n lda \#$20\n sta 2\n lda #0\n sta 3\n sta 4\n tax\n pla\n jsr $fff7\nflret:\n rts\nemit:\n cmp #10\n beq lit\n cmp #32\n bcc pair_lo\n cmp #127\n bcs pair_hi\nlit:\n ldx 4\n sta $80,x\n inx\n stx 4\n cpx #128\n beq flush\n rts\npair_lo:\n clc\n adc #128\n bne pair_go\npair_hi:\n sec\n sbc #127\npair_go:\n tax\n lda dict1,x\n pha\n lda dict0,x\n jsr emit\n pla\n jmp emit\ndict0:\n"+b18e.each_slice(32).map{|b18a|" .byt "+b18a*","}*N+"\ndict1:\n"+b18f.each_slice(32).map{|b18a|" .byt "+b18a*","}*N+"\nmsg:\n"+(b18t.bytes+[0]).each_slice(32).map{|b18a|" .byt "+b18a*","}*N+N))
   def check(prev)
-    raise "6502 asm: NUL or non-ASCII" if prev.include?("\0") || !prev.ascii_only?
+    raise "6502 asm: unsupported control or non-ASCII byte" if prev =~ /[^\n\x20-\x7e]/
   end
 end
 
@@ -280,7 +280,8 @@ class Austral < CodeGen
   File = "QR.aum"
   Cmd = "austral compile QR.aum --entrypoint=QR:main --output=qr_austral && ./qr_austral > OUTFILE && rm -f qr_austral"
   Apt = [nil]
-  Code = %q(%(module body QR is function main(): ExitCode is print("#{e[PREV]}"); return ExitSuccess(); end; end module body.#{N}))
+  # Chunk into 8KB print() calls so OCaml's recursive string parser in austral never hits Stack overflow.
+  Code = %q(%(module body QR is function main(): ExitCode is #{(PREV).scan(/.{1,8000}/m).map{|s|%(print("#{e[s]}");)}*""} return ExitSuccess(); end; end module body.#{N}))
 
   def check(prev)
     raise "Austral: NUL, CR, or non-ASCII" if prev.include?("\0") || prev.include?("\r") || !prev.ascii_only?
@@ -892,9 +893,9 @@ end
 class ObjC < CodeGen
   Name = "Objective-C"
   File = "QR.m"
-  Cmd = "gcc -o QR QR.m && ./QR > OUTFILE"
+  Cmd = "gcc -o QR QR.m -lobjc && ./QR > OUTFILE"
   Apt = "gobjc"
-  Code = %q("#import<stdio.h>#{N}int main(){puts#{E[PREV]+R}}")
+  Code = %q("#import<stdio.h>#{N}#import<objc/Object.h>#{N}@interface Q:Object#{N}+(void)p;#{N}@end#{N}@implementation Q#{N}+(void)p{puts#{E[PREV]};}#{N}@end#{N}int main(){[Q p]#{R}}")
 end
 
 class Pawn < CodeGen
@@ -1936,7 +1937,7 @@ class TypeScript_Unlambda < CodeGen
   Apt = ["node-typescript", nil]
   def code
     <<-'END'.lines.map {|l| l.strip }.join
-      "let t='k',c;for(c of#{E[PREV]})t='\\x60.'+c+t;console.log(t)"
+      "let t:string='k',c:string;for(c of#{E[PREV]})t='\\x60.'+c+t;console.log(t)"
     END
   end
 
@@ -2053,19 +2054,7 @@ end
 class FSharp < CodeGen
   Name = "F#"
   File = "QR.fsx"
-  fsproj = <<-END
-    <Project Sdk="Microsoft.NET.Sdk">
-      <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net10.0</TargetFramework>
-        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-      </PropertyGroup>
-      <ItemGroup>
-        <Compile Include="QR.fsx" />
-      </ItemGroup>
-    </Project>
-  END
-  Cmd = %(echo '#{ fsproj.lines.map {|s| s.strip }.join }' > tmp.fsproj && DOTNET_NOLOGO=1 dotnet run --project tmp.fsproj > OUTFILE)
+  Cmd = "DOTNET_NOLOGO=1 dotnet fsi --quiet --exec QR.fsx > OUTFILE"
   Apt = "dotnet-sdk-10.0"
   Code = %q(%(#$C """#{PREV} """))
 
@@ -2171,7 +2160,7 @@ class Picat < CodeGen
   File = "QR.pi"
   Cmd = "picat QR.pi > OUTFILE"
   Apt = [nil]                # release binary, see src/extra-installs/
-  Code = %q(%(main => print("#{e[PREV]}").))
+  Code = %q(("main=>"+(PREV).scan(/.{1,16000}/m).map{|s|%(print("#{e[s]}"))}.join(",")+"."+N))
   def check(prev)
     raise "Picat: non-printable byte" if prev =~ /[^\n\x20-\x7e]/
   end
@@ -2237,7 +2226,8 @@ class Murex < CodeGen
   File = "QR.mx"
   Cmd = "murex QR.mx > OUTFILE"
   Apt = [nil]
-  Code = %q(%(tout str '#{(PREV).gsub(?',%(';tout str "'";tout str '))}'))
+  # Split '{' before any Murex ANSI constant token ({F3}, {RED}, {RESET}, {+U}, etc.) so tout prints it literally.
+  Code = %q(%(tout str '#{(PREV).gsub(?',%(';tout str "'";tout str ')).gsub(/\{(?=[[:alnum:]_+-]+\})/){"';tout str '{';tout str '"}}'))
   def check(prev)
     raise if prev.include?("\0") || prev.include?("\r")
   end
@@ -2783,14 +2773,15 @@ end
 
 class AspectJ < CodeGen
   File = "QR.aj"
-  Cmd = "ajc QR.aj && java QR > OUTFILE"
+  Cmd = "ajc QR.aj && java -cp .:/usr/share/java/aspectjrt.jar QR > OUTFILE"
   Apt = "aspectj"
   def code
     <<-'END'.lines.map {|l| l.strip }.join
       %(
-        class QR{
-          #$L void main(String[]a){
-            a=String.join("",new String[]{#{PREV.gsub(Regexp.union(94.chr,/\\+/)){"^#{94.chr==$&?0:$&.size}^"}.scan(/.{1,15000}/m).map{|c|E[c]}*?,}}).split("\\\\^",-1);
+        class QR{#$L void main(String[]a){}}
+        aspect Q{
+          before():execution(void QR.main(..)){
+            String[]a=String.join("",new String[]{#{PREV.gsub(Regexp.union(94.chr,/\\+/)){"^#{94.chr==$&?0:$&.size}^"}.scan(/.{1,15000}/m).map{|c|E[c]}*?,}}).split("\\\\^",-1);
             StringBuilder o=new StringBuilder(a[0]);
             for(int i=1;i<a.length;o.append(a[i+1]),i+=2){
               int n=Integer.parseInt(a[i]);
