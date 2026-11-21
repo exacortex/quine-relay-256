@@ -1,0 +1,8 @@
+PASSED
+image CMD: ["/bin/sh","-c","make check -j 10000"]
+build: 59.1 min (no cache, fresh ubuntu:26.04)
+make check: 27.6 min
+image id: sha256:47335f5ae2dfc681f4da9c938f6e54f37c5dd1b26feb978bc8a7cf8fc9c973d8
+image size: 27.79 GB (40 RootFS layers)
+QR.rb sha256: 36d70b16700a505814e1bd5eb47a54a99ba09b38bd6512f0c9875a75ebfdff1a
+U20 parity: OK

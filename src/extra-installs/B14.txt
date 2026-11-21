@@ -1,0 +1,7 @@
+# B14: embeddable scripting II (TXR, Arturo, Ring). All pinned.
+# TXR 302 (not packaged in Ubuntu 26.04): source snapshot, configure + make install (/usr/local).
+RUN cd /opt && curl -fsSL --retry 6 --retry-delay 10 --retry-all-errors https://www.kylheku.com/cgit/txr/snapshot/txr-302.tar.bz2 | tar -xj && cd txr-302 && ./configure > /tmp/txr.log 2>&1 && make -j4 >> /tmp/txr.log 2>&1 && make install >> /tmp/txr.log 2>&1 && rm -f /tmp/txr.log && echo '(put-string "txr ok")' > /tmp/t.tl && txr /tmp/t.tl && rm -f /tmp/t.tl
+# Arturo 0.10.0 "mini" build (the full build links libwebkit2gtk-4.0, gone from 26.04).
+RUN mkdir -p /opt/arturo && cd /opt/arturo && curl -fsSL --retry 6 --retry-delay 10 --retry-all-errors https://github.com/arturo-lang/arturo/releases/download/v0.10.0/arturo-0.10.0-linux-amd64-mini.zip -o a.zip && unzip -q a.zip && rm -f a.zip && ln -s /opt/arturo/arturo /usr/local/bin/arturo && echo 'prints {:arturo ok:}' > /tmp/t.art && arturo /tmp/t.art && rm -f /tmp/t.art
+# Ring v1.27: only the core interpreter (language/src, ~45 C files; ringw.c is the Windows GUI entry and is left out).
+RUN cd /opt && git clone -q --depth 1 --filter=blob:none --sparse -b v1.27 https://github.com/ring-lang/ring && cd ring && git sparse-checkout set language > /dev/null && cd language/src && gcc -O2 $(ls *.c | grep -v ringw) -I ../include -lm -ldl -o /usr/local/bin/ring > /tmp/ring.log 2>&1 && rm -f /tmp/ring.log && echo 'see "ring ok"' > /tmp/t.ring && ring /tmp/t.ring && rm -f /tmp/t.ring

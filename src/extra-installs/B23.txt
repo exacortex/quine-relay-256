@@ -1,0 +1,100 @@
+# B23: Batch B standalone replacement languages (Boron, ChaiScript, MiniScript, Gluon, Effekt, Lily, PocketLang, Cyber, Dyon, Rye, Pawn, Austral, Vale).
+# Note: HOC uses official Ubuntu 26.04 Apt = "9base" (/usr/lib/plan9/bin/hoc); no extra RUN needed.
+# Note: Vale requires real /usr/bin/clang (installed via base apt, no clang->gcc shadow).
+
+# Boron v2.0.8 (LGPL-3.0) — C99 source build (annotated tag v2.0.8 -> commit 84e7a81f68aa7588419f7b164e94e096a1c3fa07)
+RUN git clone -q --depth 1 -b v2.0.8 https://github.com/0branch/boron.git /tmp/boron && \
+    cd /tmp/boron && make -j4 > /tmp/boron.log 2>&1 && make install >> /tmp/boron.log 2>&1 && ldconfig && \
+    cd / && rm -rf /tmp/boron /tmp/boron.log && \
+    printf 'prin "boron ok"\n' > /tmp/t.b && test "$(boron /tmp/t.b)" = "boron ok" && rm -f /tmp/t.b
+
+# ChaiScript (BSD-3-Clause) — C++17 source build (pinned commit f635b51e3f8e95868210edfc66fdbd8e475710f5)
+RUN git clone -q https://github.com/ChaiScript/ChaiScript.git /tmp/chaiscript && \
+    cd /tmp/chaiscript && git checkout -q f635b51e3f8e95868210edfc66fdbd8e475710f5 && \
+    mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DBUILD_SAMPLES=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5 > /tmp/chai.log 2>&1 && \
+    make -j4 chai >> /tmp/chai.log 2>&1 && \
+    install -m 755 chai /usr/local/bin/chai && cd / && rm -rf /tmp/chaiscript /tmp/chai.log && \
+    printf 'puts(R"Q(chai ok)Q");\n' > /tmp/t.chai && test "$(chai /tmp/t.chai)" = "chai ok" && rm -f /tmp/t.chai
+
+# MiniScript v2.0.0 (MIT) — prebuilt static Linux x64 binary (sha256-pinned)
+RUN curl --retry 5 -fsSL -o /tmp/miniscript.tgz https://github.com/JoeStrout/miniscript2/releases/download/v2.0.0/miniscript-linux.tar.gz && \
+    echo "97ddd3bb88e3287745818e29d809d3fc69e65159eda23d9e80ed02bb08a4f966  /tmp/miniscript.tgz" | sha256sum -c && \
+    mkdir -p /opt/miniscript && tar -xzf /tmp/miniscript.tgz -C /opt/miniscript 2>/dev/null && rm -f /tmp/miniscript.tgz && \
+    chmod +x /opt/miniscript/miniscript-linux/miniscript && \
+    ln -sf /opt/miniscript/miniscript-linux/miniscript /usr/local/bin/miniscript && \
+    printf 'print "miniscript ok",""\n' > /tmp/t.ms && test "$(miniscript /tmp/t.ms)" = "miniscript ok" && rm -f /tmp/t.ms
+
+# Gluon 0.18.4 (MIT) — crates.io cargo install --locked
+RUN cargo install gluon_repl --version 0.18.4 --locked --root /opt/gluon > /tmp/gluon-build.log 2>&1 && rm -f /tmp/gluon-build.log && \
+    ln -sf /opt/gluon/bin/gluon /usr/local/bin/gluon && gluon --version
+
+# Effekt v0.85.0 (MIT) — prebuilt release tarball (sha256-pinned; uses existing JDK + Node.js)
+RUN curl --retry 5 -fsSL -o /tmp/effekt.tgz https://github.com/effekt-lang/effekt/releases/download/v0.85.0/effekt.tgz && \
+    echo "aa2502af4a2d91e8ed974580d0e3bf04141d3f0325cc97ad7a09c81203db39bb  /tmp/effekt.tgz" | sha256sum -c && \
+    mkdir -p /opt/effekt && tar -xzf /tmp/effekt.tgz -C /opt/effekt && rm -f /tmp/effekt.tgz && \
+    chmod +x /opt/effekt/package/bin/effekt && ln -sf /opt/effekt/package/bin/effekt /usr/local/bin/effekt && effekt --version
+
+# Lily v2.6 (MIT) — CMake C source build (annotated tag v2.6 -> commit 37f6e0ba555809ff12050abee100422e335aa735)
+RUN git clone -q --depth 1 -b v2.6 https://github.com/FascinatedBox/lily.git /tmp/lily && \
+    mkdir -p /tmp/lily/build && cd /tmp/lily/build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release > /tmp/lily.log 2>&1 && \
+    make -j4 >> /tmp/lily.log 2>&1 && make install >> /tmp/lily.log 2>&1 && ldconfig && \
+    cd / && rm -rf /tmp/lily /tmp/lily.log && \
+    printf 'stdout.write("lily ok")\n' > /tmp/t.lily && test "$(lily /tmp/t.lily)" = "lily ok" && rm -f /tmp/t.lily
+
+# PocketLang (MIT) — 0-dep C99 source build (pinned commit cc73ca61b113d48ee130d837a7a8b145e41de5ce)
+RUN git clone -q https://github.com/ThakeeNathees/pocketlang.git /tmp/pocket && \
+    cd /tmp/pocket && git checkout -q cc73ca61b113d48ee130d837a7a8b145e41de5ce && \
+    make -j4 release > /tmp/pocket.log 2>&1 && \
+    install -m 755 build/Release/bin/pocket /usr/local/bin/pocket && cd / && rm -rf /tmp/pocket /tmp/pocket.log && \
+    printf 'import io\nio.write(io.stdout,"pocket ok")\n' > /tmp/t.pk && test "$(pocket /tmp/t.pk)" = "pocket ok" && rm -f /tmp/t.pk
+
+# Cyber 0.3 (MIT) — prebuilt Linux x64 tarball (sha256-pinned)
+RUN curl --retry 5 -fsSL -o /tmp/cyber.tgz https://github.com/fubark/cyber/releases/download/0.3/cyber-linux-x64.tar.gz && \
+    echo "24343c64e6c249fc2c081d11d959ad0e1db612f534e0a891c96db6111d9a3e1d  /tmp/cyber.tgz" | sha256sum -c && \
+    mkdir -p /opt/cyber && tar -xzf /tmp/cyber.tgz -C /opt/cyber && rm -f /tmp/cyber.tgz && \
+    chmod +x /opt/cyber/cyber && ln -sf /opt/cyber/cyber /usr/local/bin/cyber && cyber version
+
+# Dyon 0.51.3 (Apache-2.0 OR MIT) — crates.io cargo install --locked
+RUN cargo install dyon --version 0.51.3 --example dyonrun --locked --root /opt/dyon > /tmp/dyon-build.log 2>&1 && rm -f /tmp/dyon-build.log && \
+    ln -sf /opt/dyon/bin/dyonrun /usr/local/bin/dyonrun && \
+    printf 'fn main() { print("dyon ok") }\n' > /tmp/t.dyon && test "$(dyonrun /tmp/t.dyon)" = "dyon ok" && rm -f /tmp/t.dyon
+
+# Rye v0.2.82 (BSD-3-Clause) — prebuilt Linux x64 tarball (sha256-pinned)
+RUN curl --retry 5 -fsSL -o /tmp/rye.tgz https://github.com/refaktor/rye/releases/download/v0.2.82/rye_Linux_x86_64.tar.gz && \
+    echo "d357699ee093365962813640d44b79f2b59050b43c463adebc231ab1f807900e  /tmp/rye.tgz" | sha256sum -c && \
+    mkdir -p /opt/rye && tar -xzf /tmp/rye.tgz -C /opt/rye && rm -f /tmp/rye.tgz && \
+    chmod +x /opt/rye/rye && ln -sf /opt/rye/rye /usr/local/bin/rye && \
+    printf 'prn "rye ok"\n' > /tmp/t.rye && test "$(rye /tmp/t.rye)" = "rye ok" && rm -f /tmp/t.rye
+
+# Pawn v4.1.7152 (Apache-2.0 w/ static-linking exception) — CMake C build with -DHAVE_CURSES_H=0 (pipe-clean stdout)
+RUN git clone -q --depth 1 -b v4.1.7152 https://github.com/compuphase/pawn.git /tmp/pawn && \
+    mkdir -p /tmp/pawn/build && cd /tmp/pawn/build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DHAVE_CURSES_H=0 -DCMAKE_C_FLAGS="-O2 -std=gnu11 -Wno-error" > /tmp/pawn.log 2>&1 && \
+    make -j4 >> /tmp/pawn.log 2>&1 && \
+    mkdir -p /opt/pawn/bin /opt/pawn/include && \
+    cp /tmp/pawn/include/*.inc /opt/pawn/include/ && \
+    install -m 755 pawncc pawnrun /opt/pawn/bin/ && \
+    (cp -a libpawnc.so* libamx.so* /usr/local/lib/ 2>/dev/null || true) && ldconfig && \
+    printf '#!/bin/sh\nexec /opt/pawn/bin/pawncc -i/opt/pawn/include "$@"\n' > /usr/local/bin/pawncc && \
+    chmod +x /usr/local/bin/pawncc && ln -sf /opt/pawn/bin/pawnrun /usr/local/bin/pawnrun && \
+    cd / && rm -rf /tmp/pawn /tmp/pawn.log && \
+    printf '#include <console>\nmain(){printf("%%s","pawn ok");}\n' > /tmp/t.pawn && \
+    pawncc -C64 /tmp/t.pawn -o/tmp/t.amx >/dev/null && test "$(pawnrun /tmp/t.amx)" = "pawn ok" && rm -f /tmp/t.pawn /tmp/t.amx
+
+# Austral v0.2.0 (Apache-2.0 WITH LLVM-exception) — prebuilt Linux x64 binary (sha256-pinned; invoked via /lib64/ld-linux-x86-64.so.2)
+RUN mkdir -p /opt/austral && \
+    curl --retry 5 -fsSL -o /opt/austral/austral-linux https://github.com/austral/austral/releases/download/v0.2.0/austral-linux && \
+    echo "ab0c8e5f24261360a8064c992b019867edd6dc2b05001c4a21f71b863b4beed3  /opt/austral/austral-linux" | sha256sum -c && \
+    chmod +x /opt/austral/austral-linux && \
+    printf '#!/bin/sh\nexec /lib64/ld-linux-x86-64.so.2 /opt/austral/austral-linux "$@"\n' > /usr/local/bin/austral && \
+    chmod +x /usr/local/bin/austral && austral --version
+
+# Vale 0.2.0.28 (Apache-2.0) — prebuilt Ubuntu x64 zip (sha256-pinned; requires real /usr/bin/clang)
+RUN curl --retry 5 -fsSL -o /tmp/vale.zip https://github.com/ValeLang/Vale/releases/download/v0.2.0/Vale-Ubuntu-0.2.0.28.zip && \
+    echo "cfb0a46d493dc60210c1aa612836afa7ddc3423868c2dab48ccea9c39a03e893  /tmp/vale.zip" | sha256sum -c && \
+    mkdir -p /opt/vale && unzip -q /tmp/vale.zip -d /opt/vale && rm -f /tmp/vale.zip && \
+    chmod +x /opt/vale/valec && \
+    printf '#!/bin/sh\nexec /opt/vale/valec "$@"\n' > /usr/local/bin/valec && \
+    chmod +x /usr/local/bin/valec

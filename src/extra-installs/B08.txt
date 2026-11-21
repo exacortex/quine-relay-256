@@ -1,0 +1,43 @@
+# B08: Modern functional/systems languages (Gleam, Roc, Inko, Koka, Chapel, Pony). Pinned by version + sha256.
+# Gleam: Gleam 1.19.2, official static binary, sha256-pinned (Erlang is already in the image)
+RUN curl -fsSL -o /tmp/gleam.tgz https://github.com/gleam-lang/gleam/releases/download/v1.19.2/gleam-v1.19.2-x86_64-unknown-linux-musl.tar.gz && \
+    echo "2ba2afb66ca9f6dcc01a4a6e9169b6942963bad6483bec9571ddc078cfe6f41f  /tmp/gleam.tgz" | sha256sum -c && \
+    tar -xzf /tmp/gleam.tgz -C /usr/local/bin gleam && rm -f /tmp/gleam.tgz && \
+    gleam --version; erl -noshell -eval 'io:format("~s~n",[erlang:system_info(otp_release)]),halt().'
+# Roc: immutable 0.0.0-alpha1 + local offline basic-cli 0.18.0 (both sha256-pinned, zero HTTPS URL in QR.roc)
+RUN curl -fsSL -o /tmp/roc.tgz https://github.com/roc-lang/roc/releases/download/0.0.0-alpha1/roc-linux_x86_64-0-alpha1.tar.gz && \
+    echo "81a7a74aba79b5633da87490aed01d040c69459d2fc2d7e9b638df417d980adf  /tmp/roc.tgz" | sha256sum -c && \
+    mkdir -p /opt/roc /opt/roc/basic-cli && tar -xzf /tmp/roc.tgz -C /opt/roc --strip-components=1 && rm -f /tmp/roc.tgz && \
+    ln -sf /opt/roc/roc /usr/local/bin/roc && \
+    curl -fsSL -o /tmp/bcli.tar.br https://github.com/roc-lang/basic-cli/releases/download/0.18.0/0APbwVN1_p1mJ96tXjaoiUCr8NBGamr8G8Ac_DrXR-o.tar.br && \
+    echo "fd9a76574953e6eb60cf25a9a0a75239f0041a48602395d6bb65a2ffd4a85651  /tmp/bcli.tar.br" | sha256sum -c && \
+    brotli -dc /tmp/bcli.tar.br | tar -x -C /opt/roc/basic-cli && rm -f /tmp/bcli.tar.br && \
+    roc version
+# Inko: Inko 0.21.1 from the tagged source (sha256-pinned), built with cargo against Ubuntu 26.04's LLVM 18.
+RUN apt-get update -qq && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq llvm-18-dev libpolly-18-dev libzstd-dev zlib1g-dev && \
+    apt-get clean && \
+    curl -fsSL -o /tmp/inko.tgz https://github.com/inko-lang/inko/archive/refs/tags/v0.21.1.tar.gz && \
+    echo "6d73f93a7331ef9111d7bf8a3665059ccda25a33a6f2bd723a7aa2ab83b22259  /tmp/inko.tgz" | sha256sum -c && \
+    tar -xzf /tmp/inko.tgz -C /tmp && rm -f /tmp/inko.tgz && \
+    cd /tmp/inko-0.21.1 && LLVM_SYS_181_PREFIX=/usr/lib/llvm-18 make build PREFIX=/usr/local && make install PREFIX=/usr/local && \
+    cd / && rm -rf /tmp/inko-0.21.1 && \
+    inko --version
+# Koka: Koka 3.2.9, official linux-x64 bundle, sha256-pinned (uses the image's gcc as its C backend)
+RUN curl -fsSL -o /tmp/koka.tgz https://github.com/koka-lang/koka/releases/download/v3.2.9/koka-v3.2.9-linux-x64.tar.gz && \
+    echo "310459831a7c6fa6a0cd8e0e02d6b5b3b36441d5e7ce24168bda016cd2e95eee  /tmp/koka.tgz" | sha256sum -c && \
+    mkdir -p /opt/koka && tar -xzf /tmp/koka.tgz -C /opt/koka && rm -f /tmp/koka.tgz && \
+    ln -sf /opt/koka/bin/koka /usr/local/bin/koka && \
+    koka --version
+# Chapel: Chapel 2.10.0, official .deb for Ubuntu 26, sha256-pinned
+RUN apt-get update -qq && \
+    curl -fsSL -o /tmp/chapel.deb https://github.com/chapel-lang/chapel/releases/download/2.10.0/chapel-2.10.0-1.ubuntu26.amd64.deb && \
+    echo "9af4153bea3cd225f5f3e90ddc215e15fcf1c7fa8ce2246108415b6da1c27d11  /tmp/chapel.deb" | sha256sum -c && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq /tmp/chapel.deb && apt-get clean && rm -f /tmp/chapel.deb && \
+    chpl --version
+# Pony: ponyc 0.78.2, official Ubuntu 26.04 build, sha256-pinned
+RUN curl -fsSL -o /tmp/ponyc.tgz https://github.com/ponylang/ponyc/releases/download/0.78.2/ponyc-x86-64-unknown-linux-ubuntu26.04.tar.gz && \
+    echo "69f9dae95da5eb4a1abe411f011a18e819f677cd33f10bbd8e44f36fd46f5103  /tmp/ponyc.tgz" | sha256sum -c && \
+    mkdir -p /opt/ponyc && tar -xzf /tmp/ponyc.tgz -C /opt/ponyc --strip-components=1 && rm -f /tmp/ponyc.tgz && \
+    ln -sf /opt/ponyc/bin/ponyc /usr/local/bin/ponyc && \
+    ponyc --version

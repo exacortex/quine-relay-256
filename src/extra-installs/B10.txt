@@ -1,0 +1,8 @@
+# B10: logic, rules & app languages (Dart, Picat, Mercury). CLIPS and Maude come from apt (Apt in code-gen.rb). All pinned.
+# Dart 3.14.0: official SDK zip.
+RUN cd /opt && curl -fsSL -o dart.zip https://storage.googleapis.com/dart-archive/channels/stable/release/3.14.0/sdk/dartsdk-linux-x64-release.zip && unzip -q dart.zip && rm -f dart.zip && ln -s /opt/dart-sdk/bin/dart /usr/local/bin/dart && dart --version
+# Picat 3.9#12: official Linux binary.
+RUN cd /opt && curl -fsSL https://picat-lang.org/download/picat39_12_linux64.tar.gz | tar -xz && ln -s /opt/Picat/picat /usr/local/bin/picat && picat --version
+# Mercury 22.01.8: the project's Debian repo (trixie build). Its signing key (Paul Bone, DABC17308F5152E3) has
+# expired upstream, so the repo is marked trusted and the package is pinned to the exact version instead.
+RUN echo "deb [trusted=yes] https://dl.mercurylang.org/deb/ trixie main" > /etc/apt/sources.list.d/mercury.list && apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq mercury-recommended=22.01.8-1~trixie > /dev/null && rm -f /etc/apt/sources.list.d/mercury.list && apt-get clean && mmc --version | head -1

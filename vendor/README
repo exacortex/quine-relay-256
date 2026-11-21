@@ -1,0 +1,133 @@
+# Third-party archives, reference interpreters, and bundled runners under vendor/
+#
+# All files in this directory carry their own licenses listed below and are
+# excluded from the root MIT license (see ../LICENSE and ../README.md).
+# Note: `dummy-wasi-runtime.c` (unused upstream leftover), proprietary
+# `frink/frink.jar`, and custom subset stubs (`cjam.rb`, `glass.rb`, `fish.py`,
+# `brain_flak.rb`, `run6502.py`, `runz80.py`) have been removed in favor of
+# canonical upstream interpreters/emulators or standalone open-source languages.
+
+## 1. Inherited from upstream mame/quine-relay — self-made runners (MIT)
+
+Unlambda: unlambda.rb
+  * self-made (mame/quine-relay)
+  * License: MIT
+
+Whitespace: whitespace.rb
+  * self-made (mame/quine-relay)
+  * License: MIT
+
+Subleq: subleq.rb
+  * self-made (mame/quine-relay)
+  * License: MIT
+
+Thue: thue.rb
+  * self-made (mame/quine-relay)
+  * License: MIT
+
+BLC8: blc.rb
+  * self-made (mame/quine-relay)
+  * License: MIT
+
+Brainfuck: bf.rb
+  * self-made (mame/quine-relay)
+  * License: MIT
+
+FALSE: false.rb
+  * self-made (mame/quine-relay)
+  * License: MIT
+
+Aheui: aheui.rb
+  * self-made (mame/quine-relay)
+  * License: MIT
+
+WebAssembly (Text format) WASI shim: wasi-runtime.js
+  * Node.js WASI preview1 runner (mame/quine-relay)
+  * License: MIT
+
+## 2. Inherited from upstream mame/quine-relay — third-party interpreters & archives
+
+ante: ante.rb
+  * https://github.com/michaeldv (Michael Dvorkin)
+  * License: MIT
+
+Befunge: cfunge-0.9.0.tar.bz2
+  * http://sourceforge.net/projects/cfunge/
+  * License: GPLv3 (includes LGPLv2 libghthash)
+
+Chef: Acme-Chef-1.03.tar.gz
+  * https://metacpan.org/pod/Acme::Chef (Steffen Mueller)
+  * License: the same terms as Perl (Artistic License / GPL)
+
+Grass: grass.rb
+  * http://www.blue.sky.or.jp/grass/ (Ueno Katsuhiro)
+  * License: BSD 2-Clause
+  * slightly modified for Ruby 2+ (upstream mame/quine-relay)
+
+GolfScript: golfscript.rb
+  * http://www.golfscript.com/golfscript/ (Darren Smith)
+  * License: MIT
+
+LOLCODE: lci-0.10.5.zip
+  * http://lolcode.org/ (Justin J. Meza)
+  * License: GPLv3+
+
+Piet: npiet-1.3e.tar.gz
+  * http://www.bertnase.de/npiet/
+  * License: GPLv2
+
+Lazy K: lazyk.c
+  * https://github.com/irori/lazyk (Copyright 2008 irori)
+  * License: MIT (see lazyk.c header line 5)
+  * Fork modification (line 19): RDSTACK_SIZE raised from 100,000 to 10,000,000
+    for 256-step relay stack depth; Lazy K semantics are unchanged.
+
+Shakespeare: spl-1.2.1.tar.gz
+  * http://shakespearelang.sourceforge.net/
+  * License: GPLv2
+
+Velato: Velato_0_1.zip
+  * http://velato.net/ (Copyright 2009 Daniel Temkin)
+  * License: freeware non-commercial ("do with it what you want, just don't sell it")
+
+## 3. Added in this fork — third-party upstream source & reference implementations
+
+Malbolge Unshackled: Unshackled.c
+  * Matthias Lutter (https://github.com/Lutter/malbolge-unshackled)
+  * License: CC0 1.0 Public Domain
+  * Untouched upstream reference interpreter executed by Makefile step 252.
+
+Malbolge Unshackled (fixed 20-trit parity verifier): Unshackled-20.c
+  * Matthias Lutter (https://github.com/Lutter/malbolge-unshackled)
+  * License: CC0 1.0 Public Domain
+  * Untouched upstream reference interpreter; compiled by vendor/Makefile for
+    out-of-band rotwidth-independence parity verification ONLY (not invoked by
+    the main relay Makefile).
+
+K (ngn/k): ngnk-b9eeb91e.tar.gz
+  * https://codeberg.org/ngn/k (pinned commit b9eeb91e0343ef6029f59d55dd98f82667b9bd59)
+  * License: AGPLv3 (complete upstream source archive including LICENSE;
+    vendored because upstream archived the repository)
+
+## 4. Added in this fork — minimal spec-complete esolang runners (MIT)
+# Following mame/quine-relay's precedent for tiny esolangs lacking packaged
+# Ubuntu interpreters (each implements the full language spec).
+
+Underload: underload.rb
+  * self-made, complete 8/8 Underload spec (https://esolangs.org/wiki/Underload)
+  * License: MIT
+
+Emmental: emmental.rb
+  * self-made, complete 13/13 Emmental spec with lexical '!' capture, verified
+    against Chris Pressey's catseye/Emmental (https://esolangs.org/wiki/Emmental)
+  * License: MIT
+
+/// (Slashes): slashes.rb
+  * self-made, exact leftmost single-step substitution spec (with O(N) fast path
+    for non-overlapping 1-byte patterns) (https://esolangs.org/wiki////)
+  * License: MIT
+
+Beatnik: beatnik.rb
+  * self-made, complete Beatnik spec (halts strictly on score 17; scores <5 and
+    >=18 are no-ops) (https://esolangs.org/wiki/Beatnik)
+  * License: MIT

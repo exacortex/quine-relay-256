@@ -1,0 +1,5 @@
+# B12: scientific & unit-checked languages (Mathics3, Numbat). All pinned.
+# Mathics3 10.0.1 (pip).
+RUN pip install --break-system-packages -q mathics3==10.0.1 && mathics --version | head -1
+# Numbat 1.24.0 (cargo).
+RUN cargo install numbat-cli --version 1.24.0 --locked --root /opt/numbat > /tmp/numbat-build.log 2>&1 && rm -f /tmp/numbat-build.log && ln -s /opt/numbat/bin/numbat /usr/local/bin/numbat && numbat --version

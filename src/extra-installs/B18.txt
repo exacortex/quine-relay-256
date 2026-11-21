@@ -1,0 +1,23 @@
+# B18: Assembly & tiny VMs (MMIXware, Uxntal, tnylpo 1.2.2 CP/M 2.2 Z80 emulator). All sha256-pinned.
+# Note: 6502 asm uses official Ubuntu apt xa65 + cc65 (sim65) via Apt in code-gen.rb.
+# MMIXware (pinned commit 8a5ce829 + SHA-256)
+RUN curl --retry 5 -fsSL -o /tmp/mmix.tgz https://github.com/theartofcomputerprogramming/mmixware/archive/8a5ce829ebea15f6910bd31b83f601f71cc08a0f.tar.gz && \
+    echo "a9282ae0926bdf2eb250830f51b4f0175ab7da38936ff3bfbbc89b7d58b1ac31  /tmp/mmix.tgz" | sha256sum -c && \
+    mkdir -p /opt/mmixware && tar -xzf /tmp/mmix.tgz -C /opt/mmixware --strip-components=1 && rm -f /tmp/mmix.tgz && \
+    make -C /opt/mmixware CFLAGS="-O2 -std=gnu89 -Wno-implicit-int -Wno-implicit-function-declaration -Wno-return-type" mmixal mmix && \
+    install -m 755 /opt/mmixware/mmixal /opt/mmixware/mmix /usr/local/bin/ && rm -rf /opt/mmixware && \
+    printf ' LOC #100\nMain GETA $255,S\n TRAP 0,Fputs,StdOut\n TRAP 0,Halt,0\nS BYTE "ok",0\n' > /tmp/t.mms && mmixal -o /tmp/t.mmo /tmp/t.mms && test "$(mmix /tmp/t.mmo)" = "ok" && rm -f /tmp/t.mms /tmp/t.mmo
+# Uxntal (kivutar/uxn pinned commit 9e483ae8 + SHA-256)
+RUN curl --retry 5 -fsSL -o /tmp/uxn.tgz https://github.com/kivutar/uxn/archive/9e483ae8b129029152a2b3e1ebb6762078378e65.tar.gz && \
+    echo "3bcb2b27bbe90c0f503644a73153c1cb9bb9a448652e1c890cf0ade002489082  /tmp/uxn.tgz" | sha256sum -c && \
+    mkdir -p /opt/uxn && tar -xzf /tmp/uxn.tgz -C /opt/uxn --strip-components=1 && rm -f /tmp/uxn.tgz && \
+    gcc -O2 -Wno-error /opt/uxn/src/uxnasm.c -o /usr/local/bin/uxnasm && \
+    gcc -O2 -Wno-error /opt/uxn/src/uxn.c /opt/uxn/src/uxncli.c -o /usr/local/bin/uxncli && \
+    rm -rf /opt/uxn && \
+    printf '|0100 #6f #18 DEO #6b #18 DEO #800f DEO BRK\n' > /tmp/t.tal && uxnasm /tmp/t.tal /tmp/t.rom >/dev/null && test "$(uxncli /tmp/t.rom)" = "ok" && rm -f /tmp/t.tal /tmp/t.rom
+# Official Georg Brein tnylpo 1.2.2 (BSD-3-Clause C CP/M 2.2 Z80 emulator), sha256-pinned
+RUN curl --retry 5 -fsSL -o /tmp/tnylpo.tgz https://gitlab.com/gbrein/tnylpo/-/archive/1.2.2/tnylpo-1.2.2.tar.gz && \
+    echo "151ee9cc130b7d22ec242165301eeb1cb15c698cd30742467e352f4f0070e5a8  /tmp/tnylpo.tgz" | sha256sum -c && \
+    mkdir -p /tmp/tnylpo && tar -xzf /tmp/tnylpo.tgz -C /tmp/tnylpo --strip-components=1 && \
+    (cd /tmp/tnylpo && sh build.sh && install -m 755 tnylpo /usr/local/bin/tnylpo) && \
+    rm -rf /tmp/tnylpo /tmp/tnylpo.tgz

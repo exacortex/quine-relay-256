@@ -1,0 +1,5 @@
+# B09: dependent types (Lean 4, Idris 2). ACL2 comes from apt (Apt in code-gen.rb); these don't. All pinned.
+# Lean 4 v4.35.0: official release zip.
+RUN cd /opt && curl -fsSL -o lean.zip https://github.com/leanprover/lean4/releases/download/v4.35.0/lean-4.35.0-linux.zip && unzip -q lean.zip && rm -f lean.zip && ln -s /opt/lean-4.35.0-linux/bin/lean /usr/local/bin/lean && lean --version
+# Idris 2 v0.8.0: source build, bootstrapped with Chez Scheme (about 10 min).
+RUN apt-get update -qq && apt-get install -y -qq chezscheme libgmp-dev > /dev/null && apt-get clean && git clone -q --depth 1 -b v0.8.0 https://github.com/idris-lang/Idris2 /tmp/idris2src && cd /tmp/idris2src && make bootstrap SCHEME=chezscheme PREFIX=/opt/idris2 > /tmp/idris2-build.log 2>&1 && make install PREFIX=/opt/idris2 >> /tmp/idris2-build.log 2>&1 && ln -s /opt/idris2/bin/idris2 /usr/local/bin/idris2 && cd / && rm -rf /tmp/idris2src /tmp/idris2-build.log && idris2 --version

@@ -1,0 +1,17 @@
+# B16: Pinned Factor 0.100, LFE 2.1.4, ArnoldC.jar (sha256), Pyth (commit 97cdf30d, sha256).
+RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
+    erlang-nox erlang-dev default-jdk-headless python3 gcc libc6-dev libgc-dev make git curl ca-certificates && apt-get clean \
+    && curl --retry 5 --retry-all-errors -fsSL https://downloads.factorcode.org/releases/0.100/factor-linux-x86-64-0.100.tar.gz -o /tmp/factor.tar.gz \
+    && tar -xzf /tmp/factor.tar.gz -C /opt \
+    && ln -sf /opt/factor/factor /usr/local/bin/factor-vm \
+    && rm -f /tmp/factor.tar.gz \
+    && git clone -q --branch 2.1.4 --depth 1 https://github.com/lfe/lfe.git /opt/lfe \
+    && make -C /opt/lfe compile \
+    && ln -sf /opt/lfe/bin/lfe /usr/local/bin/lfe \
+    && ln -sf /opt/lfe/bin/lfec /usr/local/bin/lfec \
+    && ln -sf /opt/lfe/bin/lfescript /usr/local/bin/lfescript \
+    && curl --retry 5 --retry-all-errors -fsSL https://lhartikk.github.io/ArnoldC.jar -o /opt/ArnoldC.jar \
+    && echo "c26b0342d352e69838bc7dab67305484edaca702002cf793f61f817d9dc1c31d  /opt/ArnoldC.jar" | sha256sum -c \
+    && curl --retry 5 --retry-all-errors -fsSL -o /tmp/pyth.tgz https://github.com/isaacg1/pyth/archive/97cdf30d749d2a0d6ec1bb4b9bc417c34cce05bb.tar.gz \
+    && echo "2cd8aebaa1549b10f5139f8115036c03ee271cdf760cfe4f0e67b963f2309093  /tmp/pyth.tgz" | sha256sum -c \
+    && mkdir -p /opt/pyth && tar -xzf /tmp/pyth.tgz -C /opt/pyth --strip-components=1 && rm -f /tmp/pyth.tgz

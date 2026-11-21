@@ -1,0 +1,32 @@
+# B22: Batch A standalone replacement languages (MUMPS/YottaDB, Miranda, Hope, Clean, Grain, Mirth, Lobster, GNU APL, Flix).
+# Note: QBE uses official Ubuntu 26.04 Apt = "qbe" (1.2-3build1); no extra RUN needed.
+# All non-apt toolchains below are pinned to exact release versions or commit SHAs with SHA-256 verification.
+
+# MUMPS: YottaDB r2.06 (AGPLv3) official Linux x86_64 release tarball
+RUN curl --retry 3 -fsSL -o /tmp/ydb.tgz https://github.com/YottaDB/YDB/releases/download/r2.06/yottadb_r206_x8664_ubuntu2404_pro.tgz && echo "9414a0e3e0f9cf60b4464307fcbd07681229444572f246ef93de8b0ff78d4575  /tmp/ydb.tgz" | sha256sum -c - && mkdir -p /opt/yottadb && tar -xzf /tmp/ydb.tgz -C /opt/yottadb --strip-components=1 && rm -f /tmp/ydb.tgz
+
+# Miranda 2.066 (2-clause BSD, David Turner 1985): tiny C build on GCC 15 (-std=gnu17 -fcommon)
+RUN mkdir -p /tmp/mira_build && cd /tmp/mira_build && curl --retry 3 -fsSL -o mira-2066-src.tgz https://www.cs.kent.ac.uk/people/staff/dat/miranda/src/mira-2066-src.tgz && echo "521c281e8c2fde87a2cd7c41d9677daa09514debb71435efc08ff3a7c20016eb  mira-2066-src.tgz" | sha256sum -c - && tar -xzf mira-2066-src.tgz && cd miranda && chronic make CC="gcc -std=gnu17 -fcommon -w" && cp mira /usr/local/bin/mira && mkdir -p /usr/lib/miralib && cp -a miralib/. /usr/lib/miralib/ && cd / && rm -rf /tmp/mira_build
+
+# Hope (Ross Paterson, GPLv2): pinned commit 94fc5a09ff1e01ad0a8b6a4ee999414a5bad7f15, tiny C build on GCC 15
+RUN mkdir -p /tmp/hope_build && cd /tmp/hope_build && curl --retry 3 -fsSL -o hope.tar.gz https://github.com/dmbaturin/hope/archive/94fc5a09ff1e01ad0a8b6a4ee999414a5bad7f15.tar.gz && echo "772a882b90170202a46075f853458cbbdd274c7503e8f9d9277ad2fb63abc718  hope.tar.gz" | sha256sum -c - && tar -xzf hope.tar.gz && cd hope-94fc5a09ff1e01ad0a8b6a4ee999414a5bad7f15 && CC="gcc -std=gnu17 -Wno-implicit-int -Wno-implicit-function-declaration -Wno-incompatible-pointer-types" chronic ./configure --prefix=/usr/local && chronic make CC="gcc -std=gnu17 -Wno-implicit-int -Wno-implicit-function-declaration -Wno-incompatible-pointer-types" && chronic make install && cd / && rm -rf /tmp/hope_build
+
+# Clean 3.1 (Simplified BSD-2-Clause, Radboud University): official Linux x64 binary tarball
+RUN curl --retry 3 -fsSL -o /tmp/clean.tar.gz https://ftp.cs.ru.nl/Clean/Clean31/linux/clean3.1_64.tar.gz && echo "ffb03e65798246215a8c217cdbaf33fa29ae5b110cc54b144e989bb9537b3fbb  /tmp/clean.tar.gz" | sha256sum -c - && tar -xzf /tmp/clean.tar.gz -C /opt && chronic make -C /opt/clean && rm -f /tmp/clean.tar.gz
+
+# Grain v0.7.3 (Apache-2.0): official Linux x64 standalone binary tarball
+RUN curl --retry 3 -fsSL -o /tmp/grain.tar.gz https://github.com/grain-lang/grain/releases/download/grain-v0.7.3/grain-linux-x64.tar.gz && echo "0a62fd9ae4b24c6fbd365717396246049ede0a88702c9c975b06e5070a2304c7  /tmp/grain.tar.gz" | sha256sum -c - && mkdir -p /opt/grain && tar -xzf /tmp/grain.tar.gz -C /opt/grain && ln -sf /opt/grain/grain /usr/local/bin/grain && rm -f /tmp/grain.tar.gz
+
+# Mirth (MIT/0BSD, typed concatenative Joy replacement): pinned commit b6d5e9c0ecde71f3711a1c1d5d87ac97f4543fa6
+RUN mkdir -p /tmp/mirth_build && cd /tmp/mirth_build && curl --retry 3 -fsSL -o mirth.tar.gz https://github.com/mirth-lang/mirth/archive/b6d5e9c0ecde71f3711a1c1d5d87ac97f4543fa6.tar.gz && echo "7af6d8dd3871a9851a73c32810870096bea2f0675223acb9a7fc2eb812a06dde  mirth.tar.gz" | sha256sum -c - && tar -xzf mirth.tar.gz && mv mirth-b6d5e9c0ecde71f3711a1c1d5d87ac97f4543fa6 /opt/mirth && gcc -O2 -o /usr/local/bin/mirth /opt/mirth/bin/mirth0.c && cd / && rm -rf /tmp/mirth_build
+
+# Lobster v2026.9 (Apache-2.0): headless CMake build (-DLOBSTER_ENGINE=OFF, 0 OpenGL/SDL deps); keep modules/ alongside bin/
+RUN mkdir -p /tmp/lob_build && cd /tmp/lob_build && curl --retry 3 -fsSL -o lobster.tar.gz https://github.com/aardappel/lobster/archive/refs/tags/v2026.9.tar.gz && echo "4f1de38fb65faf654092c407b2420411a6bfae0cdce186a97844e5f200a399ac  lobster.tar.gz" | sha256sum -c - && tar -xzf lobster.tar.gz && cd lobster-2026.9/dev && mkdir build && cd build && chronic cmake -DCMAKE_BUILD_TYPE=Release -DLOBSTER_ENGINE=OFF .. && chronic make -j"$(nproc)" && mkdir -p /opt/lobster/bin && cp /tmp/lob_build/lobster-2026.9/bin/lobster /opt/lobster/bin/lobster && cp -a /tmp/lob_build/lobster-2026.9/modules /opt/lobster/modules && cd / && rm -rf /tmp/lob_build
+
+# GNU APL 2.0 (GPLv3): official GNU source tarball (via kernel.org GNU mirror), headless build
+RUN mkdir -p /tmp/apl_build && cd /tmp/apl_build && curl --retry 3 -fsSL -o apl-2.0.tar.gz https://mirrors.kernel.org/gnu/apl/apl-2.0.tar.gz && echo "24bbb744fce47e62837234a053bdeecee51b9ea61c82c79f7cc191bc6a54c0a1  apl-2.0.tar.gz" | sha256sum -c - && tar -xzf apl-2.0.tar.gz && cd apl-2.0 && chronic ./configure --prefix=/usr/local --without-gtk3 --without-sqlite3 --without-postgresql --without-pcre && chronic make -j"$(nproc)" && chronic make install && cd / && rm -rf /tmp/apl_build
+
+# Flix v0.80.0 (Apache-2.0): official release JAR (runs on image's existing OpenJDK)
+RUN mkdir -p /opt/flix && curl --retry 3 -fsSL -o /opt/flix/flix.jar https://github.com/flix/flix/releases/download/v0.80.0/flix.jar && echo "0e9dec1e93071ada5eaba2e187499f0880b574e7e4ef62937d6f31c661c1fda0  /opt/flix/flix.jar" | sha256sum -c -
+
+ENV PATH=/opt/clean/bin:/opt/lobster/bin:$PATH

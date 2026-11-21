@@ -1,0 +1,7 @@
+# B06: Modern shells with no apt package (PowerShell, Nushell, Ion, YSH, Murex). All pinned.
+RUN mkdir -p /opt/pwsh && curl -fsSL https://github.com/PowerShell/PowerShell/releases/download/v7.4.6/powershell-7.4.6-linux-x64.tar.gz | tar -xz -C /opt/pwsh && chmod +x /opt/pwsh/pwsh && ln -sf /opt/pwsh/pwsh /usr/local/bin/pwsh
+RUN mkdir -p /opt/nu && curl -fsSL https://github.com/nushell/nushell/releases/download/0.101.0/nu-0.101.0-x86_64-unknown-linux-gnu.tar.gz | tar -xz -C /opt/nu --strip-components=1 && ln -sf /opt/nu/nu /usr/local/bin/nu
+# ion-shell pinned to commit e9b3ca48 (upstream Cargo.lock is out of sync with Cargo.toml, so --locked cannot be passed)
+RUN cargo install --git https://github.com/redox-os/ion.git --rev e9b3ca48b7ab6444498d5c3aa902d471ce29f759 ion-shell --root /usr/local
+RUN mkdir -p /tmp/oils && curl -fsSL https://www.oilshell.org/download/oils-for-unix-0.24.0.tar.gz | tar -xz -C /tmp/oils --strip-components=1 && (cd /tmp/oils && ./configure && _build/oils.sh && ./install) && rm -rf /tmp/oils
+RUN git clone --branch v7.4.2002 --depth 1 https://github.com/lmorg/murex.git /tmp/murex && (cd /tmp/murex && go build -o /usr/local/bin/murex .) && rm -rf /tmp/murex

@@ -1,0 +1,20 @@
+# B19: Official canonical esolang interpreters (Hexagony, CJam 0.6.5, Jonathan fish.py, Flakheads CraneFlak). All pinned.
+# Official m-ender/hexagony interpreter (pinned commit b674f59a0c9e10c1867bd9cf34f676ba89f0fc1c)
+RUN mkdir -p /opt/hexagony && curl --retry 5 -fsSL https://github.com/m-ender/hexagony/archive/b674f59a0c9e10c1867bd9cf34f676ba89f0fc1c.tar.gz | tar -xz -C /opt/hexagony --strip-components=1 && printf 'o;k;@' > /tmp/t.hxg && test "$(ruby /opt/hexagony/interpreter.rb /tmp/t.hxg)" = "ok" && rm -f /tmp/t.hxg
+# Official CJam 0.6.5 (MIT, SourceForge), sha256-pinned
+RUN mkdir -p /opt/cjam && \
+    curl --retry 5 -fsSL -o /opt/cjam/cjam-0.6.5.jar https://downloads.sourceforge.net/project/cjam/cjam-0.6.5/cjam-0.6.5.jar && \
+    echo "e7444a9ac3cab491053df2bd625217906ba07ab091ace9aa52e54f700db9e3a7  /opt/cjam/cjam-0.6.5.jar" | sha256sum -c && \
+    printf '"ok"' > /tmp/t.cjam && test "$(java -jar /opt/cjam/cjam-0.6.5.jar /tmp/t.cjam)" = "ok" && rm -f /tmp/t.cjam
+# Official Jonathan fish.py (><>, gist 6392418@3b16018c), sha256-pinned
+RUN mkdir -p /opt/fish && \
+    curl --retry 5 -fsSL -o /opt/fish/fish.py https://gist.githubusercontent.com/anonymous/6392418/raw/3b16018cb47f2f9ad1fa085c155cc5c0dc448b2d/fish.py && \
+    echo "8d14253215c02acc8eacc8f2af7598edd7aa213bb6d3d7a5d8f4fedf023bcbe2  /opt/fish/fish.py" | sha256sum -c && \
+    printf '"ko"oo;' > /tmp/t.fish && test "$(python3 /opt/fish/fish.py /tmp/t.fish)" = "ok" && rm -f /tmp/t.fish
+# Official Flakheads CraneFlak (C Brain-Flak interpreter, MIT, commit 049f09ea), sha256-pinned
+RUN curl --retry 5 -fsSL -o /tmp/craneflak.tgz https://github.com/Flakheads/CraneFlak/archive/049f09ea980d9bd037a9f32d5ca6b00f88792328.tar.gz && \
+    echo "b3aaed7b48b488a8898ead68ee1a2c71a183519bd3a2f91d9dab83930d593542  /tmp/craneflak.tgz" | sha256sum -c && \
+    mkdir -p /tmp/craneflak && tar -xzf /tmp/craneflak.tgz -C /tmp/craneflak --strip-components=1 && \
+    gcc -O3 -fcommon /tmp/craneflak/main.c /tmp/craneflak/stack.c /tmp/craneflak/interpreter.c -o /usr/local/bin/craneflak && \
+    rm -rf /tmp/craneflak /tmp/craneflak.tgz && \
+    printf '((((((()()()){}){}()){}){}()){}())((((((()()()){}){}()){}()){}()){}())' > /tmp/t.bflk && test "$(craneflak -A /tmp/t.bflk)" = "ok" && rm -f /tmp/t.bflk
