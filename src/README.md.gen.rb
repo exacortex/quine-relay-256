@@ -282,16 +282,16 @@ In the spirit of complete transparency, this fork inherits the same minimal tool
   - `K (ngn/k)`: built from a pinned vendored `AGPLv3` source tarball (`vendor/ngnk-b9eeb91e.tar.gz`) because upstream Codeberg archived the repository.
   - `vendor/` esolang runners: every bundled interpreter and runner (both upstream `mame` and fork-authored MIT runners such as `underload.rb`, `emmental.rb`, `slashes.rb`, and `beatnik.rb`) is listed explicitly in the table below and in [`vendor/README`](vendor/README). Where canonical upstream interpreters or emulators exist (`CJam`, `Glass`, `><> (Fish)`, `Brain-Flak`, `6502 asm`, `Z80 asm`), this fork uses the real upstream tool rather than a custom stub.
 
-All <%= mame_steps.size %> single-implementation languages from Endoh's Ubuntu 26.04 relay — including the verbatim, no-read `Scilab -> sed -> Shakespeare -> S-Lang` chain — run intact alongside **Malbolge Unshackled** (self-contained, rotwidth-independent, zero `'/'` input executions, built from an in-tree generator `src/malbolge-boot.dat.gen.py` and verified byte-exact on both untouched CC0 `Unshackled.c` and `Unshackled-20.c`).
+All <%= mame_steps.size %> single-implementation languages from Endoh's Ubuntu 26.04 relay — including the verbatim, zero-`fopen` `Scilab -> sed -> Shakespeare -> S-Lang` chain — run intact alongside **Malbolge Unshackled** (self-contained, rotwidth-independent, zero `'/'` input executions, built from an in-tree generator `src/malbolge-boot.dat.gen.py` and verified byte-exact on both untouched CC0 `Unshackled.c` and `Unshackled-20.c`).
 
 ## Proof that it works
 
-This repository's [`Dockerfile`](Dockerfile) builds from scratch (`docker build --pull --no-cache`, `FROM ubuntu:26.04`, 59.1 min) and passes `make check -j 10000` **100% offline (`docker run --rm --network=none`)** in 25.3 min:
+This repository's [`Dockerfile`](Dockerfile) builds from scratch (`docker build --pull --no-cache`, `FROM ubuntu:26.04`, 67.3 min, 27.79 GB, 40 RootFS layers, image `d7666b94...`) and passes its untouched default `CMD` (`make check -j 10000`) **100% offline (`docker run --rm --network=none`)** in 23.6 min:
 
 - **All <%= RunSteps.size %> languages run in sequence offline** inside one self-contained Ubuntu 26.04 Docker image with pinned open-source toolchains and bundled `vendor/` interpreters (zero network calls during execution).
-- **Every intermediate file matches [`SHA256SUMS`](SHA256SUMS)** (all <%= RunSteps.size %> of them, verified the same way `mame/quine-relay` checks).
+- **Every intermediate file matches [`SHA256SUMS`](SHA256SUMS)** (all <%= RunSteps.size %> of them, verified by `sha256sum --quiet -c SHA256SUMS` inside the image's own default `CMD`).
 - **Step <%= RunSteps.size %> (<%= RunSteps[-1].name %>) prints `QR2.rb`, byte-for-byte identical to `QR.rb`** (<%= qr_size %> bytes, SHA-256 `<%= qr_sha %>`).
-- **Canary & dual-interpreter checks:** verified byte-exact on both `Unshackled.c` and `Unshackled-20.c` (`U20 PARITY OK`), plus canary mutations (`Drawn With Code` -> `Drawn With K0de`) verified through `Picat` and `6502 asm`.
+- **Canary & dual-interpreter checks:** verified byte-exact on both `Unshackled.c` and `Unshackled-20.c` (`U20 PARITY OK`), plus a full 256-step offline canary loop (`Drawn With Code` -> `Drawn With K0de` under `--network=none`, closing `QR2.rb == modified QR.rb`).
 
 The full build log, offline run log, and verification result live in [`proof/`](proof/). Anyone can reproduce the entire proof with the two Docker commands under Usage.
 

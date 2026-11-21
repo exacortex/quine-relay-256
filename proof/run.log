@@ -401,53 +401,53 @@ purs compile -o purs_out QR.purs '/opt/purs/lib/*/src/**/*.purs'
 [ 8 of 57] Compiling Control.Category
 [ 9 of 57] Compiling Data.Symbol
 [10 of 57] Compiling Data.Semiring
-[12 of 57] Compiling Data.Semigroup
-[11 of 57] Compiling Data.HeytingAlgebra
+[11 of 57] Compiling Data.Semigroup
+[12 of 57] Compiling Data.HeytingAlgebra
 [13 of 57] Compiling Data.Show
 [14 of 57] Compiling Data.Ring
-[15 of 57] Compiling Data.Generic.Rep
-[17 of 57] Compiling Data.BooleanAlgebra
+[15 of 57] Compiling Data.BooleanAlgebra
 [16 of 57] Compiling Data.Eq
+[17 of 57] Compiling Data.Generic.Rep
 [18 of 57] Compiling Data.CommutativeRing
-[19 of 57] Compiling Data.Ordering
-[20 of 57] Compiling Data.EuclideanRing
+[20 of 57] Compiling Data.Ordering
+[19 of 57] Compiling Data.EuclideanRing
 [21 of 57] Compiling Data.Ord
 [22 of 57] Compiling Data.DivisionRing
 [23 of 57] Compiling Data.Field
 [24 of 57] Compiling Data.Bounded
-[25 of 57] Compiling Data.Monoid
-[26 of 57] Compiling Data.Reflectable
+[25 of 57] Compiling Data.Reflectable
+[26 of 57] Compiling Data.Monoid
 [27 of 57] Compiling Data.Function
 [28 of 57] Compiling Data.Functor
 [29 of 57] Compiling Control.Apply
-[30 of 57] Compiling Data.Monoid.Generic
-[31 of 57] Compiling Data.Bounded.Generic
+[31 of 57] Compiling Data.Monoid.Generic
+[30 of 57] Compiling Data.Bounded.Generic
 [32 of 57] Compiling Control.Applicative
 [33 of 57] Compiling Control.Bind
 [34 of 57] Compiling Control.Monad
 [35 of 57] Compiling Prelude
-[36 of 57] Compiling Data.Show.Generic
-[37 of 57] Compiling Data.Semiring.Generic
-[38 of 57] Compiling Data.Semigroup.First
+[36 of 57] Compiling Data.HeytingAlgebra.Generic
+[37 of 57] Compiling Data.Ord.Generic
+[38 of 57] Compiling Data.Monoid.Endo
 [39 of 57] Compiling Effect
-[40 of 57] Compiling Data.HeytingAlgebra.Generic
-[41 of 57] Compiling Data.Semigroup.Last
-[42 of 57] Compiling Data.Monoid.Endo
-[43 of 57] Compiling Data.Monoid.Additive
-[44 of 57] Compiling Data.Monoid.Disj
-[45 of 57] Compiling Data.Monoid.Conj
-[46 of 57] Compiling Data.Ord.Generic
-[47 of 57] Compiling Data.Monoid.Dual
-[48 of 57] Compiling Data.Ring.Generic
-[49 of 57] Compiling Data.Eq.Generic
-[50 of 57] Compiling Data.Semigroup.Generic
-[51 of 57] Compiling Data.Monoid.Multiplicative
-[52 of 57] Compiling Effect.Class
-[53 of 57] Compiling Effect.Console
-[54 of 57] Compiling Effect.Uncurried
-[55 of 57] Compiling Effect.Unsafe
-[56 of 57] Compiling QR
-[57 of 57] Compiling Effect.Class.Console
+[40 of 57] Compiling Data.Show.Generic
+[41 of 57] Compiling Data.Eq.Generic
+[42 of 57] Compiling Data.Monoid.Additive
+[43 of 57] Compiling Data.Semigroup.Generic
+[44 of 57] Compiling Data.Semigroup.Last
+[45 of 57] Compiling Data.Semigroup.First
+[46 of 57] Compiling Data.Monoid.Dual
+[47 of 57] Compiling Data.Monoid.Conj
+[48 of 57] Compiling Data.Monoid.Disj
+[49 of 57] Compiling Data.Monoid.Multiplicative
+[50 of 57] Compiling Data.Semiring.Generic
+[51 of 57] Compiling Data.Ring.Generic
+[52 of 57] Compiling Effect.Console
+[54 of 57] Compiling Effect.Unsafe
+[53 of 57] Compiling Effect.Uncurried
+[55 of 57] Compiling Effect.Class
+[57 of 57] Compiling QR
+[56 of 57] Compiling Effect.Class.Console
 node purs_out/QR/index.js > QR.c
 rm -rf purs_out
 
@@ -991,7 +991,7 @@ perl QR.chef.pl > qr.li
 lisaac -gcc -Wno-implicit-function-declaration qr.li > /dev/null
 Depending pass: .......... (10)
 Executing pass: *.......*.. (11)
- => 4 second(s).
+ => 5 second(s).
 ./qr > QR.clj
 
 #############################
@@ -1207,7 +1207,7 @@ DOTNET_NOLOGO=1 dotnet run --project tmp.vbproj > QR.wat
 
 wat2wasm QR.wat -o QR.wat.wasm
 node --experimental-wasi-unstable-preview1 vendor/wasi-runtime.js QR.wat.wasm > QR.ws
-(node:9926) ExperimentalWarning: WASI is an experimental feature and might change at any time
+(node:9874) ExperimentalWarning: WASI is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 #################################
@@ -1294,7 +1294,7 @@ CC: ../../../lib/nim/lib/system.nim
 CC: QR.nim
 Hint:  [Link]
 Hint: mm: orc; threads: on; opt: none (DEBUG BUILD, `-d:release` generates faster code)
-28707 lines; 0.454s; 46.258MiB peakmem; proj: /usr/local/share/quine-relay/QR.nim; out: /usr/local/share/quine-relay/QR [SuccessX]
+28707 lines; 0.472s; 46.258MiB peakmem; proj: /usr/local/share/quine-relay/QR.nim; out: /usr/local/share/quine-relay/QR [SuccessX]
 ./QR > QR_ec.ec
 
 #######################
@@ -1357,7 +1357,7 @@ ld -m elf_i386 -o QR QR.o
 ##########################
 
 roc build --output qrroc QR.roc
-[1;32m0[0m errors and [1;32m0[0m warnings found in 379 ms while successfully building:
+[1;32m0[0m errors and [1;32m0[0m warnings found in 320 ms while successfully building:
 
     qrroc
 ./qrroc > QR.effekt
@@ -1673,7 +1673,7 @@ Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling QR.pas
 Linking QR
-0 lines compiled, 0.1 sec
+0 lines compiled, 0.0 sec
 ./QR > QR.pl
 
 #############################
@@ -1867,13 +1867,3 @@ rexx ./QR.rexx > QR2.rb
 
 diff -s QR.rb QR2.rb
 Files QR.rb and QR2.rb are identical
-ff759bc61e2bb755dccc48e8ba46c15318a9529a6ac8efe434e8fd238928728d  QR.rb
-ff759bc61e2bb755dccc48e8ba46c15318a9529a6ac8efe434e8fd238928728d  QR2.rb
-SHA256SUMS 256/256 OK
-fc800b3dd5b240934e3994a6a7483f7d0df6a7dc8df1424476d95a6542e2feef  QR.R
-fc800b3dd5b240934e3994a6a7483f7d0df6a7dc8df1424476d95a6542e2feef  /tmp/QR.R.u20
-U20 PARITY OK
-CANARY1 Picat src=1183627 B
-CANARY1 PICAT OK
-CANARY1 6502 OK (59264 B)
-OFFLINE ROUNDTRIP OK

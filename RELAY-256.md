@@ -6,7 +6,7 @@ A fork of Yusuke Endoh's (mame) [Quine Relay](https://github.com/mame/quine-rela
 
 | Group | Count | Notes |
 |---|---:|---|
-| **`mame-128` base (1:1 distinct)** | **123** | All 123 single-implementation languages from Endoh's Ubuntu 26.04 relay, including the verbatim no-read `Scilab -> sed -> Shakespeare -> S-Lang` chain. |
+| **`mame-128` base (1:1 distinct)** | **123** | All 123 single-implementation languages from Endoh's Ubuntu 26.04 relay, including the verbatim zero-`fopen` `Scilab -> sed -> Shakespeare -> S-Lang` chain. |
 | **`mame-retired` restored** | **16 / 20** | Classic languages retired from earlier Ubuntu editions of `mame/quine-relay` (`AspectC++`, `Parrot asm`, `Boo`, `Dafny`, `Julia`, `Maxima`, `Gri`, `UCBLogo`, `GNU Smalltalk`, `GSL`, `nesC`, `Lisaac`, `eC`, `CDuce`, `A+`, `Falcon`). |
 | **Malbolge Unshackled** | **1** | Unbounded Malbolge in the fused tail (`Python -> Malbolge Unshackled -> R -> Ratfor -> rc -> REXX`), generated from in-tree `src/malbolge-boot.dat.gen.py` and verified on both CC0 `Unshackled.c` and `Unshackled-20.c`. |
 | **Standalone fork languages** | **116** | Standalone open-source languages running on real pinned compilers/interpreters under all three no-cheating rules. |
@@ -89,8 +89,8 @@ Using an exact-evaluated ATSP / local-search order optimizer (`xsearch.py` + `wo
 | `Lazy K` actual payload (`QR.ls`, step 245) | — | **`62,570 B`** (`<= 95,000`) | **+32,430 B** margin |
 | `C` LZ77 input size | — | **`3.38 MB`** (`< 5.00 MB`) | **+1.62 MB** margin |
 | `amap2.rb` checks / `junction.rb` | — | **`0` fails / `bare == parenthesized? true`** | 223 / 223 classes |
-| Clean `docker build --pull --no-cache` | — | **`59.1 min`** (`40` base layers, `27.81 GB`) | Verified 2026-11-21 from `ubuntu:26.04` (`Dockerfile` unchanged) |
-| Full `make check -j 10000` (`--network=none`) | — | **`25.3 min`** (`256/256` `SHA256SUMS` + `U20 parity: OK` + canary checks) | Image `0de4a22a...` ([proof](proof/)) |
+| Clean `docker build --pull --no-cache` | — | **`67.3 min`** (`40` RootFS layers, `27.79 GB`) | Verified 2026-11-21 from fresh clone of `4e6dfc5` on `ubuntu:26.04` |
+| Full `make check -j 10000` (`--network=none`) | — | **`23.6 min`** (default `CMD`, `256/256` `SHA256SUMS` + `U20 parity: OK` + full 256-step offline canary) | Image `d7666b94...` ([proof](proof/)) |
 
 ### 4. Subtle runtime traps caught and guarded permanently
 

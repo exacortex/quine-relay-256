@@ -7,7 +7,7 @@ A record needs a public repo and a full run from a clean build that anyone can r
 
 | Relay | Distinct languages | Relay steps | Verified | Date |
 |---|---:|---:|---|---|
-| [exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256) (this repo) | **256** | **256** | `docker build --pull --no-cache` from this repo's `Dockerfile` (59.1 min) + offline `make check` (`--network=none`, 25.3 min) on Ubuntu 26.04, `QR.rb` 45,828 B (`ff759bc6...`), image `0de4a22a...`, `U20 parity: OK`, canary checks `PASS` ([proof](proof/)) | 2026-11-21 |
+| [exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256) (this repo) | **256** | **256** | `docker build --pull --no-cache` from a fresh checkout of `4e6dfc5` (67.3 min, 27.79 GB, 40 layers) + offline `docker run --network=none` default `CMD` `make check -j 10000` (23.6 min) on Ubuntu 26.04, `QR.rb` 45,828 B (`ff759bc6...`), image `d7666b94...`, `U20 parity: OK`, full 256-step offline canary loop `PASS` ([proof](proof/)) | 2026-11-21 |
 | [exacortex/quine-relay-267](https://github.com/exacortex/quine-relay-267) *(prior stepping stone)* | 257 | 267 | `docker build --no-cache` (79.9 min) + `make check` (23.9 min) on Ubuntu 26.04 | 2026-11-19 |
 | [mame/quine-relay](https://github.com/mame/quine-relay) *(original upstream relay)* | 123 *(under 1:1 rule)* | 128 | mame's CI, Ubuntu 26.04 (`QR.rb` 13,664 B) | 2026 |
 
@@ -69,6 +69,6 @@ Anyone should be able to reproduce the run with `docker build` and `docker run`.
 | Includes Malbolge Unshackled | No | No | **Yes** (CC0 `Unshackled.c`, zero `'/'` ops) |
 | Seed `QR.rb` size | **13,664 B** (106.8 B/step) | 34,888 B (130.7 B/step) | **45,828 B** (179.0 B/step, `ff759bc6...`) |
 | Total class-boundary intermediates (`amap2`) | — | ~559 MB | **316.24 MB** (all 256 real files: **505.41 MB**) |
-| Clean `docker build --pull --no-cache` | — | 79.9 min | **59.1 min** (`ubuntu:26.04`, 40 base layers, 27.81 GB) |
-| Full `make check` lap time | — | 23.9 min | **25.3 min** (`--network=none` offline, `256/256` `SHA256SUMS`, `U20 parity: OK`) |
-| Docker image ID | — | `fd722d9b...` | `sha256:0de4a22a3e1960ef57e507416a80b2b71dc104c267efabd780e31cd3ffa75dc7` |
+| Clean `docker build --pull --no-cache` | — | 79.9 min | **67.3 min** (`ubuntu:26.04`, 40 RootFS layers, 27.79 GB) |
+| Full `make check` lap time | — | 23.9 min | **23.6 min** (`--network=none` default `CMD`, `256/256` `SHA256SUMS`, `U20 parity: OK`) |
+| Docker image ID | — | `fd722d9b...` | `sha256:d7666b943ec63bf33ac6e4858d69925a3c33bf1500dd8af6e1f3fc67cec7ab8a` |

@@ -1,11 +1,10 @@
 PASSED
+commit: 4e6dfc5838253df6df8f1ecf9cf23011ae9ff1c0
 image CMD: ["/bin/sh","-c","make check -j 10000"]
-build: 59.1 min (no cache, fresh ubuntu:26.04; Dockerfile unchanged)
-make check: 25.3 min (--network=none offline)
-image id: sha256:0de4a22a3e1960ef57e507416a80b2b71dc104c267efabd780e31cd3ffa75dc7
-image size: 27.81 GB (44 RootFS layers)
+build: 67.3 min (docker build --pull --no-cache, fresh ubuntu:26.04)
+make check: 23.6 min (docker run --network=none, default image CMD)
+image id: sha256:d7666b943ec63bf33ac6e4858d69925a3c33bf1500dd8af6e1f3fc67cec7ab8a
+image size: 27.79 GB (40 RootFS layers)
 QR.rb sha256: ff759bc61e2bb755dccc48e8ba46c15318a9529a6ac8efe434e8fd238928728d
 U20 parity: OK
 offline network=none: PASS
-canary1 Picat: PASS
-canary1 6502: PASS
