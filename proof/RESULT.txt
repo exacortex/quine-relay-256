@@ -1,10 +1,9 @@
 PASSED
-commit: 4e6dfc5838253df6df8f1ecf9cf23011ae9ff1c0
-image CMD: ["/bin/sh","-c","make check -j 10000"]
-build: 67.3 min (docker build --pull --no-cache, fresh ubuntu:26.04)
-make check: 23.6 min (docker run --network=none, default image CMD)
-image id: sha256:d7666b943ec63bf33ac6e4858d69925a3c33bf1500dd8af6e1f3fc67cec7ab8a
-image size: 27.79 GB (40 RootFS layers)
-QR.rb sha256: ff759bc61e2bb755dccc48e8ba46c15318a9529a6ac8efe434e8fd238928728d
-U20 parity: OK
-offline network=none: PASS
+image: qr256-alpha-v2 (sha256:b2d15bf479bba2d22f6bf646731ecacea45b52cdeb19630b2e25741216260893)
+user: qr (non-root)
+build_seconds: 1.8
+lap_seconds: 2173.5
+offline_network_none: PASS
+U20_PARITY=OK (211228 B, sha256=f66a64b6db6e1f6f1dc1a8d1ee1069a61528765070a7a93be41af0b5af9dce94)
+sha256sums_count: 256
+sha256sums_seed: 65e2edca57dca479e25e4af6674dc7d02b0a81fe456071c8d43ddb0dd4e4bcd0 *QR.aj

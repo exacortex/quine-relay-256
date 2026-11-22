@@ -281,7 +281,17 @@ RUN ( git clone -q --depth 1 -b v2.0.8 https://github.com/0branch/boron.git /tmp
     chmod +x /opt/vale/valec && \
     printf '#!/bin/sh\nexec /opt/vale/valec "$@"\n' > /usr/local/bin/valec && \
     chmod +x /usr/local/bin/valec )
+RUN useradd -m -s /bin/bash qr \
+    && for d in .arturo .ballerina .cache .cargo .config .dotnet .local .mirarc .npm .nuget .texlive2025 go; do \
+         [ -e "/root/$d" ] && mv "/root/$d" "/home/qr/$d"; \
+       done \
+    && chown -R qr:qr /home/qr \
+    && for d in /opt/clean /opt/yottadb /opt/roc /opt/flix /opt/grain /opt/vale /opt/purs /opt/mirth /opt/v /opt/factor; do \
+         [ -d "$d" ] && chown -R qr:qr "$d"; \
+       done
 ADD . /usr/local/share/quine-relay
 WORKDIR /usr/local/share/quine-relay
-RUN make -C vendor && rm -f /usr/bin/sync && dpkg-divert --quiet --local --rename --remove /usr/bin/sync
-CMD make check -j 10000
+RUN make -C vendor && rm -f /usr/bin/sync && dpkg-divert --quiet --local --rename --remove /usr/bin/sync && chown -R qr:qr /usr/local/share/quine-relay
+USER qr
+ENV HOME=/home/qr DOTNET_CLI_HOME=/home/qr/.dotnet NUGET_PACKAGES=/home/qr/.nuget/packages XDG_CACHE_HOME=/home/qr/.cache GOCACHE=/home/qr/.cache/go-build
+CMD ["make", "check", "-j", "10000"]

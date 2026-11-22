@@ -35,14 +35,14 @@ endif
 
 .DELETE_ON_ERROR:
 END
-OUT << "all: QR2.rb"
+OUT << "all: QR2.aj"
 banner("CHECK")
-OUT << "\tdiff -s QR.rb QR2.rb"
+OUT << "\tdiff -s QR.aj QR2.aj"
 OUT << ""
 OUT << "check: all"
 OUT << "\t@sha256sum --quiet -c SHA256SUMS"
 
-[*RunSteps, RunStep["Ruby", "QR2.rb"]].each_cons(2).with_index do |(s1, s2), i|
+[*RunSteps, RunStep["AspectJ", "QR2.aj"]].each_cons(2).with_index do |(s1, s2), i|
   cmd = s1.cmd_make.gsub("OUTFILE", s2.src)
 
   OUT << ""
@@ -56,10 +56,6 @@ OUT << "\t@sha256sum --quiet -c SHA256SUMS"
     end
   end
   cmd.split("&&").each {|c| OUT << "\t" + c.strip.gsub(/^!/, "ulimit -s unlimited && ") }
-  if s1.name == "BeanShell"
-    # workaround; bsh disables terminal echo
-    OUT << "\t-@stty echo"
-  end
   if s1.backup
     if s1.backup.is_a?(String)
       OUT << "\t@mv #{ s1.backup }.bak #{ s1.backup }"
@@ -73,7 +69,7 @@ end
 # Add any extra build outputs from replacement languages to EXTRA_CLEAN_FILES
 # or EXTRA_CLEAN_DIRS so `make clean` always leaves a spotless working tree.
 CLEAN_FILES = %w[
-  qr QR qr.* QR.* QR2.rb *.class gst.im
+  qr QR qr.* QR.* QRP.* QR2.aj qrgleam/src/qr.gleam qrpony/main.pony qrpony.out qr_cs/QR.cs qr_vb/QR.vb *.class gst.im
   QR_ec* qr_mercury* qrkoka qrchpl qrroc
   tmp.*proj work-obj93.cf
 ]
@@ -83,8 +79,8 @@ EXTRA_CLEAN_FILES = %w[
 ]
 
 CLEAN_DIRS = %w[
-  Mercury qrpony* qrgleam .koka .obnc
-  dafny-out frege-out purs_out bin obj
+  Mercury .koka .obnc
+  dafny-out frege-out purs_out bin obj qrgleam/build qr_cs/bin qr_cs/obj qr_vb/bin qr_vb/obj
 ]
 EXTRA_CLEAN_DIRS = [
   "'Clean System Files'", "target", "qr_effekt_out", "qr_vale_out"
@@ -93,10 +89,10 @@ EXTRA_CLEAN_DIRS = [
 OUT << <<-END
 
 clean:
-\t@mv QR.rb quine-relay.rb
+\t@mv QR.aj quine-relay.aj
 \trm -f #{ (CLEAN_FILES + EXTRA_CLEAN_FILES).join(" ") }
 \trm -rf #{ (CLEAN_DIRS + EXTRA_CLEAN_DIRS).join(" ") }
-\t@mv quine-relay.rb QR.rb
+\t@mv quine-relay.aj QR.aj
 END
 
 File.binwrite("../Makefile", OUT.join("\n"))
