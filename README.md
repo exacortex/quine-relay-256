@@ -21,7 +21,7 @@ The languages in red are the 133 languages added in this fork. Everything in bla
 
 ## The rules every step follows
 
-Yusuke Endoh (mame) reviewed an earlier prototype and shared three no-cheating principles he uses as a matter of craft and fairness. Every step added or modified in this fork follows all three (with the inherited `mame/quine-relay` `sed` and `Mustache` self-operand steps noted transparently below):
+Yusuke Endoh (mame) reviewed an earlier prototype and shared three no-cheating principles he uses as a matter of craft and fairness. Every step in this relay follows these principles, with the inherited upstream precedents and minor fork toolchain accommodations disclosed transparently below:
 
 1. **No code on the command line.** A command names the program file and sets compiler or interpreter options. It never passes program source or query expressions on the CLI (`node -e '...'`, `printf` shims, etc.).
 2. **No reading files.** Programs do not open their own source, another step's file, or `/dev/stdout`, and do not consume payload via stdin (including Malbolge's `'/'` opcode). All printed text lives inside the program.
@@ -37,6 +37,7 @@ In the spirit of complete transparency, this fork inherits the same minimal tool
   - `Taxi`: compiled with BigZaphod's official upstream `-DNO_GREETINGS` preprocessor flag (suppresses Taxi's startup banner without modifying source).
   - `A+`: invoked as `a+ QR.aplus.a > OUTFILE 2> /dev/null < /dev/null` to discard interpreter diagnostics on stderr and close interactive stdin (stdout is untouched).
   - `Gleam`: uses a minimal `gleam.toml` manifest alongside `QR.gleam` (analogous to `.NET` `tmp.*proj`) and binds BEAM's built-in `io:put_chars/1` and `string:replace/4` via `@external(erlang, ...)` (the same Erlang primitives wrapped by official `gleam_stdlib`) so `QR.gleam` compiles 100% offline with zero package downloads.
+  - `Pony`: `ponyc` compiles a package directory rather than a standalone source file, so the recipe stages `QR.pony` into `qrpony/main.pony` before invoking `ponyc qrpony`.
   - `Z80 asm`: `tnylpo` (CP/M 2.2 emulator) refuses UID 0 for safety, so the step recipe guards `setpriv --reuid=nobody --regid=nogroup --clear-groups` on `id -u = 0` and runs `tnylpo -b qr.com` directly for non-root users.
   - `K (ngn/k)`: built from a pinned vendored `AGPLv3` source tarball (`vendor/ngnk-b9eeb91e.tar.gz`) because upstream Codeberg archived the repository.
   - `vendor/` esolang runners: every bundled interpreter and runner (both upstream `mame` and fork-authored MIT runners such as `underload.rb`, `emmental.rb`, `slashes.rb`, and `beatnik.rb`) is listed explicitly in the table below and in [`vendor/README`](vendor/README). Where canonical upstream interpreters or emulators exist (`CJam`, `Glass`, `><> (Fish)`, `Brain-Flak`, `6502 asm`, `Z80 asm`), this fork uses the real upstream tool rather than a custom stub.
