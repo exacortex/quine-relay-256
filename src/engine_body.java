@@ -249,7 +249,7 @@ static String step(String s) throws Exception {
       while (!df.finished()) bo.write(buf, 0, df.deflate(buf));
       df.end();
       String b64 = Base64.getEncoder().encodeToString(bo.toByteArray());
-      if (m == 2) b64 = b64.replace("///", "/\"<>\"//");
+      if (m == 2) b64 = b64.replace("//", "/\"<>\"/");
       if (m == 3) {
         StringBuilder r = sb(pre);
         for (int i = 0; i < b64.length(); i += 1000) {

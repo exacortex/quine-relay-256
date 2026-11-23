@@ -2,6 +2,7 @@
 # Compiles 227 CodeGen steps from code-gen.rb into the self-reproducing AspectJ quine QR.aj.
 require "zlib"
 require "base64"
+require "tmpdir"
 
 CODE_GEN_PATH = ARGV[0] || File.expand_path("code-gen.rb", __dir__)
 OUT_AJ_PATH   = ARGV[1] || File.expand_path("../QR.aj", __dir__)
@@ -758,3 +759,45 @@ $stderr.puts format(
   "Wrote %s: total=%d B, zlib(QR.aj)=%d B (blob raw=%d B -> b91=%d B; eng min=%d B)",
   OUT_AJ_PATH, aj_src.bytesize, z_aj.bytesize, raw_blob.bytesize, b91_blob.bytesize, min_eng.bytesize
 )
+
+# Hard < 64,000 B ROM guard for the three 16-bit 64 KiB VM targets (Asm6502, Z80Asm, Uxntal)
+ROM_GUARD = (ENV["ROM_GUARD"] || 64000).to_i
+rom_limits = { "Asm6502" => 65012, "Z80Asm" => 64991, "Uxntal" => 65280 }
+cur_rom = aj_src.dup
+ordered[0, 30].each do |st|
+  st.check.call(cur_rom)
+  nxt_rom = eval_step(st, cur_rom)
+  if rom_limits.key?(st.name)
+    bin_sz = nil
+    case st.name
+    when "Asm6502"
+      if system("command -v xa >/dev/null 2>&1")
+        Dir.mktmpdir do |d|
+          File.binwrite("#{d}/QR.s", nxt_rom.encode("UTF-8").b)
+          bin_sz = File.size("#{d}/QR.bin") if system("xa -o #{d}/QR.bin #{d}/QR.s >/dev/null 2>&1")
+        end
+      end
+      bin_sz ||= nxt_rom.scan(/\.byt\s+([^\n]+)/).sum { |m| m[0].split(",").size } + 160
+    when "Z80Asm"
+      if system("command -v z80asm >/dev/null 2>&1")
+        Dir.mktmpdir do |d|
+          File.binwrite("#{d}/QR.z80", nxt_rom.encode("UTF-8").b)
+          bin_sz = File.size("#{d}/qr.com") if system("z80asm -o #{d}/qr.com #{d}/QR.z80 >/dev/null 2>&1")
+        end
+      end
+      bin_sz ||= nxt_rom.scan(/^\s*db\s+([^\n]+)/).sum { |m| m[0].split(",").size } + 96
+    when "Uxntal"
+      if system("command -v uxnasm >/dev/null 2>&1")
+        Dir.mktmpdir do |d|
+          File.binwrite("#{d}/QR.tal", nxt_rom.encode("UTF-8").b)
+          bin_sz = File.size("#{d}/QR.rom") if system("uxnasm #{d}/QR.tal #{d}/QR.rom >/dev/null 2>&1")
+        end
+      end
+      bin_sz ||= (nxt_rom[/&d\s+(.*)\z/m, 1] || "").scan(/[0-9a-f]{2}/i).size + 96
+    end
+    limit = rom_limits[st.name]
+    $stderr.puts format("ROM guard %-8s: %d B / %d B (guard < %d B, spare=%d B)", st.name, bin_sz, limit, ROM_GUARD, limit - bin_sz)
+    raise "#{st.name} ROM GUARD FAILED: #{bin_sz} B >= #{ROM_GUARD} B!" if bin_sz >= ROM_GUARD
+  end
+  cur_rom = nxt_rom
+end

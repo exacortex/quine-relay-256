@@ -1510,7 +1510,7 @@ class Mathics < CodeGen
   File = "QR.wl"
   Cmd = "mathics -q --no-completion -f QR.wl < /dev/null > OUTFILE"
   Apt = [nil]                # pip mathics3==10.0.1, see src/extra-installs/
-  Code = %q((require"zlib";%(WriteString["stdout",Uncompress["#{[Object.const_get("Zlib")::Deflate.deflate(%("#{e[PREV]}"),9)].pack("m0").gsub("///","/\x22<>\x22//")}"]])))
+  Code = %q((require"zlib";%(WriteString["stdout",Uncompress["#{[Object.const_get("Zlib")::Deflate.deflate(%("#{e[PREV]}"),9)].pack("m0").gsub("//","/\x22<>\x22/")}"]])))
   def check(prev)
     raise "Mathics: non-printable byte" if prev =~ /[^\n\x20-\x7e]/
   end

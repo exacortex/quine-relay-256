@@ -1,23 +1,22 @@
 === PRE-LAP IDENTITY & WORKDIR ===
 uid=1001(qr) gid=1001(qr) groups=1001(qr)
-total 212
-drwxr-xr-x 1 qr   qr    4096 Nov 22 22:30 .
+total 252
+drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 .
 drwxr-xr-x 1 root root  4096 Nov 21 22:24 ..
--rwxr-xr-x 1 qr   qr     875 Nov 22 22:30 Dockerfile.lap
--rwxr-xr-x 1 qr   qr   10851 Nov 22 22:24 LANGUAGES.md
--rwxr-xr-x 1 qr   qr    1614 Nov 22 22:24 LICENSE
--rwxr-xr-x 1 qr   qr   49699 Nov 22 22:24 Makefile
--rwxr-xr-x 1 qr   qr   50346 Nov 22 22:24 QR.aj
--rwxr-xr-x 1 qr   qr    4691 Nov 22 22:24 README.md
--rwxr-xr-x 1 qr   qr    4076 Nov 22 22:24 RECORDS.md
--rwxr-xr-x 1 qr   qr      72 Nov 22 22:24 SHA256SUMS
-drwxr-xr-x 1 qr   qr    4096 Nov 22 22:24 qr_cs
-drwxr-xr-x 1 qr   qr    4096 Nov 22 22:24 qr_vb
-drwxr-xr-x 1 qr   qr    4096 Nov 22 22:24 qrgleam
-drwxr-xr-x 1 qr   qr    4096 Nov 22 22:24 qrpony
-drwxr-xr-x 1 qr   qr    4096 Nov 22 22:25 src
-drwxr-xr-x 1 qr   qr    4096 Nov 22 22:25 tools
-drwxr-xr-x 1 qr   qr    4096 Nov 22 22:32 vendor
+-rwxr-xr-x 1 qr   qr   47514 Nov 23 00:46 Dockerfile
+-rwxr-xr-x 1 qr   qr   10851 Nov 23 00:46 LANGUAGES.md
+-rwxr-xr-x 1 qr   qr    1614 Nov 23 00:45 LICENSE
+-rwxr-xr-x 1 qr   qr   49699 Nov 23 00:46 Makefile
+-rwxr-xr-x 1 qr   qr   50342 Nov 23 00:46 QR.aj
+-rwxr-xr-x 1 qr   qr    5235 Nov 23 00:47 README.md
+-rwxr-xr-x 1 qr   qr    3791 Nov 23 00:47 RECORDS.md
+drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 qr_cs
+drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 qr_vb
+drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 qrgleam
+drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 qrpony
+drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 src
+drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 tools
+drwxr-xr-x 1 qr   qr    4096 Nov 23 00:51 vendor
 NO_STALE_QR_RB=OK
 
 ###############################
@@ -1106,7 +1105,7 @@ Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling QR.pas
 Linking QR
-1899 lines compiled, 0.2 sec
+1903 lines compiled, 0.2 sec
 ./QR > QR.pawn
 
 ###########################
@@ -1203,31 +1202,31 @@ spin -T QR.pr > QRP.purs
 purs compile -o purs_out QRP.purs '/opt/purs/lib/*/src/**/*.purs'
 [ 1 of 57] Compiling Type.Proxy
 [ 2 of 57] Compiling Record.Unsafe
-[ 4 of 57] Compiling Data.Unit
 [ 3 of 57] Compiling Data.Void
+[ 4 of 57] Compiling Data.Unit
 [ 5 of 57] Compiling Data.NaturalTransformation
 [ 6 of 57] Compiling Data.Boolean
 [ 7 of 57] Compiling Control.Semigroupoid
 [ 8 of 57] Compiling Control.Category
 [ 9 of 57] Compiling Data.Symbol
-[10 of 57] Compiling Data.Semiring
 [11 of 57] Compiling Data.HeytingAlgebra
+[10 of 57] Compiling Data.Semiring
 [12 of 57] Compiling Data.Semigroup
 [13 of 57] Compiling Data.Show
 [14 of 57] Compiling Data.Ring
-[15 of 57] Compiling Data.Eq
-[16 of 57] Compiling Data.Generic.Rep
+[15 of 57] Compiling Data.Generic.Rep
 [17 of 57] Compiling Data.BooleanAlgebra
+[16 of 57] Compiling Data.Eq
 [18 of 57] Compiling Data.CommutativeRing
 [19 of 57] Compiling Data.Ordering
 [20 of 57] Compiling Data.EuclideanRing
 [21 of 57] Compiling Data.Ord
 [22 of 57] Compiling Data.DivisionRing
 [23 of 57] Compiling Data.Field
-[24 of 57] Compiling Data.Function
+[24 of 57] Compiling Data.Bounded
 [25 of 57] Compiling Data.Monoid
-[27 of 57] Compiling Data.Bounded
-[26 of 57] Compiling Data.Reflectable
+[26 of 57] Compiling Data.Function
+[27 of 57] Compiling Data.Reflectable
 [28 of 57] Compiling Data.Functor
 [29 of 57] Compiling Control.Apply
 [30 of 57] Compiling Data.Bounded.Generic
@@ -1236,26 +1235,26 @@ purs compile -o purs_out QRP.purs '/opt/purs/lib/*/src/**/*.purs'
 [33 of 57] Compiling Control.Bind
 [34 of 57] Compiling Control.Monad
 [35 of 57] Compiling Prelude
-[36 of 57] Compiling Data.Monoid.Conj
-[37 of 57] Compiling Data.Semiring.Generic
-[38 of 57] Compiling Data.Monoid.Multiplicative
-[39 of 57] Compiling Data.Semigroup.First
-[40 of 57] Compiling Data.Eq.Generic
-[41 of 57] Compiling Data.Ring.Generic
-[42 of 57] Compiling Data.Monoid.Endo
-[43 of 57] Compiling Data.Show.Generic
-[44 of 57] Compiling Data.Monoid.Additive
-[45 of 57] Compiling Effect
-[46 of 57] Compiling Data.Ord.Generic
-[47 of 57] Compiling Data.Semigroup.Last
-[48 of 57] Compiling Data.Monoid.Disj
-[49 of 57] Compiling Data.Monoid.Dual
-[50 of 57] Compiling Data.Semigroup.Generic
-[51 of 57] Compiling Data.HeytingAlgebra.Generic
-[52 of 57] Compiling Effect.Class
-[53 of 57] Compiling Effect.Unsafe
-[54 of 57] Compiling Effect.Uncurried
-[55 of 57] Compiling Effect.Console
+[36 of 57] Compiling Data.HeytingAlgebra.Generic
+[37 of 57] Compiling Data.Monoid.Dual
+[38 of 57] Compiling Data.Monoid.Endo
+[39 of 57] Compiling Data.Ord.Generic
+[40 of 57] Compiling Data.Monoid.Disj
+[41 of 57] Compiling Data.Monoid.Additive
+[42 of 57] Compiling Data.Semigroup.Generic
+[43 of 57] Compiling Data.Semigroup.First
+[44 of 57] Compiling Data.Show.Generic
+[45 of 57] Compiling Data.Semigroup.Last
+[46 of 57] Compiling Data.Monoid.Conj
+[47 of 57] Compiling Data.Ring.Generic
+[48 of 57] Compiling Data.Semiring.Generic
+[49 of 57] Compiling Data.Monoid.Multiplicative
+[50 of 57] Compiling Data.Eq.Generic
+[51 of 57] Compiling Effect
+[52 of 57] Compiling Effect.Unsafe
+[53 of 57] Compiling Effect.Class
+[55 of 57] Compiling Effect.Uncurried
+[54 of 57] Compiling Effect.Console
 [56 of 57] Compiling QRP
 [57 of 57] Compiling Effect.Class.Console
 node purs_out/QRP/index.js > QR.arr
@@ -1367,7 +1366,7 @@ rm -f QR
 ############################
 
 roc build --output qrroc QR.roc
-[1;32m0[0m errors and [1;32m0[0m warnings found in 445 ms while successfully building:
+[1;32m0[0m errors and [1;32m0[0m warnings found in 316 ms while successfully building:
 
     qrroc
 ./qrroc > QR.rock
@@ -1590,7 +1589,7 @@ ruby vendor/unlambda.rb QR.unl > QR.tal
 ########################
 
 uxnasm QR.tal QR.rom
-Assembled QR.rom in 62.40kb(98.28% used), 8 labels, 0 macros.
+Assembled QR.rom in 62.45kb(98.36% used), 8 labels, 0 macros.
 uxncli QR.rom > QR.vlang.v
 Loaded QR.rom
 rm -f QR.rom
@@ -1659,7 +1658,7 @@ DOTNET_NOLOGO=1 dotnet run --project qr_vb > QR.wat
 
 wat2wasm QR.wat -o QR.wat.wasm
 node --experimental-wasi-unstable-preview1 vendor/wasi-runtime.js QR.wat.wasm > QR.ws
-(node:5052) ExperimentalWarning: WASI is an experimental feature and might change at any time
+(node:5049) ExperimentalWarning: WASI is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 ###############################
@@ -1771,8 +1770,8 @@ ruby vendor/aheui.rb QR.aheui > QR.alg
 #################################
 
 marst QR.alg -o QR.alg.c
-QR.alg:92: warning: unlabelled dummy statement
-QR.alg:94: warning: unlabelled dummy statement
+QR.alg:93: warning: unlabelled dummy statement
+QR.alg:95: warning: unlabelled dummy statement
 gcc QR.alg.c -lalgol -lm -o QR
 ./QR > QR.a68
 rm -f QR QR.alg.c
@@ -1832,29 +1831,27 @@ ag++ --keywords -o QR QR.cc
 
 diff -s QR.aj QR2.aj
 Files QR.aj and QR2.aj are identical
-=== MAKE_ALL_RC=0 LAP_SECONDS=2163 ===
+=== MAKE_ALL_RC=0 LAP_SECONDS=1957 ===
 === ROUNDTRIP CHECK ===
 Files QR.aj and QR2.aj are identical
-65e2edca57dca479e25e4af6674dc7d02b0a81fe456071c8d43ddb0dd4e4bcd0  QR.aj
-65e2edca57dca479e25e4af6674dc7d02b0a81fe456071c8d43ddb0dd4e4bcd0  QR2.aj
+65c6b3ca59af6c51dbdbbcf5cfbb881ae09ad741699c1260f16522a9f4896024  QR.aj
+65c6b3ca59af6c51dbdbbcf5cfbb881ae09ad741699c1260f16522a9f4896024  QR2.aj
 === MALBOLGE U20 PARITY ===
-U20_PARITY=OK (211228 B, sha256=f66a64b6db6e1f6f1dc1a8d1ee1069a61528765070a7a93be41af0b5af9dce94)
+U20_PARITY=OK (212028 B, sha256=16778935af3bc5b3f2c53130c47c4570cba108459c819cc778df755ea704752b)
 === CAPTURE ALL 256 STEP HASHES ===
 STEP_FILE_COUNT=256
 SHA256SUMS_256=OK (256/256)
-=== TARGETED STRACE CHECK ON FIXED STEPS ===
-STRACE_NOT_INSTALLED_IN_IMAGE=1
 === KEY INTERMEDIATE SIZES ===
--rwxr-xr-x 1 qr qr    50346 Nov 22 22:24 QR.aj
--rw-r--r-- 1 qr qr   887623 Nov 22 22:34 QR.asy
--rw-r--r-- 1 qr qr 12260668 Nov 22 22:49 QR.lazy
--rw-r--r-- 1 qr qr  4057049 Nov 22 22:57 QR.mb
--rw-r--r-- 1 qr qr   600706 Nov 22 23:04 QR.rb
--rw-r--r-- 1 qr qr 39644487 Nov 22 23:04 QR.spl
--rw-r--r-- 1 qr qr   211228 Nov 22 22:57 QR.wl
--rw-r--r-- 1 qr qr    50346 Nov 22 23:10 QR2.aj
--rw-r--r-- 1 qr qr   825374 Nov 22 23:04 QRP.purs
--rw-r--r-- 1 qr qr   404153 Nov 22 22:35 qr_cs/QR.cs
--rw-r--r-- 1 qr qr    67940 Nov 22 23:09 qr_vb/QR.vb
--rw-r--r-- 1 qr qr   372082 Nov 22 22:42 qrgleam/src/qr.gleam
--rw-r--r-- 1 qr qr   190963 Nov 22 23:04 qrpony/main.pony
+-rwxr-xr-x 1 qr qr    50342 Nov 23 00:46 QR.aj
+-rw-r--r-- 1 qr qr   900680 Nov 23 00:52 QR.asy
+-rw-r--r-- 1 qr qr 12439884 Nov 23 01:06 QR.lazy
+-rw-r--r-- 1 qr qr  4056485 Nov 23 01:13 QR.mb
+-rw-r--r-- 1 qr qr   601423 Nov 23 01:19 QR.rb
+-rw-r--r-- 1 qr qr 39674963 Nov 23 01:20 QR.spl
+-rw-r--r-- 1 qr qr   212028 Nov 23 01:13 QR.wl
+-rw-r--r-- 1 qr qr    50342 Nov 23 01:24 QR2.aj
+-rw-r--r-- 1 qr qr   826401 Nov 23 01:19 QRP.purs
+-rw-r--r-- 1 qr qr   411797 Nov 23 00:53 qr_cs/QR.cs
+-rw-r--r-- 1 qr qr    68000 Nov 23 01:23 qr_vb/QR.vb
+-rw-r--r-- 1 qr qr   379010 Nov 23 00:59 qrgleam/src/qr.gleam
+-rw-r--r-- 1 qr qr   191435 Nov 23 01:19 qrpony/main.pony

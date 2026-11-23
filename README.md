@@ -6,11 +6,11 @@ This repository builds on [Yusuke Endoh's (mame) Quine Relay](https://github.com
 
 ## Highlights
 
-- **Strict A–Z alphabetical order (`out of order: 0`)**: Ignoring case and punctuation, every step proceeds in A–Z order around the 256-language cycle, rotated to enter at **Step #1 `AspectJ` (`QR.aj`)** so all three 16-bit 64 KiB hardware/VM targets (`6502 asm`, `Z80 asm`, `Uxntal`) sit near the compact inner tail and assemble cleanly inside real `< 64 KiB` RAM/ROM limits (`Asm6502` 43,262 B / 65,012 B; `Z80 asm` 63,481 B / 64,991 B; `Uxntal` 63,899 B / 65,280 B).
-- **Self-reproducing AspectJ seed (`QR.aj`, `50,346 B`, `sha256: 65e2edca...`)**: Genuine AspectJ (`aspect Q { before(): execution(void QR.main(..)) { ... } } public class QR { public static void main(String[] a) {} }`), storing its compressed engine + 227-step spec table in chunked printable-ASCII Base91 string literals (`java.util.zip.InflaterInputStream`), with zero file I/O, zero CLI code, and zero external processes. Rebuilds byte-identical from `src/` via `ruby src/gen-aj.rb`.
+- **Strict A–Z alphabetical order (`out of order: 0`)**: Ignoring case and punctuation, every step proceeds in A–Z order around the 256-language cycle, rotated to enter at **Step #1 `AspectJ` (`QR.aj`)** so all three 16-bit 64 KiB hardware/VM targets (`6502 asm`, `Z80 asm`, `Uxntal`) sit near the compact inner tail and assemble cleanly inside real `< 64 KiB` RAM/ROM limits (`Asm6502` 43,323 B / 65,012 B; `Z80 asm` 63,541 B / 64,991 B; `Uxntal` 63,952 B / 65,280 B), enforced by a `< 64,000 B` hard guard in `src/gen-aj.rb` and `src/vm-exec.rb`.
+- **Self-reproducing AspectJ seed (`QR.aj`, `50,342 B`, `sha256: 65c6b3ca...`)**: Genuine AspectJ (`aspect Q { before(): execution(void QR.main(..)) { ... } } public class QR { public static void main(String[] a) {} }`), storing its compressed engine + 227-step spec table in chunked printable-ASCII Base91 string literals (`java.util.zip.InflaterInputStream`), with zero file I/O, zero CLI code, and zero external processes. Rebuilds byte-identical from `src/` via `ruby src/gen-aj.rb`.
 - **Verified offline proof lap ([proof/](proof/))**:
-  - **256 / 256 steps PASS** in **36.1 min** (`2,173.5s`), `--network=none`, non-root `USER qr` (`uid=1001`).
-  - **Exact roundtrip**: `diff -s QR.aj QR2.aj` -> `Files QR.aj and QR2.aj are identical` (`50,346 B`).
+  - **256 / 256 steps PASS** in **32.6 min** (`1,957s`), `--network=none`, non-root `USER qr` (`uid=1001`). Note: the non-root `USER qr` layer was verified on top of the from-scratch `ubuntu:26.04` toolchain image; `Dockerfile` encodes the complete standalone recipe from `FROM ubuntu:26.04`.
+  - **Exact roundtrip**: `diff -s QR.aj QR2.aj` -> `Files QR.aj and QR2.aj are identical` (`50,342 B`).
   - **Full `SHA256SUMS`**: **256 / 256** step file hashes verified (`sha256sum --quiet -c SHA256SUMS`).
   - **Malbolge Unshackled `U20` parity**: `U20_PARITY=OK` (`Unshackled.c` vs `Unshackled-20.c` byte-identical on real `QR.mb` with `< /dev/null`, zero `'/'` input ops).
 
@@ -38,7 +38,7 @@ docker run --rm --network=none quine-relay-256
 
 This builds Ubuntu 26.04 with all 256 language toolchains, switches to non-root `USER qr`, executes all 256 steps from `QR.aj` -> `QR2.aj` offline (`make check -j 10000`), verifies `diff -s QR.aj QR2.aj`, and checks all 256 hashes in `SHA256SUMS`.
 
-To regenerate `QR.aj` from `src/`:
+To regenerate `QR.aj` (with the `< 64,000 B` ROM guard) and all generated repo files from `src/`:
 ```bash
 ruby src/gen-aj.rb
 ```
@@ -47,6 +47,6 @@ ruby src/gen-aj.rb
 
 - **2013–2026**: [Yusuke Endoh (@mametter)](https://github.com/mame/quine-relay) — original 50 / 100 / 128-language Quine Relay (MIT License).
 - **2026-11-21**: `quine-relay-256` initial release — 256 distinct languages (`QR.rb` 45,828 B, custom order).
-- **2026-11-22**: `quine-relay-256` unified strict A–Z release — all 256 distinct languages in strict A–Z alphabetical order (`QR.aj` 50,346 B, AspectJ entry point, non-root `USER qr`, 248/256 clean / 0 critical / 0 fork borderlines, 256/256 `SHA256SUMS`, `U20_PARITY=OK`).
+- **2026-11-22**: `quine-relay-256` unified strict A–Z release — all 256 distinct languages in strict A–Z alphabetical order (`QR.aj` 50,342 B, AspectJ entry point, non-root `USER qr`, 248/256 clean / 0 critical / 0 fork borderlines, 256/256 `SHA256SUMS`, `U20_PARITY=OK`).
 
 See [LICENSE](LICENSE) for full MIT license terms.

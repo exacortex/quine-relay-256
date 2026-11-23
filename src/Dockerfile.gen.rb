@@ -10,7 +10,7 @@ def squash_installs(files)
   files.each do |f|
     insns = []
     cur = nil
-    File.read(f).each_line do |l|
+    File.read(f, encoding: "UTF-8").each_line do |l|
       l = l.chomp
       if cur
         cur << "\n" << l
@@ -62,9 +62,21 @@ dockerfile << "RUN GOBIN=/usr/local/bin go install github.com/d5/tengo/v2/cmd/te
 dockerfile << "RUN cargo install --locked --root /usr/local rhai@1.27.0 --features bin-features --bin rhai-run && cargo install --locked --root /usr/local koto_cli@0.16.1"
 # Squashed per-batch installs (stays well below Docker's 127-layer overlay2 limit)
 dockerfile.concat(squash_installs(Dir[File.join(__dir__, "extra-installs", "*.txt")].sort))
+dockerfile << <<~'NONROOT'.chomp
+  RUN useradd -m -s /bin/bash qr \
+      && for d in .arturo .ballerina .cache .cargo .config .dotnet .local .mirarc .npm .nuget .texlive2025 go; do \
+           [ -e "/root/$d" ] && mv "/root/$d" "/home/qr/$d"; \
+         done \
+      && chown -R qr:qr /home/qr \
+      && for d in /opt/clean /opt/yottadb /opt/roc /opt/flix /opt/grain /opt/vale /opt/purs /opt/mirth /opt/v /opt/factor; do \
+           [ -d "$d" ] && chown -R qr:qr "$d"; \
+         done
+NONROOT
 dockerfile << "ADD . /usr/local/share/quine-relay"
 dockerfile << "WORKDIR /usr/local/share/quine-relay"
-dockerfile << "RUN make -C vendor && rm -f /usr/bin/sync && dpkg-divert --quiet --local --rename --remove /usr/bin/sync"
-dockerfile << "CMD make check -j 10000"
+dockerfile << "RUN make -C vendor && rm -f /usr/bin/sync && dpkg-divert --quiet --local --rename --remove /usr/bin/sync && chown -R qr:qr /usr/local/share/quine-relay"
+dockerfile << "USER qr"
+dockerfile << "ENV HOME=/home/qr DOTNET_CLI_HOME=/home/qr/.dotnet NUGET_PACKAGES=/home/qr/.nuget/packages XDG_CACHE_HOME=/home/qr/.cache GOCACHE=/home/qr/.cache/go-build"
+dockerfile << 'CMD ["make", "check", "-j", "10000"]'
 
-File.binwrite("../Dockerfile", dockerfile.join("\n") + "\n")
+File.binwrite(File.join(__dir__, "../Dockerfile"), dockerfile.join("\n") + "\n")

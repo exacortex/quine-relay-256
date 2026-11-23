@@ -5,7 +5,7 @@ CLEAN.include("../qr.*")
 CLEAN.include("../QR$*")
 CLEAN.include("../QR")
 CLEAN.include("../qr")
-CLEAN.include("../QR2.rb")
+CLEAN.include("../QR2.aj")
 CLEAN.include("../QRMUMPS.*")
 CLEAN.include("../QR_ec*")
 CLEAN.include("../qr_mercury*")
@@ -15,8 +15,6 @@ CLEAN.include("../qrroc")
 CLEAN.include("../qr_austral")
 CLEAN.include("../README.md")
 CLEAN.include("../LANGUAGES.md")
-CLEAN.include("../langs.png")
-CLEAN.include("../thumbnail.png")
 CLEAN.include("../Makefile")
 CLEAN.include("../Dockerfile")
 CLEAN.include("../.github/workflows/main.yml")
@@ -46,20 +44,12 @@ file "malbolge-boot.dat" => "malbolge-boot.dat.gen.py" do
   sh "python3", "malbolge-boot.dat.gen.py"
 end
 
-file "../QR.rb" => ["QR.rb.gen.rb", *LIBS, "uroboros.txt"] do
-  ruby "QR.rb.gen.rb"
+file "../QR.aj" => ["gen-aj.rb", "engine_body.java", *LIBS] do
+  ruby "gen-aj.rb"
 end
 
-file "../README.md" => ["README.md.gen.rb", *LIBS] do
+file "../README.md" => ["README.md.gen.rb", "../QR.aj", *LIBS] do
   ruby "README.md.gen.rb"
-end
-
-file "../langs.png" => ["langs.png.gen.rb", "uroboros.svg", *LIBS] do
-  ruby "langs.png.gen.rb"
-end
-
-file "../thumbnail.png" => ["thumbnail.png.gen.rb", "../QR.rb"] do
-  ruby "thumbnail.png.gen.rb"
 end
 
 file "../LANGUAGES.md" => ["LANGUAGES.md.gen.rb", *LIBS] do
@@ -78,16 +68,18 @@ file "../Dockerfile" => ["Dockerfile.gen.rb", *LIBS, *Dir["extra-installs/*.txt"
   ruby "Dockerfile.gen.rb"
 end
 
-task :test do
+task :rom_guard => "../QR.aj" do
+  ruby "vm-exec.rb"
+end
+
+task :test => :rom_guard do
   ruby "test.rb"
 end
 
 task :default => %w(
-  ../QR.rb
+  ../QR.aj
   ../README.md
   ../LANGUAGES.md
-  ../langs.png
-  ../thumbnail.png
   ../Makefile
   ../.github/workflows/main.yml
   ../Dockerfile
