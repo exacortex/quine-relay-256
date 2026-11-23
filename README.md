@@ -8,11 +8,10 @@ This repository builds on [Yusuke Endoh's (mame) Quine Relay](https://github.com
 
 - **Strict A–Z alphabetical order (`out of order: 0`)**: Ignoring case and punctuation, every step proceeds in A–Z order around the 256-language cycle, rotated to enter at **Step #1 `AspectJ` (`QR.aj`)** so all three 16-bit 64 KiB hardware/VM targets (`6502 asm`, `Z80 asm`, `Uxntal`) sit near the compact inner tail and assemble cleanly inside real `< 64 KiB` RAM/ROM limits (`Asm6502` 43,323 B / 65,012 B; `Z80 asm` 63,541 B / 64,991 B; `Uxntal` 63,952 B / 65,280 B), enforced by a `< 64,000 B` hard guard in `src/gen-aj.rb` and `src/vm-exec.rb`.
 - **Self-reproducing AspectJ seed (`QR.aj`, `50,342 B`, `sha256: 65c6b3ca...`)**: Genuine AspectJ (`aspect Q { before(): execution(void QR.main(..)) { ... } } public class QR { public static void main(String[] a) {} }`), storing its compressed engine + 227-step spec table in chunked printable-ASCII Base91 string literals (`java.util.zip.InflaterInputStream`), with zero file I/O, zero CLI code, and zero external processes. Rebuilds byte-identical from `src/` via `ruby src/gen-aj.rb`.
-- **Verified offline proof lap ([proof/](proof/))**:
-  - **256 / 256 steps PASS** in **32.6 min** (`1,957s`), `--network=none`, non-root `USER qr` (`uid=1001`). Note: the non-root `USER qr` layer was verified on top of the from-scratch `ubuntu:26.04` toolchain image; `Dockerfile` encodes the complete standalone recipe from `FROM ubuntu:26.04`.
-  - **Exact roundtrip**: `diff -s QR.aj QR2.aj` -> `Files QR.aj and QR2.aj are identical` (`50,342 B`).
-  - **Full `SHA256SUMS`**: **256 / 256** step file hashes verified (`sha256sum --quiet -c SHA256SUMS`).
-  - **Malbolge Unshackled `U20` parity**: `U20_PARITY=OK` (`Unshackled.c` vs `Unshackled-20.c` byte-identical on real `QR.mb` with `< /dev/null`, zero `'/'` input ops).
+- **Verified from-scratch offline proof lap ([proof/](proof/))**:
+  - **From-scratch `ubuntu:26.04` Docker build (`docker build --pull --no-cache`)**: **80.2 min** on a fresh clone of commit `1727379` (image `qr256-1727379-scratch`, `sha256:a8ed91e7...`, non-root `USER qr`, `uid=1001`; [proof/SCRATCH-RESULT.txt](proof/SCRATCH-RESULT.txt)).
+  - **Untouched default `CMD` (`make check -j 10000`) under `--network=none`**: **256 / 256 steps PASS** in **32.1 min** (`Files QR.aj and QR2.aj are identical`, `50,342 B`, **256 / 256** `SHA256SUMS` verified).
+  - **Malbolge Unshackled `U20` parity ([proof/RESULT.txt](proof/RESULT.txt))**: `U20_PARITY=OK` (`Unshackled.c` vs `Unshackled-20.c` byte-identical on real `QR.mb` with `< /dev/null`, zero `'/'` input ops; full per-step log in [proof/run.log](proof/run.log)).
 
 ## Audit & No-Cheating Transparency
 

@@ -6,7 +6,7 @@ These are the counting rules and verified comparisons for [exacortex/quine-relay
 
 | Relay | Strict Distinct *(1:1 rule)* | Relay Steps *(Endoh's standard)* | Order | Verified | Date |
 |---|---:|---:|---|---|---|
-| **[exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256)** *(this repo)* | **256** | **256** | **Strict A–Z** (`AspectJ -> ... -> AspectC++ -> AspectJ`) | Offline `--network=none` non-root `USER qr` lap (`make check -j 10000`, `32.6 min` / `1,957s`, `QR.aj` 50,342 B `65c6b3ca...` == `QR2.aj`, **256/256** `SHA256SUMS`, `U20_PARITY=OK`, 0 critical / 248 clean / 8 disclosed inherited borderlines; [proof](proof/)) | 2026-11-22 |
+| **[exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256)** *(this repo)* | **256** | **256** | **Strict A–Z** (`AspectJ -> ... -> AspectC++ -> AspectJ`) | From-scratch `ubuntu:26.04` build (`80.2 min`, `a8ed91e7...`) + offline `--network=none` non-root `USER qr` default `CMD` lap (`32.1 min`, `QR.aj` 50,342 B `65c6b3ca...` == `QR2.aj`, **256/256** `SHA256SUMS`, `U20_PARITY=OK`, 0 critical / 248 clean / 8 disclosed inherited borderlines; [proof](proof/)) | 2026-11-22 |
 | [`mame/quine-relay`](https://github.com/mame/quine-relay) *(original upstream, 2013–2026)* | 123 *(under 1:1 rule)* | **128** *(Endoh counts all 128 by his own test)* | Custom (`Ruby -> ...`) | mame's CI, Ubuntu 26.04 (`QR.rb` 13,664 B) | 2026 |
 
 *(Note: Yusuke Endoh counts all 128 steps in `mame/quine-relay` as languages by his own test; the "Strict Distinct (1:1 rule)" column reflects our fork's stricter rule omitting 5 non-distinct entries: `Ook!`, `JSFuck`, `WebAssembly (Binary format)`, `FORTRAN77`, and `Gzip`.)*
