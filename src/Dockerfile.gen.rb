@@ -56,11 +56,11 @@ dockerfile << "RUN dpkg-divert --quiet --local --rename --add /usr/bin/sync && l
 apts.each_slice(20) do |apt|
   dockerfile << "RUN chronic apt-get -qq install -y #{ apt.join(" ") } && chronic apt-get clean"
 end
-# Non-apt toolchains from the 151/157 base (pinned)
+# Non-apt toolchains (pinned versions)
 dockerfile << "RUN chronic apt-get -qq install -y python3-pip golang-go cargo && chronic apt-get clean"
 dockerfile << "RUN GOBIN=/usr/local/bin go install github.com/d5/tengo/v2/cmd/tengo@v2.17.0 && GOBIN=/usr/local/bin go install github.com/mattn/anko@v0.1.15"
 dockerfile << "RUN cargo install --locked --root /usr/local rhai@1.27.0 --features bin-features --bin rhai-run && cargo install --locked --root /usr/local koto_cli@0.16.1"
-# Squashed per-batch installs (stays well below Docker's 127-layer overlay2 limit)
+# Grouped toolchain installs (keeps layer count well below Docker's overlay2 limit)
 dockerfile.concat(squash_installs(Dir[File.join(__dir__, "extra-installs", "*.txt")].sort))
 dockerfile << <<~'NONROOT'.chomp
   RUN useradd -m -s /bin/bash qr \

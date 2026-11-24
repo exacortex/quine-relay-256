@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# Compiles 227 CodeGen steps from code-gen.rb into the self-reproducing AspectJ quine QR.aj.
+# Compiles the CodeGen steps from code-gen.rb into the self-reproducing AspectJ quine QR.aj.
 require "zlib"
 require "base64"
 require "tmpdir"
@@ -491,7 +491,7 @@ def compile_step(buf, step)
   when "LOLCODE"
     buf.chunk("HAI 1\n", "\nKTHXBYE\n", 'VISIBLE "', '"!', "\n", 10000, 0, 0, [[":", "::"], ['"', ':"'], ["\n", ":)"]])
 
-  # --- ZLIB_WRAP (Op 3) or plain fallback if simplified in P13 ---
+  # --- ZLIB_WRAP (Op 3) ---
   when "PowerShell"
     if code.include?("Deflate")
       out = eval_step(step, PROBE)
@@ -758,7 +758,7 @@ ordered.each { |st| compile_step(buf, st) }
 raw_eng = File.read(ENGINE_PATH, encoding: "UTF-8")
 min_eng = minify_java(raw_eng)
 
-# Pack [min_eng, step_count, step_specs...] into ONE single zlib-9 blob B (Base91)!
+# Pack [min_eng, step_count, step_specs...] into a single zlib level-9 Base91 blob.
 full_buf = BinBuf.new
 full_buf.str(min_eng)
 raw_blob = full_buf.bytes + buf.bytes

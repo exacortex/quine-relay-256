@@ -20,8 +20,7 @@ MAME_128 = %w[
   "Lazy K", "LLVM asm", "Parser 3", "Perl 5", "Perl 6", "Promela (Spin)"
 ]
 
-# All 128 steps from Endoh's Ubuntu 26.04 relay are preserved intact ("Endoh Stamp").
-MAME_NON_DISTINCT = []
+# All 128 steps from mame/quine-relay (Ubuntu 26.04) are preserved unchanged.
 
 # Classic languages retired from earlier Ubuntu editions of mame/quine-relay
 # (16 of 20 historical retirees restored here).
@@ -43,14 +42,14 @@ CUT_OURS = [
   "Beatnik", "Emmental", "///", "SQL (SQLite)", "Underload",
 ]
 
-ENDOH_STAMP_NOTES = %w[FORTRAN77 Gzip JSFuck Ook!] + ["WebAssembly (Binary format)"]
+UPSTREAM_FORMAT_NOTES = %w[FORTRAN77 Gzip JSFuck Ook!] + ["WebAssembly (Binary format)"]
 
 NOTES = {
   "Perl 6" => "renamed Raku in 2019; its own language, separate from Perl 5",
-  "Malbolge Unshackled" => "unbounded Malbolge (CC0 Unshackled.c / Unshackled-20.c; zero '/' input ops executed, MB_STDIN_SAME, U20_PARITY=OK)",
+  "Malbolge Unshackled" => "unbounded Malbolge (CC0 Unshackled.c / Unshackled-20.c; verified with dual-interpreter parity and stdin-invariance tests)",
 }
-ENDOH_STAMP_NOTES.each do |name|
-  NOTES[name] ||= "preserved from mame/quine-relay (Endoh Stamp)"
+UPSTREAM_FORMAT_NOTES.each do |name|
+  NOTES[name] ||= "preserved from upstream mame/quine-relay"
 end
 RESTORED_MAME.each do |name|
   NOTES[name] ||= "retired from earlier Ubuntu editions of mame/quine-relay; restored here"
@@ -69,7 +68,7 @@ retiree_count = RESTORED_MAME.size
 fork_only_count = step_names.size - mame_count - retiree_count - 1
 
 rows = RunSteps.map.with_index do |s, i|
-  origin = MAME_128.include?(s.name) ? "mame (Endoh Stamp)" : "this fork"
+  origin = MAME_128.include?(s.name) ? "mame/quine-relay" : "this fork"
   note = NOTES[s.name] || ""
   "| #{ i + 1 } | #{ s.name } | #{ origin } | #{ note } |"
 end
@@ -77,9 +76,9 @@ end
 File.binwrite("../LANGUAGES.md", <<END)
 # Languages
 
-Every step of the relay, in exact A–Z run order, from [Ruby/AspectJ seed](README.md) through all #{ step_names.size } steps. See [RECORDS.md](RECORDS.md) for how upstream Endoh entries and standalone fork additions are accounted for.
+Every step of the relay, in exact A–Z run order, from the [AspectJ seed](README.md) through all #{ step_names.size } steps. See [RECORDS.md](RECORDS.md) for how upstream entries and fork additions are counted.
 
-**Totals: #{ step_names.size } steps = #{ mame_count } from `mame/quine-relay` (100% preserved, "Endoh Stamp") + #{ step_names.size - mame_count } standalone fork additions (#{ retiree_count }/#{ TOTAL_MAME_RETIREES } restored `mame` retirees + Malbolge Unshackled + #{ fork_only_count } standalone languages, all on canonical third-party upstream compilers/interpreters).**
+**Totals: #{ step_names.size } steps = #{ mame_count } preserved from `mame/quine-relay` + #{ step_names.size - mame_count } additions in this fork (#{ retiree_count }/#{ TOTAL_MAME_RETIREES } restored historical `mame` languages + Malbolge Unshackled + #{ fork_only_count } additional standalone languages, all using third-party upstream compilers or interpreters).**
 
 | # | Language | Origin | Note |
 |---|---|---|---|

@@ -1,8 +1,6 @@
-# squash-installs.rb FILE... -> Dockerfile lines for the lap image, one layer per installs file.
-# Added Nov 15 (merge 248): FROM qr157 + one layer per install line passed Docker's overlay depth limit
-# ("max depth exceeded" at 85 new layers). Each file's consecutive RUN instructions become one RUN, each body in
-# its own ( subshell ) so a `cd` or `export` can't leak into the next; ENV / COPY / other directives stay as-is
-# and split the group. Comments and blank lines are dropped (they were before, too). Contents are unchanged.
+# squash-installs.rb FILE... -> groups consecutive RUN instructions from each installs file
+# into a single subshell-isolated RUN layer so the generated Dockerfile stays well below
+# Docker's overlay2 layer limit while keeping `cd` / `export` scoped cleanly per group.
 out = []
 ARGV.each do |f|
   insns = []; cur = nil

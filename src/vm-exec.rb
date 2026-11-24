@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
-# Assembles & executes Asm6502, Z80Asm, and Uxntal on their REAL payloads generated from QR.aj,
-# measuring exact ROM/binary sizes and enforcing the hard < 64,000 B ROM guard!
+# Assembles and executes Asm6502, Z80Asm, and Uxntal on the payloads generated from QR.aj,
+# verifying exact output and enforcing the < 64,000 B ROM size limit.
 require "fileutils"
 require_relative "code-gen"
 qr_path = ARGV[0] || File.expand_path("../QR.aj", __dir__)

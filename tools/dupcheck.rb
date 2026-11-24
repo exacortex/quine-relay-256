@@ -1,5 +1,4 @@
-# dupcheck.rb - fail if two steps would use the same source file (the QR.ss bug that broke the first
-# 157 lap: make silently dropped a dependency and ran SurgeScript before its file existed).
+# dupcheck.rb - fail if two steps share the same intermediate source filename (preventing silent Make dependency collisions).
 #   ruby dupcheck.rb code-gen.rb
 src = File.read(ARGV[0])
 seen = {}

@@ -1,4 +1,4 @@
-# B23: Batch B standalone replacement languages (Boron, ChaiScript, MiniScript, Gluon, Effekt, Lily, PocketLang, Cyber, Dyon, Rye, Pawn, Austral, Vale).
+# B23: Additional standalone toolchains (Boron, ChaiScript, MiniScript, Gluon, Effekt, Lily, PocketLang, Cyber, Dyon, Rye, Pawn, Austral, Vale).
 # Note: HOC uses official Ubuntu 26.04 Apt = "9base" (/usr/lib/plan9/bin/hoc); no extra RUN needed.
 # Note: Vale requires real /usr/bin/clang (installed via base apt, no clang->gcc shadow).
 

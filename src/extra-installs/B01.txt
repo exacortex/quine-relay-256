@@ -1,4 +1,4 @@
-# B01: Dockerfile lines for installs with no apt package. Pin versions. (Maxima and Gri are apt: Apt = in batch.rb.)
+# B01: Dockerfile lines for installs with no apt package. Pin versions. (Maxima and Gri come from Ubuntu apt via code-gen.rb.)
 # Build deps for UCBLogo and GNU Smalltalk, unzip for Dafny.
 RUN chronic apt-get -qq install -y autoconf automake autoconf-archive libncurses-dev libgmp-dev libffi-dev libltdl-dev libreadline-dev zlib1g-dev gawk pkg-config unzip && chronic apt-get clean
 # UCBLogo 6.2.5 built without wx, so it prints to stdout and needs no display (Ubuntu's ucblogo package is the wx GUI build).

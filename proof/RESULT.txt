@@ -1,53 +1,52 @@
-quine-relay-256 v3.1 ("The Endoh Stamp" + IonShell fix) — Offline Proof Summary
-=============================================================================
+quine-relay-256 — Offline Verification Summary
+================================================
 
 Date: 2026-11-24
 
 Architecture:
-  128 / 128 mame/quine-relay Ubuntu 26.04 steps preserved intact ("Endoh Stamp")
-  + 128 standalone fork additions on canonical third-party upstream toolchains
+  128 / 128 mame/quine-relay Ubuntu 26.04 steps preserved unchanged
+  + 128 additions in this fork using canonical third-party upstream toolchains
   = 256 steps in strict A-Z order (Entry #1 AspectJ -> #244 6502 asm wrap -> #256 AspectC++)
-  0 custom fork esolang runners in vendor/ (beatnik.rb, emmental.rb, slashes.rb, underload.rb removed; SQL removed)
-  0 fork-side tool accommodations across the 128 fork additions
+  0 custom fork esolang interpreters in vendor/
 
 Docker Image:
-  qr256-alpha-v3 (overlay FROM qr256-1727379-scratch, make -C vendor built, USER qr uid=1001)
+  Ubuntu 26.04 verification image (make -C vendor built, non-root USER qr uid=1001)
   Image ID: sha256:78891375f453f39e6b6899d0504e7244a584931ca4f7b139cc005938af0c60ef
 
-Seed & Generators (re-run idempotency verified in Docker):
+Seed & Generated Outputs (reproduced in Ubuntu 26.04 Docker image):
   QR.aj        54,170 B  sha256: 126a0c37b07545182d95ebd060ad46241ff2033151fa9f061d66f89ae2f911f2
-  LANGUAGES.md           sha256: c68a1eafb859bfcfd06507d98b85bd1cbf0816537aa8304e82223a943c24da4f
+  LANGUAGES.md           sha256: d808598dae8c12ea9366e47bf13f22330eab89b5b33263cca59734af449b8578
   Makefile               sha256: 142998c75daf7419dff2d94097732a4f6e617ada7f33979a948f55043a2233ca
   Dockerfile             sha256: b9079d7447b1b54e3b91a3df33312b28fc8093ffaebded18760a5322035dc84f
   main.yml               sha256: c95895bdbe65e4fc574acdd3cc70558c80aa414e05730d4703723b158bc52ba8
-  README.md              sha256: a70107545274a0b4c40813d696d342edd27fc668605638f737d379f04a777f46
+  README.md              sha256: 1e79e6beb26ab73e360d48d19037c09cdc0418c796ca61bfdbbbdf6864a5497c
   SHA256SUMS  256 lines  sha256: e821f3110dfa3cc19b6d9a19d0b49100e3490365cdb7cd62ab424ff7b1ea7214
 
-Engine & VM Verification (pre-queue in qr256-1727379-scratch):
-  check_order.rb         : PASS (256/256 unique, 0 missing MAME_128, 0 missing RESTORED_16, Out of order: 0)
-  diff-test-v3.rb        : PASS (self() == QR.aj 54,170 B; Phase 1 exact=224 fails=0/224; Phase 2 chain check()s 224/224)
-  Asm6502 (xa + sim65)   : PASS exact=true 0.02s  46,799 B / 65,012 B (guard < 64,000 B, spare=18,213 B)
-  Z80Asm  (z80asm+tnylpo): PASS exact=true 0.01s  63,563 B / 64,991 B (guard < 64,000 B, spare=1,428 B)
-  Uxntal  (uxnasm+uxncli): PASS exact=true 0.11s  57,371 B / 65,280 B (guard < 64,000 B, spare=7,909 B, 88.28% used)
-  Live Ion -> J -> Janet : PASS on both real QR.aj (QR.ion=291,503 B -> QR.ijs=256,207 B -> QR.janet=254,558 B, exact)
-                           and QRCAN! canary QR.aj (54,175 B; QR.ion=297,823 B -> QR.ijs=257,814 B -> QR.janet=256,196 B, exact)
+Engine & VM Verification (Ubuntu 26.04 container):
+  Order & uniqueness check : PASS (256/256 unique, 128/128 upstream base, 16/20 restored historical mame languages, Out of order: 0)
+  Differential check       : PASS (self() == QR.aj 54,170 B; Phase 1 exact=224 fails=0/224; Phase 2 chain check()s 224/224)
+  Asm6502 (xa + sim65)     : PASS exact=true 0.02s  46,799 B / 65,012 B (guard < 64,000 B, spare=18,213 B)
+  Z80Asm  (z80asm+tnylpo)  : PASS exact=true 0.01s  63,563 B / 64,991 B (guard < 64,000 B, spare=1,428 B)
+  Uxntal  (uxnasm+uxncli)  : PASS exact=true 0.11s  57,371 B / 65,280 B (guard < 64,000 B, spare=7,909 B, 88.28% used)
+  Live Ion -> J -> Janet   : PASS on both QR.aj (QR.ion=291,503 B -> QR.ijs=256,207 B -> QR.janet=254,558 B, exact)
+                             and mutated engine build (QR.aj=54,175 B; QR.ion=297,823 B -> QR.ijs=257,814 B -> QR.janet=256,196 B, exact)
 
 Lap 1 (Full offline build, SHA256SUMS verification & make clean check):
-  Command : docker run --rm --network=none qr256-alpha-v3 (make all -j 10000, USER qr)
+  Mode    : docker run --rm --network=none (make all -j 10000, non-root USER qr)
   Result  : PASS (exit=0, 256/256 steps) in 2,319.8s (38.7 min)
   Identity: Files QR.aj and QR2.aj are identical (54,170 B)
   SHA256  : sha256sum --quiet -c SHA256SUMS -> 256/256 PASS
   JSFuck  : 20,430,412 B, characters strictly in []()!+\n
-  Malbolge: U20_PARITY=OK, MB_STDIN_SAME=OK (Unshackled.c == Unshackled-20.c == QR.wl 198,440 B on both </dev/null and canary stdin; QR.mb 3,811,135 B)
-  Clean   : make clean -> 0 leftover QR.* files (other than QR.aj) and QR2.aj removed (14 non-QR toolchain cache entries left by make clean: .Random.seed, .build/, QR_dats.c, __pycache__/, build/, qrgleam/manifest.toml)
+  Malbolge: Dual-interpreter parity PASS (Unshackled.c == Unshackled-20.c == QR.wl 198,440 B on both </dev/null and 50-line canary stdin; QR.mb 3,811,135 B)
+  Clean   : make clean -> 0 leftover QR.* files (other than QR.aj) and QR2.aj removed (14 non-QR toolchain cache entries left by compiler/runtime tools: .Random.seed, .build/, QR_dats.c, __pycache__/, build/, qrgleam/manifest.toml)
 
-Lap 2 (Verifier "bad op " -> "QRCAN! " Engine Canary sensitivity lap):
-  Mutation: "bad op " -> "QRCAN! " in src/engine_body.java, rebuilt QR.aj = 54,175 B (sha256: 3ef81e77ff1a0003372894c55e22b860ea520227688e9cd8a44ee58eb4903a3c)
+Lap 2 (Engine-mutation sensitivity test):
+  Mutation  : "bad op " -> "QRCAN! " in src/engine_body.java, rebuilt QR.aj = 54,175 B (sha256: 3ef81e77ff1a0003372894c55e22b860ea520227688e9cd8a44ee58eb4903a3c)
   ROM guards: Asm6502 46,904 / 65,012 B (spare 18,108 B), Z80Asm 63,673 / 64,991 B (spare 1,318 B), Uxntal 57,324 / 65,280 B (spare 7,956 B)
-  Command : docker run --rm --network=none qr256-alpha-v3 (make all -j 10000, USER qr)
-  Result  : PASS (exit=0, 2,339.4s / 39.0 min), Files QR.aj and QR2.aj are identical
-  Canary  : CANARY_STEP_HASH_CHANGED=256/256 UNCHANGED=0/256
+  Mode      : docker run --rm --network=none (make all -j 10000, non-root USER qr)
+  Result    : PASS (exit=0, 2,339.4s / 39.0 min), Files QR.aj and QR2.aj are identical
+  Hashes    : 256 / 256 intermediate step file SHA-256 digests changed; 0 unchanged
 
-Baseline strace trace (carried from bb598ba prior to the IonShell quoting fix):
-  Independent verifier Lap C (bb598ba): 3,930 trace rows, 0 foreign QR.* reads, 256/256 SHA256SUMS (5,401s)
-  v3 baseline strace audit (QR.aj ed0fbe68...): MALBOLGE_STRACE_READS=0 across 925 trace lines; 49/49 changed/restored/adjacent steps exited ok=true exact=true
+Prior baseline strace trace (recorded prior to the final IonShell quoting update):
+  Full-lap strace trace: 3,930 trace rows across full make build, 0 cross-step QR.* file reads, 256/256 SHA256SUMS match (5,401s)
+  Focused strace check : 0 read(0, ...) syscalls in Malbolge Unshackled across 925 trace lines; 49/49 sampled steps exited ok with exact stdout parity

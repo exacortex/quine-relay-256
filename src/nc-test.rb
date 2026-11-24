@@ -1,4 +1,4 @@
-# usage: ruby nc-test.rb ClassName [big]   -- tests one step with a nasty payload; exits 0 on OK
+# usage: ruby nc-test.rb ClassName [big]   -- tests one step with a stress-test payload; exits 0 on OK
 require_relative "code-gen"
 ENV["PATH"] = "vendor/local/bin:#{ ENV["PATH"] }"
 dir = File.join(File.dirname(__dir__), "tmp-nc-#{ARGV[0]}")

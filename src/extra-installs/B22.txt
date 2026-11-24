@@ -1,4 +1,4 @@
-# B22: Batch A standalone replacement languages (MUMPS/YottaDB, Miranda, Hope, Clean, Grain, Mirth, Lobster, GNU APL, Flix).
+# B22: Additional standalone toolchains (MUMPS/YottaDB, Miranda, Hope, Clean, Grain, Mirth, Lobster, GNU APL, Flix).
 # Note: QBE uses official Ubuntu 26.04 Apt = "qbe" (1.2-3build1); no extra RUN needed.
 # All non-apt toolchains below are pinned to exact release versions or commit SHAs with SHA-256 verification.
 

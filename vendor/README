@@ -2,10 +2,8 @@
 #
 # All files in this directory carry their own licenses listed below and are
 # excluded from the root MIT license (see ../LICENSE and ../README.md).
-# Note: `dummy-wasi-runtime.c` (unused upstream leftover), proprietary
-# `frink/frink.jar`, and custom subset stubs (`cjam.rb`, `glass.rb`, `fish.py`,
-# `brain_flak.rb`, `run6502.py`, `runz80.py`) have been removed in favor of
-# canonical upstream interpreters/emulators or standalone open-source languages.
+# Every entry below is either inherited from upstream mame/quine-relay or a
+# canonical third-party upstream source/reference implementation.
 
 ## 1. Inherited from upstream mame/quine-relay — self-made runners (MIT)
 
