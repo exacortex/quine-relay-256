@@ -1,9 +1,50 @@
-PASSED
-image: qr256-alpha-v2 (sha256:f114590e12e0ccf788ea4dc5fc627708dd51debeb21f68f7ce373fb3ecbb4da1)
-user: qr (non-root)
-build_seconds: 164.9
-lap_seconds: 1964.7
-offline_network_none: PASS
-U20_PARITY=OK (212028 B, sha256=16778935af3bc5b3f2c53130c47c4570cba108459c819cc778df755ea704752b)
-sha256sums_count: 256
-sha256sums_seed: 65c6b3ca59af6c51dbdbbcf5cfbb881ae09ad741699c1260f16522a9f4896024 *QR.aj
+quine-relay-256 v3 ("The Endoh Stamp") — Offline Proof Verification Summary
+=============================================================================
+
+Architecture:
+  128 / 128 mame/quine-relay Ubuntu 26.04 steps preserved intact ("Endoh Stamp")
+  + 128 standalone fork additions on canonical third-party upstream toolchains
+  = 256 steps in strict A-Z order (Entry #1 AspectJ -> #244 6502 asm wrap -> #256 AspectC++)
+  0 custom fork esolang runners in vendor/ (beatnik.rb, emmental.rb, slashes.rb, underload.rb removed; SQL removed)
+  0 fork-side tool accommodations across the 128 fork additions
+
+Docker Image:
+  qr256-alpha-v3 (overlay FROM qr256-1727379-scratch, make -C vendor built, USER qr uid=1001)
+  Image ID: sha256:77705ddce1d0e763e6507292f7161fe8dd74f1c1e9a4b174c2fe7cca75b417f6
+
+Seed & Generators (two-pass byte-identical idempotency verified):
+  QR.aj        54,047 B  sha256: ed0fbe68141e50a7b8cb06c1ebbbe86e17b797823a20a9d1403df256f134e2c8
+  LANGUAGES.md           sha256: c68a1eafb859bfcfd06507d98b85bd1cbf0816537aa8304e82223a943c24da4f
+  Makefile               sha256: 142998c75daf7419dff2d94097732a4f6e617ada7f33979a948f55043a2233ca
+  Dockerfile             sha256: b9079d7447b1b54e3b91a3df33312b28fc8093ffaebded18760a5322035dc84f
+  main.yml               sha256: c95895bdbe65e4fc574acdd3cc70558c80aa414e05730d4703723b158bc52ba8
+  README.md              sha256: bbf370885e816c03edd5d50c78a5c143894315f62e58cb371e8d2cd14706e2ad
+  SHA256SUMS  256 lines  sha256: fd598e22ab055e771cb19757b310b287a91129566a16e22a4fa2902d12f8fefe
+
+Engine & VM Verification:
+  check_order.rb         : PASS (256/256 unique, 0 missing MAME_128, 0 missing RESTORED_16, Out of order: 0)
+  diff-test-v3.rb        : PASS (self() == QR.aj 54,047 B; Phase 1 exact=224 fails=0/224; Phase 2 chain check()s 224/224)
+  Asm6502 (xa + sim65)   : PASS exact=true 0.02s  46,723 B / 65,012 B (guard < 64,000 B, spare=18,289 B)
+  Z80Asm  (z80asm+tnylpo): PASS exact=true 0.01s  63,281 B / 64,991 B (guard < 64,000 B, spare=1,710 B)
+  Uxntal  (uxnasm+uxncli): PASS exact=true 0.10s  57,065 B / 65,280 B (guard < 64,000 B, spare=8,215 B)
+
+Lap 1 (Full offline build, SHA256SUMS generation & audit):
+  Command : docker run --name qr_v3_lap1 --network=none qr256-alpha-v3 (make all -j 10000, USER qr)
+  Result  : PASS (exit=0, 256/256 steps) in 2,396.8s (39.9 min)
+  Identity: Files QR.aj and QR2.aj are identical (54,047 B)
+  SHA256  : sha256sum --quiet -c SHA256SUMS -> 256/256 PASS
+  JSFuck  : 20,371,566 B, characters strictly in []()!+\n
+  Malbolge: U20_PARITY=OK, MB_STDIN_SAME=OK (Unshackled.c == Unshackled-20.c == QR.wl 197,676 B on both </dev/null and canary stdin)
+  strace  : MALBOLGE_STRACE_READS=0 (0 read(0, ...) syscalls across 925 trace lines);
+            49/49 changed/restored/adjacent steps exited ok=true exact=true under strace -f (44/49 clean, 3 DNS port-53 ENETUNREACH under --network=none, 2 ENOENT package.json lookups on Node WASI)
+
+Lap 2 (Untouched default CMD verification + make clean check):
+  Command : docker run --name qr_v3_lap2 --network=none qr256-alpha-v3 (CMD ["make", "check", "-j", "10000"])
+  Result  : PASS (exit=0, diff -s QR.aj QR2.aj identical, sha256sum --quiet -c SHA256SUMS 256/256 PASS)
+  Clean   : make clean -> Only in pre_lap: [] / Only in post_clean (LEFTOVERS): [] (spotless)
+
+Lap 3 (1-byte Engine Canary sensitivity lap):
+  Mutation: 1 byte in src/engine_body.java ("bad op " -> "bad oq "), rebuilt QR.aj = 54,048 B (sha256: 52500fe2...)
+  Command : docker run --rm --network=none qr256-alpha-v3 bash /t/run_canary.sh (make all -j 10000)
+  Result  : PASS (exit=0, 2,453.2s), Files QR.aj and QR2.aj are identical
+  Canary  : CANARY_CHANGED=256/256 UNCHANGED=0/256

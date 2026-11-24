@@ -20,76 +20,69 @@ MAME_128 = %w[
   "Lazy K", "LLVM asm", "Parser 3", "Perl 5", "Perl 6", "Promela (Spin)"
 ]
 
-# All 256 steps are distinct programming languages (Tier 2 dropped).
-MERGED = {}
+# All 128 steps from Endoh's Ubuntu 26.04 relay are preserved intact ("Endoh Stamp").
+MAME_NON_DISTINCT = []
 
 # Classic languages retired from earlier Ubuntu editions of mame/quine-relay
 # (16 of 20 historical retirees restored here).
 TOTAL_MAME_RETIREES = 20
 RESTORED_MAME = [
   "AspectC++", "Parrot asm (PASM)", "Boo", "Maxima", "Gri", "UCBLogo",
-  "GNU Smalltalk", "Julia", "Dafny", "GSL (Generator Scripting Language)",
+  "GNU Smalltalk", "Julia", "Dafny", "Generator Scripting Language",
   "nesC", "Lisaac", "eC", "CDuce", "A+", "Falcon",
 ]
 
-# Zero single-implementation mame-128 languages dropped (all 123 present).
-MAME_DROPPED = []
-
-# 5 alternate encodings/versions/formats from the 128-step base omitted so 1 step == 1 distinct language.
-MAME_NON_DISTINCT = ["Ook!", "JSFuck", "WebAssembly (Binary format)", "FORTRAN77", "Gzip"]
-
-# Fork languages retired in purity / distinctness passes.
+# Fork additions retired so every fork addition runs on a canonical third-party upstream toolchain
+# (no duplicate dialects/shells, no custom fork runners in vendor/, no query-only formats).
 CUT_OURS = [
   "mksh", "BusyBox ash", "yash", "Chicken Scheme", "Chez Scheme",
   "Deadfish~", "Hush", "Genie", "groff", "Starlark", "Rego",
   "Joy", "Frink", "Logtalk", "Rocq", "Agda", "F*", "ChucK", "dash",
   "NQP", "es", "Teal", "MoonScript", "YueScript", "xonsh", "Coconut",
   "Ink", "CUE", "Pkl", "Jsonnet", "Nickel", "Nix", "XQuery", "Wisp", "Imba",
+  "Beatnik", "Emmental", "///", "SQL (SQLite)", "Underload",
 ]
-CUT_ALL = MAME_NON_DISTINCT + CUT_OURS
+
+ENDOH_STAMP_NOTES = %w[FORTRAN77 Gzip JSFuck Ook!] + ["WebAssembly (Binary format)"]
 
 NOTES = {
   "Perl 6" => "renamed Raku in 2019; its own language, separate from Perl 5",
-  "Malbolge Unshackled" => "unbounded Malbolge (CC0 Unshackled.c / Unshackled-20.c, zero `'/'` input ops)",
+  "Malbolge Unshackled" => "unbounded Malbolge (CC0 Unshackled.c / Unshackled-20.c; zero '/' input ops executed, MB_STDIN_SAME, U20_PARITY=OK)",
 }
+ENDOH_STAMP_NOTES.each do |name|
+  NOTES[name] ||= "preserved from mame/quine-relay (Endoh Stamp)"
+end
 RESTORED_MAME.each do |name|
   NOTES[name] ||= "retired from earlier Ubuntu editions of mame/quine-relay; restored here"
 end
 
 step_names = RunSteps.map {|s| s.name }
 raise "duplicate step names!" unless step_names.uniq.size == step_names.size
-raise "cut step still present: #{ (CUT_ALL & step_names).inspect }" unless (CUT_ALL & step_names).empty?
-raise "unknown name in MERGED: #{ (MERGED.keys - step_names).inspect }" unless (MERGED.keys - step_names).empty?
-raise "missing MAME_128 step: #{ (MAME_128 - step_names - MAME_NON_DISTINCT).inspect }" unless (MAME_128 - step_names).sort == MAME_NON_DISTINCT.sort
+raise "cut step still present: #{ (CUT_OURS & step_names).inspect }" unless (CUT_OURS & step_names).empty?
+raise "missing MAME_128 step: #{ (MAME_128 - step_names).inspect }" unless (MAME_128 - step_names).empty?
 raise "missing RESTORED_MAME step: #{ (RESTORED_MAME - step_names).inspect }" unless (RESTORED_MAME - step_names).empty?
 raise "missing Malbolge Unshackled!" unless step_names.include?("Malbolge Unshackled")
+raise "expected 256 steps, got #{ step_names.size }" unless step_names.size == 256
 
-t1 = RunSteps.size - MERGED.size
-raise "expected Tier 1 == RunSteps.size == 256, got #{ RunSteps.size }" unless t1 == RunSteps.size && t1 == 256
-mame_kept_count = (MAME_128 - MAME_NON_DISTINCT).size
+mame_count = MAME_128.size
 retiree_count = RESTORED_MAME.size
-fork_only_count = t1 - mame_kept_count - retiree_count - 1
+fork_only_count = step_names.size - mame_count - retiree_count - 1
 
 rows = RunSteps.map.with_index do |s, i|
-  tier = "T1"
-  added = MAME_128.include?(s.name) ? "mame" : "this fork"
+  origin = MAME_128.include?(s.name) ? "mame (Endoh Stamp)" : "this fork"
   note = NOTES[s.name] || ""
-  "| #{ i + 1 } | #{ s.name } | #{ tier } | #{ added } | #{ note } |"
+  "| #{ i + 1 } | #{ s.name } | #{ origin } | #{ note } |"
 end
 
 File.binwrite("../LANGUAGES.md", <<END)
 # Languages
 
-Every step of the relay, in run order, with its record status. [RECORDS.md](RECORDS.md) has the rules.
+Every step of the relay, in exact A–Z run order, from [Ruby/AspectJ seed](README.md) through all #{ step_names.size } steps. See [RECORDS.md](RECORDS.md) for how upstream Endoh entries and standalone fork additions are accounted for.
 
-- **T1**: distinct programming language (Tier 1). All #{ t1 } steps are distinct languages (Tier 2 dropped).
+**Totals: #{ step_names.size } steps = #{ mame_count } from `mame/quine-relay` (100% preserved, "Endoh Stamp") + #{ step_names.size - mame_count } standalone fork additions (#{ retiree_count }/#{ TOTAL_MAME_RETIREES } restored `mame` retirees + Malbolge Unshackled + #{ fork_only_count } standalone languages, all on canonical third-party upstream compilers/interpreters).**
 
-**Totals: #{ RunSteps.size } steps, #{ t1 } distinct languages (#{ mame_kept_count } from `mame/quine-relay` + #{ retiree_count }/#{ TOTAL_MAME_RETIREES } restored from earlier Ubuntu editions of `mame/quine-relay` + Malbolge Unshackled + #{ fork_only_count } standalone fork languages).**
-
-All #{ mame_kept_count } single-implementation languages from Endoh's Ubuntu 26.04 relay are present (the 5 alternate encodings/versions/formats #{ MAME_NON_DISTINCT.join(", ") } are omitted under our 1-step-per-language rule alongside #{ CUT_OURS.size } retired fork entries).
-
-| # | Language | Tier | Added by | Note |
-|---|---|---|---|---|
+| # | Language | Origin | Note |
+|---|---|---|---|
 #{ rows.join("\n") }
 
 This file is generated by `src/LANGUAGES.md.gen.rb`.

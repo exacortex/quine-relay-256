@@ -88,6 +88,13 @@ GenPrologue = <<-'END'.lines.map {|l| l.strip }.join
       s.gsub(n,(j%256).chr)
     },v]
   };
+  b91q=->s{
+    al=(33..126).reject{|c|c==34||c==39||c==92}.map(&:chr);
+    o=+"";b=n=0;
+    s.each_byte{|x|b|=x<<n;n+=8;if n>13;v=b&8191;if v>88;b>>=13;n-=13;else;v=b&16383;b>>=14;n-=14;end;o<<al[v%91]<<al[v/91];end};
+    if n>0;o<<al[b%91];o<<al[b/91] if n>7||b>90;end;
+    o
+  };
 END
 class AspectCpp < CodeGen
   Name = "AspectC++"
@@ -272,7 +279,7 @@ class Zig < CodeGen
   File = "QR.zig"
   Cmd = "zig run QR.zig > OUTFILE"
   Apt = [nil]
-  Code = %q((require"zlib";%(const s=@import("std");pub fn main()!void{const b="#{[Object.const_get("Zlib")::Deflate.deflate(PREV,9)].pack("m0")}";const d=try s.heap.page_allocator.alloc(u8,try s.base64.standard.Decoder.calcSizeForSlice(b));try s.base64.standard.Decoder.decode(d,b);var f=s.io.fixedBufferStream(d);var w=s.io.bufferedWriter(s.io.getStdOut().writer());try s.compress.zlib.decompress(f.reader(),w.writer());try w.flush();})))
+  Code = %q((require"zlib";%(const s=@import("std");pub fn main()!void{const b="#{b91q[Object.const_get("Zlib")::Deflate.deflate(PREV,9)]}";var t:[128]u8=undefined;var k:u8=0;for(33..127)|i|{if(i!=34 and i!=39 and i!=92){t[i]=k;k+=1;}}var d=try s.ArrayList(u8).initCapacity(s.heap.page_allocator,b.len);var v:i32=-1;var a:u32=0;var n:u5=0;for(b)|x|{const c:u32=t[x];if(v<0){v=@intCast(c);}else{v+=@intCast(c*91);a|=@as(u32,@intCast(v))<<n;n+=if((v&8191)>88)13 else 14;while(true){try d.append(@truncate(a));a>>=8;n-=8;if(n<=7)break;}v=-1;}}if(v>=0)try d.append(@truncate(a|(@as(u32,@intCast(v))<<n)));var f=s.io.fixedBufferStream(d.items);var w=s.io.bufferedWriter(s.io.getStdOut().writer());try s.compress.zlib.decompress(f.reader(),w.writer());try w.flush();})))
 end
 
 class Z80Asm < CodeGen
@@ -376,23 +383,58 @@ class Wren < CodeGen
   end
 end
 
-class VisualBasic_WebAssemblyText_Whitespace < CodeGen
-  Name = ["Visual Basic", "WebAssembly (Text format)", "Whitespace"]
-  File = ["qr_vb/QR.vb", "QR.wat", "QR.ws"]
+class VisualBasic_WebAssemblyBinary_WebAssemblyText_Whitespace < CodeGen
+  Name = ["Visual Basic", "WebAssembly (Binary format)", "WebAssembly (Text format)", "Whitespace"]
+  File = ["qr_vb/QR.vb", "QR.wasm", "QR.wat", "QR.ws"]
   Cmd = [
     "DOTNET_NOLOGO=1 dotnet run --project qr_vb > OUTFILE",
+    "$(WASI_RUNTIME) QR.wasm > OUTFILE",
     "wat2wasm QR.wat -o QR.wat.wasm && $(WASI_RUNTIME) QR.wat.wasm > OUTFILE",
     "ruby vendor/whitespace.rb QR.ws > OUTFILE"
   ]
-  Apt = ["dotnet-sdk-10.0", "wabt", nil]
+  Apt = ["dotnet-sdk-10.0", "wabt", "wabt", nil]
   def code
-    <<-'END'.lines.map {|l| l.strip }.join
-      %(Module QR\nSub main()\nDim b=CStr(Chr(92)),q=CStr(Chr(34)),s="#{s=PREV;d[s].gsub N,'"& VbLf &"'}"\n#$C("(module(import ""wasi_snapshot_preview1"" ""fd_write""(func $w(param i32 i32 i32 i32)(result i32)))(memory #{(s.bytesize+4200)/65536+1})(export ""memory""(memory 0))(data(i32.const 0)"+q+b+"10"+b+"00"+b+"00"+b+"00"+q+")(data(i32.const 4112)"+q+s.Replace(b,b+b).Replace(q,b+q).Replace(VbLf,b+"n")+q+")(global $p(mut i32)(i32.const 0))(func $f i32.const 4 global.get $p i32.store i32.const 1 i32.const 0 i32.const 1 i32.const 8 call $w drop i32.const 0 global.set $p)(func $o(param i32)global.get $p i32.const 16 i32.add local.get 0 i32.store8 global.get $p i32.const 1 i32.add global.set $p global.get $p i32.const 4096 i32.eq(if(then call $f)))(func(export ""_start"")(local $i i32)(local $b i32)i32.const 4112 local.set $i(loop i32.const 32 call $o i32.const 32 call $o i32.const 32 call $o i32.const 8 local.set $b(loop i32.const 32 local.get $i i32.load8_u local.get $b i32.const 1 i32.sub local.tee $b i32.shr_u i32.const 1 i32.and i32.const 23 i32.mul i32.sub call $o local.get $b br_if 0)i32.const 10 call $o i32.const 9 call $o i32.const 10 call $o i32.const 32 call $o i32.const 32 call $o local.get $i i32.const 1 i32.add local.tee $i i32.load8_u br_if 0)i32.const 10 call $o i32.const 10 call $o i32.const 10 call $o call $f))")\nEnd Sub\nEnd Module)
+    r = <<-'END'.lines.map {|l| l.strip }.join(?:)
+      %(Module QR\nSub main()\nDim c,n:Dim s=#{C[0]}.openstandardoutput(),t={@@TBL@@}
+          For Each d in"@@DATA1@@}@@DATA2@@~@@DATA3@@$@@DATA4@@"
+            c=Asc(d)
+            If c=36
+              For c=0To 11
+                #$W(If(c mod 3,Asc(#{s=PREV;s.size*16+3}.ToString("x8")(7-c*2\\3 xor 1)),92))
+              Next
+            Else
+              n=(c>124)*(@@CONST1@@*c-#{s.size+@@CONST2@@})
+              Do While n>127
+                #$W(n mod 128+128)
+                n\\=128
+              Loop
+              #$W(If(c<125,If((c-1)\\7-8,c-66*(c>65)*(c<91),t(c-57)),n))
+            End If
+          Next
+          For Each c in"#{d[s].gsub N,'"& VbLf &"'}"
+            #$W(Asc(c))
+          Next
+        End Sub
+      end module)
     END
+    tbl, data1, data2, data3, data4 = ::File.read(::File.join(__dir__, "wasm-tmpl.dat")).lines.map {|s| s.chomp }
+    raise unless data3[0] == '('
+    r.gsub(/@@\w+@@/, {
+      "@@TBL@@" => tbl,
+      "@@DATA1@@" => data1.gsub("\\"){"\\\\"},
+      "@@DATA2@@" => data2.gsub("\\"){"\\\\"},
+      "@@DATA3@@" => '#{40.chr}'+data3[1..].gsub("\\"){"\\\\"},
+      "@@DATA4@@" => data4.gsub("\\"){"\\\\"},
+      "@@CONST1@@" => "8",
+      "@@CONST2@@" => (2 + (data3.size + data4.size + 18) + 125 * 8).to_s
+    })
   end
 
   def check(prev)
     raise if prev.empty? || prev =~ /[^\n\x20-\x7e]/
+    data3, data4 = ::File.read(::File.join(__dir__, "wasm-tmpl.dat")).lines.values_at(3, 4)
+    k = data3.chomp.size + data4.chomp.size + 18
+    raise unless (2**14...2**21).cover?(k + prev.bytesize)
   end
 end
 
@@ -487,36 +529,24 @@ class Uxntal < CodeGen
   File = "QR.tal"
   Cmd = "uxnasm QR.tal QR.rom && uxncli QR.rom > OUTFILE && rm -f QR.rom"
   Apt = [nil]
-  Code = %q((b18s,b18v=rp[PREV,[*127..255,*1..9,*11..31]];b18d=b18v.scan(/../m).reverse.insert(138,"\0\0")*"";"|0100 ;s @loop LDAk DUP #00 EQU ;done JCN2 ;emit JSR2 INC2 ;loop JMP2 @done POP POP2 #800f DEO BRK @emit DUP #0a EQU ;out JCN2 DUP #20 LTH ;lo JCN2 DUP #7f LTH ;out JCN2 #7f SUB ;go JMP2 @lo #80 ADD @go #00 SWP DUP2 ADD2 ;dict ADD2 LDAk ;emit JSR2 INC2 LDA ;emit JMP2 @out #18 DEO JMP2r\n@dict\n"+b18d.unpack1("H*").scan(/../).each_slice(120).map{|b18a|b18a*" "}*N+"\n@s\n"+b18s.unpack1("H*").scan(/../).each_slice(120).map{|b18a|b18a*" "}*N+" 00\n"))
+  Code = %q((uk="base64.decode"+40.chr+"'";ua,ub=PREV.split(uk,2);uc,ud=ub.split("'",2);ur=uc.unpack1("m0");un=(ur.bytesize/3)*3;uh=->(s){s.unpack1("H*").scan(/../).each_slice(120).map{|a|a*" "}*N};"|0100 ;pre ;p JSR2 ;z @l DUP2 ;ze EQU2 ;d JCN2 LDAk #00 STZ INC2 LDAk #01 STZ INC2 LDAk #02 STZ INC2 #00 LDZ #02 SFT ;e JSR2 #00 LDZ #03 AND #40 SFT #01 LDZ #04 SFT ORA ;e JSR2 #01 LDZ #0f AND #20 SFT #02 LDZ #06 SFT ORA ;e JSR2 #02 LDZ #3f AND ;e JSR2 ;l JMP2 @d POP2 ;suf ;p JSR2 #800f DEO BRK @e #00 SWP ;t ADD2 LDA #18 DEO JMP2r @p LDAk DUP #00 EQU ,&q JCN #18 DEO INC2 ,p JMP &q POP POP2 JMP2r\n@t "+uh[[*"A".."Z",*"a".."z",*"0".."9","+","/"]*""]+"\n@pre\n"+uh[ua+uk+"\0"]+"\n@z\n"+(un>0 ? uh[ur.byteslice(0,un)]+N : "")+"@ze\n@suf\n"+uh[uc[(un/3)*4..]+"'"+ud+"\0"]+"\n"))
   def check(prev)
-    raise "Uxntal: unsupported control or non-ASCII byte" if prev =~ /[^\n\x20-\x7e]/
+    raise "Uxntal: non-printable byte" if prev =~ /[^\n\x20-\x7e]/
+    raise "Uxntal: missing base64.decode('...')" unless prev.include?("base64.decode('") && prev.split("base64.decode('", 2)[1].include?("'")
   end
 end
 
-class Underload_Unlambda < CodeGen
-  Name = ["Underload", "Unlambda"]
-  File = ["QR.ul", "QR.unl"]
+class Umka_Unlambda < CodeGen
+  Name = ["Umka", "Unlambda"]
+  File = ["QR.um", "QR.unl"]
   Cmd = [
-    "ruby vendor/underload.rb QR.ul > OUTFILE",
+    "umka QR.um > OUTFILE",
     "ruby vendor/unlambda.rb QR.unl > OUTFILE",
   ]
   Apt = [nil, nil]
-  Code = %q((u11s=(PREV);u11n=u11s.size;u11b=u11n.bit_length;"(\x60)"+(0...u11b).map{|u11i|(((u11n>>u11i)&1)==1 ? ":S" : "")+(u11i+1<u11b ? ":*" : "")}*""+"!("+u11s.gsub(/./m){|u11c|u11c==N ? "r" : "."+u11c}+"k)S"))
-
+  Code = %q(%(fn main(){s:="#{e[PREV]}";n:=len(s);for i:=0;i<n;i++{printf("\x60")};for i:=0;i<n;i++{if s[i]=='#{B}n'{printf("r")}else{printf(".%c",s[i])}};printf("k")}))
   def check(prev)
-    raise "Underload > Unlambda: unbalanced parens" unless prev.match?(PARENS)
-    raise "Underload > Unlambda: non-ASCII or CR" if prev.include?("\r") || !prev.ascii_only?
-  end
-end
-
-class Umka < CodeGen
-  Name = "Umka"
-  File = "QR.um"
-  Cmd = "umka QR.um > OUTFILE"
-  Apt = [nil]                # source build v1.5.7, see src/extra-installs/
-  Code = %q(%(fn main(){printf("#{d[e[PREV],"%"]}")}))
-  def check(prev)
-    raise "Umka: non-printable byte" if prev =~ /[^\n\x20-\x7e]/
+    raise "Umka_Unlambda: non-printable byte" if prev =~ /[^\n\x20-\x7e]/
   end
 end
 
@@ -655,14 +685,6 @@ class Squirrel < CodeGen
   Code = %q("print"+E[PREV])
 end
 
-class SQL < CodeGen
-  Name = "SQL (SQLite)"
-  File = "QR.sql"
-  Cmd = "sqlite3 < QR.sql > OUTFILE"
-  Apt = "sqlite3"
-  Code = %q(%(SELECT'#{d[PREV,?']}';))
-end
-
 class SNOBOL4 < CodeGen
   Name = "SNOBOL4"
   File = "QR.sno"
@@ -672,14 +694,6 @@ class SNOBOL4 < CodeGen
   def check(prev)
     raise "SNOBOL4: non-ASCII or CR" if !prev.ascii_only? || prev.include?("\r")
   end
-end
-
-class Slashes < CodeGen
-  Name = "///"
-  File = "QR.slashes"
-  Cmd = "ruby vendor/slashes.rb QR.slashes > OUTFILE"
-  Apt = [nil]
-  Code = %q(((PREV).gsub(/[\\\\\x2f]/){B+$&}))
 end
 
 class SLang < CodeGen
@@ -1185,12 +1199,24 @@ class PARIGP < CodeGen
   Code = %q("print#{E[PREV]};quit")
 end
 
-class Odin < CodeGen
-  Name = "Odin"
-  File = "QR.odin"
-  Cmd = "odin run QR.odin -file > OUTFILE"
-  Apt = [nil]
-  Code = %q(%(package main;import"core:fmt";main::proc(){fmt.print("#{e[PREV]}")}))
+class Odin_Ook < CodeGen
+  Name = ["Odin", "Ook!"]
+  File = ["QR.odin", "QR.ook"]
+  Cmd = [
+    "odin run QR.odin -file > OUTFILE",
+    "ruby vendor/ook-to-bf.rb QR.ook QR.ook.bf && ruby vendor/bf.rb QR.ook.bf > OUTFILE",
+  ]
+  Apt = [nil, nil]
+  def code
+    bf_to_ook = ->(bf) {
+      mp = { '+' => 'Ook. Ook. ', '-' => 'Ook! Ook! ', '>' => 'Ook. Ook? ', '<' => 'Ook? Ook. ',
+             '.' => 'Ook! Ook. ', ',' => 'Ook. Ook! ', '[' => 'Ook! Ook? ', ']' => 'Ook? Ook! ' }
+      bf.chars.map { |ch| mp[ch] }.join
+    }
+    init_ook = bf_to_ook["++++++++++[>++>++++>+++++>+++++++>++++++++>++++++++++>+++++++++++>++++++++++++<<<<<<<<-]>"]
+    %Q(%(package main\nimport "core:os"\nw::proc(b:[]u8,k:^int,t:string){for i:=0;i<len(t);i+=1{b[k^]=t[i];k^+=1;if k^>=65000{os.write(os.stdout,b[:k^]);k^=0}}}\nmain::proc(){s:="\#{e[PREV]}";b:=make([]u8,65536);k:=0;c:=[8]int{20,40,50,70,80,100,110,120};p:=0;w(b,&k,"#{init_ook}");for i:=0;i<len(s);i+=1{v:=int(s[i]);bj:=0;bc:=999;for j:=0;j<8;j+=1{d:=v-c[j];if d<0{d=-d};m:=j-p;if m<0{m=-m};if d+m<bc{bc=d+m;bj=j}};for p<bj{w(b,&k,"Ook. Ook? ");p+=1};for p>bj{w(b,&k,"Ook? Ook. ");p-=1};for c[p]<v{w(b,&k,"Ook. Ook. ");c[p]+=1};for c[p]>v{w(b,&k,"Ook! Ook! ");c[p]-=1};w(b,&k,"Ook! Ook. ")};if k>0{os.write(os.stdout,b[:k])}}))
+  end
+
   def check(prev)
     raise if prev.bytesize > 1_000_000 || prev.include?("\0") || !prev.ascii_only?
   end
@@ -1905,22 +1931,80 @@ class JuliaLang < CodeGen
   File = "QR.jl"
   Cmd = "julia QR.jl > OUTFILE"
   Apt = [nil]   # src/extra-installs/
-  Code = %q((p1jm={?%=>"%0",B=>"%1",?"=>"%2",?$=>"%5",N=>"%4"};p1js=%("#{(PREV).gsub(Regexp.union(*p1jm.keys),p1jm)}");[[1,92],[2,34],[5,36],[4,10],[0,37]].each{|p1ji,p1jc|p1js=%[r(#{p1js},"%#{p1ji}",#{p1jc})]};%[r(s,p,c)=replace(s,p=>string(Char(c)));print(#{p1js})]))
+  def code
+    <<-'END'.lines.map {|l| l.strip }.join
+      (
+        p1js=PREV;
+        p1jn=p1js.bytesize;
+        p1je=->(x){(x<54 ? x+37 : x+40).chr};
+        p1jh=Array.new(256,-1);
+        p1jp=Array.new(p1jn,-1);
+        p1jb=+"";
+        p1jl=+"";
+        p1jf=->{
+          while p1jb.bytesize>0;
+            p1ju=p1jb.byteslice(0,20);
+            p1jb=p1jb.byteslice(20,p1jb.bytesize)||+"";
+            p1jl<<p1je[p1ju.bytesize-1]<<p1ju;
+          end
+        };
+        p1jsk=0;
+        p1jn.times{|p1ji|
+          p1jc=p1js.getbyte(p1ji);
+          if p1jsk>0;
+            p1jsk-=1;
+          else;
+            p1jbk=0;p1jbj=0;
+            if p1jc!=91&&p1jc!=93;
+              p1jj=p1jh[p1jc];
+              while p1jj>=0&&(p1ji-p1jj)<=5829;
+                p1jk=0;
+                while p1jk<90&&p1ji+p1jk<p1jn&&(p1jy=p1js.getbyte(p1ji+p1jk))!=91&&p1jy!=93&&p1jy==p1js.getbyte(p1jj+p1jk);
+                  p1jk+=1;
+                end;
+                if p1jk>p1jbk;
+                  p1jbk=p1jk;p1jbj=p1jj;
+                  break if p1jk==90;
+                end;
+                p1jj=p1jp[p1jj];
+              end;
+            end;
+            if p1jbk>=4;
+              p1jf.call;
+              p1jd=p1ji-p1jbj-1;
+              p1jl<<p1je[20+p1jd/87]<<p1je[p1jd%87]<<p1je[p1jbk-4];
+              p1jsk=p1jbk-1;
+            else;
+              p1jb<<p1jc;
+            end;
+          end;
+          p1jp[p1ji]=p1jh[p1jc];
+          p1jh[p1jc]=p1ji;
+        };
+        p1jf.call;
+        p1jq=e[p1jl].gsub("$",B+"$");
+        %(function q();p=codeunits("#{p1jq}");o=UInt8[];i=1;n=length(p);g(k)=(x=Int(p[k]);x-(x>93 ? 40 : 37));while i<=n;c=g(i);if c<20;m=c+1;append!(o,@view p[i+1:i+m]);i+=m+1;else;d=(c-20)*87+g(i+1)+1;m=g(i+2)+4;for _ in 1:m;push!(o,o[end-d+1]);end;i+=3;end;end;write(stdout,o);end;q()\n)
+      )
+    END
+  end
   def check(prev)
-    raise "Julia: non-ASCII" unless prev.ascii_only?
+    raise "Julia: non-printable or non-ASCII byte" if prev =~ /[^\n\x20-\x7e]/
   end
 end
 
-class JavaScript_Jq < CodeGen
-  File = ["QR.js", "QR.jq"]
+class JavaScript_Jq_JSFuck < CodeGen
+  Name = ["JavaScript", "Jq", "JSFuck"]
+  File = ["QR.js", "QR.jq", "QR.jsfuck"]
   Cmd = [
     "$(JAVASCRIPT) QR.js > OUTFILE",
-    "jq -j -n -f QR.jq > OUTFILE",
+    "jq -r -n -f QR.jq > OUTFILE",
+    "!$(JAVASCRIPT) --stack_size=100000 QR.jsfuck > OUTFILE",
   ]
-  Apt = ["nodejs", "jq"]
-  Code = %q("console.log(JSON.stringify(\""+e[PREV].gsub(/[\x00-\x1f\x7f]/){B+"x%02x"%$&.ord}+"\"))")
+  Apt = ["nodejs", "jq", "nodejs"]
+  Code = %q(%(P={0:'[+[]]'};for(R of('![]@!![]@'+(A="[]['at']")+"@([]+[])['link']()@(+('11e20')+[])['split']([])@(+[])"+(C="['constructor']")).split('@'))for(E in D=eval(G='('+R+'+[])'))P[D[E]]||=G+"['"+E+"']";for(G='[',B=0;++B<36;)P[D=B.toString(36)]=B<10?(G+='+!+[]')+']':P[D]||"(+('"+B+"'))['to'+([]+[])"+C+"['name']]('36')";E=(s)=>{for(let r=8;r--;)s=s.replace(/'(.*?)'/g,(_,d)=>[...d].map(x=>P[x]).join('+'));return s};PE={};for(k of Object.keys(P))PE[k]=E(P[k]);bt=(a,l,r)=>{if(r-l<2)return a[l];let m=(l+r)>>1;return'('+bt(a,l,m)+'+'+bt(a,m,r)+')'};H='0123456789abcdef';T=[];for(c of'console.log(unescape("')T.push(PE[c]);for(c of"#{e[PREV.chomp]}"){v=c.charCodeAt(0);h1=PE[H[v>>4]];h2=PE[H[v&15]];if(v!=37&&v!=34&&v!=92&&v!=102&&PE[c]&&PE[c].length<5+h1.length+h2.length)T.push(PE[c]);else T.push('![]',h1,h2)}for(c of'".replace(/false/g,escape(" ")[0])))')T.push(PE[c]);console.log(JSON.stringify(E(A+C)+'('+bt(T,0,T.length)+')()'))\n))
   def check(prev)
-    raise "JavaScript/Jq: not UTF-8" unless prev.dup.force_encoding("UTF-8").valid_encoding?
+    raise "JavaScript_Jq_JSFuck: must end with single newline" unless prev.end_with?("\n") && !prev.chomp.include?("\n")
+    raise "JavaScript_Jq_JSFuck: non-printable ASCII" if prev.chomp =~ /[^\x20-\x7e]/
   end
 end
 
@@ -1988,7 +2072,7 @@ class IonShell < CodeGen
   File = "QR.ion"
   Cmd = "ion QR.ion > OUTFILE"
   Apt = [nil]
-  Code = %q(%(echo -n '#{(PREV).gsub(?',%('"'"'))}'))
+  Code = %q(%(echo -n '#{(PREV).gsub(?',%('"'"')).gsub(/([@$])([\x28\x7b])/){$1+"''"+$2}}'))
   def check(prev)
     raise if prev.include?("\0") || prev.include?("\r") || prev.start_with?("-")
   end
@@ -2105,23 +2189,15 @@ class Hare < CodeGen
   end
 end
 
-class GeneratorScriptingLanguage < CodeGen
-  Name = "GSL (Generator Scripting Language)"
-  File = "QR.gsl"
-  Cmd = "gsl -q QR.gsl > OUTFILE"
-  Apt = "generator-scripting-language"
-  Code = %q(".template 1"+N+".bs = string.substr(\""+B+B+"\", 0, 1)"+N+(PREV).split(N,-1).map{|p4gl|p4gc=p4gl.scan(/.{1,200}/).flat_map{|p4g|p4g.split(/(#{B+B}|"|\$)/).reject(&:empty?).map{|p4t|p4t==B ? "bs" : p4t==?" ? "'\"'" : "\""+p4t+"\""}};p4gc.empty? ? ".s = \"\""+N+"$(s:no)" : ".s = "+p4gc[0]+(p4gc[1..].map{|p4x|N+".s += "+p4x}*"")+N+"$(s:no)"}*N+N+".endtemplate")
-  def check(prev)
-    raise "GSL: CR or NUL" if prev.include?("\r") || prev.include?("\0")
-    raise "GSL: trailing whitespace on a line (gsl strips trailing whitespace)" if prev =~ /[ \t]$/
-  end
-end
-
-class Groovy < CodeGen
-  File = "QR.groovy"
-  Cmd = "groovy QR.groovy > OUTFILE"
-  Apt = "groovy"
-  Code = %q((require"zlib";%(new java.util.zip.InflaterInputStream(new java.io.ByteArrayInputStream(java.util.Base64.decoder.decode(#{N}#{[Object.const_get("Zlib")::Deflate.deflate(PREV,9)].pack("m0").scan(/.{1,1000}/).map{|p15g|"'#{p15g}'"}*("+"+N)}#{N}))).transferTo(System.out)#{N})))
+class Groovy_Gzip < CodeGen
+  Name = ["Groovy", "Gzip"]
+  File = ["QR.groovy", "QR.gz"]
+  Cmd = [
+    "groovy QR.groovy > OUTFILE",
+    "gzip -cd QR.gz > OUTFILE",
+  ]
+  Apt = ["groovy", "gzip"]
+  Code = %q((require"zlib";%(new java.util.zip.GZIPOutputStream(System.out).withCloseable{z->new java.util.zip.InflaterInputStream(new java.io.ByteArrayInputStream(java.util.Base64.decoder.decode(#{N}#{[Object.const_get("Zlib")::Deflate.deflate(PREV,9)].pack("m0").scan(/.{1,1000}/).map{|p15g|"'#{p15g}'"}*("+"+N)}#{N}))).transferTo(z)}#{N})))
 end
 
 class GriLang < CodeGen
@@ -2300,6 +2376,18 @@ class Glass < CodeGen
   end
 end
 
+class GeneratorScriptingLanguage < CodeGen
+  Name = "Generator Scripting Language"
+  File = "QR.gsl"
+  Cmd = "gsl -q QR.gsl > OUTFILE"
+  Apt = "generator-scripting-language"
+  Code = %q(".template 1"+N+".bs = string.substr(\""+B+B+"\", 0, 1)"+N+(PREV).split(N,-1).map{|p4gl|p4gc=p4gl.scan(/.{1,200}/).flat_map{|p4g|p4g.split(/(#{B+B}|"|\$)/).reject(&:empty?).map{|p4t|p4t==B ? "bs" : p4t==?" ? "'\"'" : "\""+p4t+"\""}};p4gc.empty? ? ".s = \"\""+N+"$(s:no)" : ".s = "+p4gc[0]+(p4gc[1..].map{|p4x|N+".s += "+p4x}*"")+N+"$(s:no)"}*N+N+".endtemplate")
+  def check(prev)
+    raise "GSL: CR or NUL" if prev.include?("\r") || prev.include?("\0")
+    raise "GSL: trailing whitespace on a line (gsl strips trailing whitespace)" if prev =~ /[ \t]$/
+  end
+end
+
 class GEL < CodeGen
   Name = "GEL (Genius)"
   File = "QR.gel"
@@ -2348,16 +2436,18 @@ class Frege < CodeGen
   end
 end
 
-class Forth_Fortran90 < CodeGen
-  File = ["QR.fs", "QR.f90"]
+class Forth_FORTRAN77_Fortran90 < CodeGen
+  Name = ["Forth", "FORTRAN77", "Fortran90"]
+  File = ["QR.fs", "QR.f", "QR.f90"]
   Cmd = [
     "gforth QR.fs > OUTFILE",
+    "gfortran -o QR QR.f && ./QR > OUTFILE",
     "gfortran -o QR QR.f90 && ./QR > OUTFILE",
   ]
-  Apt = ["gforth", "gfortran"]
-  Code = %q("VARIABLE Q1 VARIABLE Q2 VARIABLE Q3\n: HS .\" subroutine s\" Q2 @ 0 .R CR 0 Q1 ! ;\n: HE .\" end\" CR 1 Q2 +! ;\n: BK Q1 @ 400 >= IF HE HS THEN 1 Q1 +! ;\n: FL Q3 @ IF .\" '\x29\" CR 0 Q3 ! THEN ;\n: CH FL BK .\" call c\x28\" 0 .R .\" \x29\" CR ;\n: PR DUP 32 < OVER 125 > OR OVER 34 = OR OVER 39 = OR OVER 92 = OR IF CH ELSE Q3 @ 38 >= IF FL THEN Q3 @ 0= IF BK .\" call p\x28'\" THEN EMIT 1 Q3 +! THEN ;\n: GO BOUNDS ?DO I C@ PR LOOP FL ;\n: FIN HE Q2 @ 0 ?DO .\" call s\" I 0 .R CR LOOP .\" end\" CR .\" subroutine p\x28s\x29\" CR .\" character\x28*\x29s\" CR .\" write\x28*,'\x28a\x29',advance='no'\x29s\" CR .\" end\" CR .\" subroutine c\x28n\x29\" CR .\" write\x28*,'\x28a\x29',advance='no'\x29char\x28n\x29\" CR .\" end\" CR BYE ;\nHS\n"+(PREV).scan(/.{1,4000}/m).map{|p6c|"S\x5c\" #{e[p6c]}\" GO\n"}*""+"FIN\n")
+  Apt = ["gforth", "gfortran", "gfortran"]
+  Code = %q("VARIABLE Q1 VARIABLE Q2 VARIABLE Q3\n: HS .\"       subroutine f\" Q2 @ 0 .R CR .\"       print '(a)','subroutine s\" Q2 @ 0 .R .\" '\" CR 0 Q1 ! ;\n: HE .\"       print '(a)','end'\" CR .\"       end\" CR 1 Q2 +! ;\n: BK Q1 @ 400 >= IF HE HS THEN 1 Q1 +! ;\n: FL Q3 @ IF .\" '\x29\" CR 0 Q3 ! THEN ;\n: CH FL BK .\"       call c\x28\" 0 .R .\" \x29\" CR ;\n: PR DUP 32 < OVER 125 > OR OVER 34 = OR OVER 39 = OR OVER 92 = OR IF CH ELSE Q3 @ 44 >= IF FL THEN Q3 @ 0= IF BK .\"       call p\x28'\" THEN EMIT 1 Q3 +! THEN ;\n: GO BOUNDS ?DO I C@ PR LOOP FL ;\n: FIN HE .\"       program q\" CR Q2 @ 0 ?DO .\"       call f\" I 0 .R CR LOOP .\"       do 10 i=0,\" Q2 @ 1 - 0 .R CR .\"       if\x28i.lt.10\x29write\x28*,'\x28a,i1\x29'\x29'call s',i\" CR .\"       if\x28i.ge.10.and.i.lt.100\x29write\x28*,'\x28a,i2\x29'\x29'call s',i\" CR .\"       if\x28i.ge.100\x29write\x28*,'\x28a,i3\x29'\x29'call s',i\" CR .\" 10    continue\" CR .\"       print '\x28a\x29','end'\" CR .\"       print '\x28a\x29','subroutine p\x28s\x29'\" CR .\"       print '\x28a\x29','character\x28*\x29s'\" CR .\"       print '\x28a\x29','write\x28*,''\x28a\x29'',advance=''no''\x29s'\" CR .\"       print '\x28a\x29','end'\" CR .\"       print '\x28a\x29','subroutine c\x28n\x29'\" CR .\"       print '\x28a\x29','write\x28*,''\x28a\x29'',advance=''no''\x29char\x28n\x29'\" CR .\"       print '\x28a\x29','end'\" CR .\"       end\" CR .\"       subroutine p\x28s\x29\" CR .\"       character*\x28*\x29 s\" CR .\"       write\x28*,'\x28a\x29'\x29 'call p\x28'''//s//'''\x29'\" CR .\"       end\" CR .\"       subroutine c\x28n\x29\" CR .\"       if\x28n.lt.10\x29write\x28*,'\x28a,i1,a\x29'\x29 'call c\x28',n,'\x29'\" CR .\"       if\x28n.ge.10.and.n.lt.100\x29write\x28*,'\x28a,i2,a\x29'\x29 'call c\x28',n,'\x29'\" CR .\"       if\x28n.ge.100\x29write\x28*,'\x28a,i3,a\x29'\x29 'call c\x28',n,'\x29'\" CR .\"       end\" CR BYE ;\nHS\n"+(PREV).scan(/.{1,4000}/m).map{|p6c|"S\x5c\" #{e[p6c]}\" GO\n"}*""+"FIN\n")
   def check(prev)
-    raise "Forth_Fortran90: non-ASCII or CR" if prev.include?("\r") || !prev.ascii_only?
+    raise "Forth_FORTRAN77_Fortran90: non-ASCII or CR" if prev.include?("\r") || !prev.ascii_only?
   end
 end
 
@@ -2493,17 +2583,14 @@ class Erlang < CodeGen
   end
 end
 
-class EmacsLisp_Emmental < CodeGen
-  Name = ["Emacs Lisp", "Emmental"]
-  File = ["QR.el", "QR.emmental"]
-  Cmd = [
-    "emacs -Q --script QR.el > OUTFILE",
-    "ruby vendor/emmental.rb QR.emmental > OUTFILE"
-  ]
-  Apt = ["emacs-nox", nil]
-  Code = %q(%((let ((s "#{e[PREV]}") (b "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz :'+/=-") (m (make-vector 128 nil)) (o nil)) (dotimes (i (length b)) (let* ((x (aref b i)) (d (format "#%d." x))) (push (concat ";" (mapconcat (lambda (k) (format "#%d" k)) d "") (format "#%d!" x)) o) (aset m x (char-to-string x)))) (dolist (p '((64 . 34) (36 . 10) (38 . 48) (42 . 49) (94 . 50) (95 . 51) (124 . 52))) (let* ((y (car p)) (t0 (cdr p)) (d (format "#%d." t0))) (push (concat ";" (mapconcat (lambda (k) (format "#%d" k)) d "") (format "#%d!" y)) o) (aset m t0 (char-to-string y)))) (princ (apply #'concat (nreverse o))) (let ((n (length s)) (i 0) (buf nil)) (while (< i n) (let ((x (aref s i))) (push (or (aref m x) (format "#%d." x)) buf)) (setq i (1+ i)) (when (= (% i 4000) 0) (princ (apply #'concat (nreverse buf))) (setq buf nil))) (when buf (princ (apply #'concat (nreverse buf))))) (terpri))))
+class EmacsLisp < CodeGen
+  Name = "Emacs Lisp"
+  File = "QR.el"
+  Cmd = "emacs -Q --script QR.el > OUTFILE"
+  Apt = "emacs-nox"
+  Code = %q(%((princ "#{e[PREV]}")))
   def check(prev)
-    raise "EmacsLisp_Emmental: non-ASCII or NUL" if !prev.ascii_only? || prev.include?("\0")
+    raise "EmacsLisp: non-ASCII or NUL" if !prev.ascii_only? || prev.include?("\0")
   end
 end
 
@@ -2861,14 +2948,14 @@ class BefungeLang < CodeGen
   end
 end
 
-class BeanShell_Beatnik < CodeGen
-  Name = ["BeanShell", "Beatnik"]
-  File = ["QR.bsh", "QR.beatnik"]
-  Cmd = ["bsh QR.bsh > OUTFILE", "ruby vendor/beatnik.rb QR.beatnik > OUTFILE"]
-  Apt = ["bsh", nil]
-  Code = %q(%(String e="#{"E"*128}";f(s){for(i=0;i<s.length();i++){System.out.print("K "+e.substring(0,s.charAt(i))+" JA ");}}#{(PREV).scan(/.{1,4000}/m).map{|p12b|"f#{E[p12b]};"}*""}System.out.print("JACK");#{N}))
+class BeanShell < CodeGen
+  Name = "BeanShell"
+  File = "QR.bsh"
+  Cmd = "bsh QR.bsh > OUTFILE"
+  Apt = "bsh"
+  Code = %q((PREV).scan(/.{1,15000}/m).map{|p12b|"System.out.print#{E[p12b]};"}*"")
   def check(prev)
-    raise "BeanShell_Beatnik: NUL or non-ASCII" if prev.include?("\0") || !prev.ascii_only?
+    raise "BeanShell: NUL or non-ASCII" if prev.include?("\0") || !prev.ascii_only?
   end
 end
 

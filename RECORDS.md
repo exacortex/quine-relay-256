@@ -1,32 +1,35 @@
-# Quine Relay Records
+# Quine Relay 256 — Design & Counting Notes
 
-These are the counting rules and verified comparisons for [exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256).
+These notes document how [exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256) relates to Yusuke Endoh's upstream [`mame/quine-relay`](https://github.com/mame/quine-relay) without changing or second-guessing upstream's own standard.
 
-## Leaderboard
+## Overview: Upstream Base + Fork Additions (128 + 128 = 256)
 
-| Relay | Strict Distinct *(1:1 rule)* | Relay Steps *(Endoh's standard)* | Order | Verified | Date |
-|---|---:|---:|---|---|---|
-| **[exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256)** *(this repo)* | **256** | **256** | **Strict A–Z** (`AspectJ -> ... -> AspectC++ -> AspectJ`) | From-scratch `ubuntu:26.04` build (`80.2 min`, `a8ed91e7...`) + offline `--network=none` non-root `USER qr` default `CMD` lap (`32.1 min`, `QR.aj` 50,342 B `65c6b3ca...` == `QR2.aj`, **256/256** `SHA256SUMS`, `U20_PARITY=OK`, 0 critical / 248 clean / 8 disclosed inherited borderlines; [proof](proof/)) | 2026-11-22 |
-| [`mame/quine-relay`](https://github.com/mame/quine-relay) *(original upstream, 2013–2026)* | 123 *(under 1:1 rule)* | **128** *(Endoh counts all 128 by his own test)* | Custom (`Ruby -> ...`) | mame's CI, Ubuntu 26.04 (`QR.rb` 13,664 B) | 2026 |
+| Relay | Steps | Composition | Order | Verification |
+|---|---:|---|---|---|
+| [`mame/quine-relay`](https://github.com/mame/quine-relay) *(upstream original, 2013–2026)* | **128** | All 128 steps of Endoh's Ubuntu 26.04 relay | Hand-tuned (`Ruby -> ... -> Ruby`) | Upstream CI, Ubuntu 26.04 (`QR.rb` 13,664 B) |
+| **[exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256)** *(this fork, v3 "The Endoh Stamp")* | **256** | **128** upstream Endoh steps (`100%` preserved) + **128** standalone fork additions | **Strict A–Z** (`AspectJ -> Asymptote -> ... -> Zsh -> 6502 asm -> A+ -> ... -> AspectC++ -> AspectJ`) | Offline `--network=none` non-root `USER qr` lap (`39.9 min` / `2,396.8s`, `QR.aj` 54,047 B `sha256: ed0fbe68...` == `QR2.aj`, **256/256** `SHA256SUMS`, `U20_PARITY=OK`; [proof](proof/)) |
 
-*(Note: Yusuke Endoh counts all 128 steps in `mame/quine-relay` as languages by his own test; the "Strict Distinct (1:1 rule)" column reflects our fork's stricter rule omitting 5 non-distinct entries: `Ook!`, `JSFuck`, `WebAssembly (Binary format)`, `FORTRAN77`, and `Gzip`.)*
+## "The Endoh Stamp" Rule
 
-## Counting Rule: Distinct Languages Only (1 step = 1 language)
+Yusuke Endoh invented and hand-crafted Quine Relay across more than a decade. Rather than imposing an external deduplication rule back onto upstream:
 
-- **One entry per language**: Multiple implementations of the same language count once (`mksh`, `BusyBox ash`, `yash`, `dash`, `Chicken Scheme`, `Chez Scheme` omitted).
-- **One entry per language across versions**: `FORTRAN77` omitted in favor of `Fortran90`; `Perl 6` (Raku) is distinct from `Perl 5`.
-- **No encodings, word-swaps, dialects, or thin supersets**: `Ook!`, `JSFuck`, `WebAssembly (Binary format)`, `NQP`, `Genie`, `Teal`, `MoonScript`, `YueScript`, `xonsh`, `Coconut` omitted. Languages extending another grammar (`AspectJ`, `AspectC++`, `TypeScript`, `Objective-C`, `nesC`) use real language-specific syntax of their own.
-- **No pure config/markup formats**: `Gzip` omitted; `SQL (SQLite)` is kept as a fork addition (noting its program is a single `SELECT '...'`, alongside upstream `mame` precedents `Dhall`, `XSLT`, `M4`, `Mustache`, `CMake`, `Flex`, `Jq`, `sed`, `Makefile`).
-- **Distinct CPU/VM ISAs count separately** when each has its own ISA and real assembler/runtime (`NASM` i386, `ARM64 asm`, `RISC-V asm`, `6502 asm`, `Z80 asm`, `MMIX`, `Uxntal`, `Parrot asm`, `QBE`, `LLVM asm`, `Jasmin`, `MSIL`).
+1. **All 128 / 128 Ubuntu 26.04 upstream steps stay intact (`mame (Endoh Stamp)`)**: Including `FORTRAN77`, `Gzip`, `JSFuck`, `Ook!`, and `WebAssembly (Binary format)`, plus the 8 upstream tool conventions (`sed`, `Mustache`, `XSLT`, `Execline`, `bc`, `MiniZinc`, `Promela`, `Jq`).
+2. **Every one of our 128 fork additions stands on its own canonical third-party upstream toolchain (`this fork`)**:
+   - **16 / 20 historical `mame` retirees** restored (`AspectC++`, `Parrot asm (PASM)`, `Boo`, `Maxima`, `Gri`, `UCBLogo`, `GNU Smalltalk`, `Julia`, `Dafny`, `Generator Scripting Language`, `nesC`, `Lisaac`, `eC`, `CDuce`, `A+`, `Falcon`).
+   - **Malbolge Unshackled** (unbounded ternary Malbolge via CC0 `Unshackled.c` / `Unshackled-20.c`; zero `'/'` input ops executed, `0` stdin reads under `strace`, `MB_STDIN_SAME`, `U20_PARITY=OK`) — noting candidly that classic 10-trit Malbolge's `59,049`-cell limit remains unbroken in strict A–Z ordering.
+   - **111 standalone fork languages**, with zero duplicate dialects/shells, zero query-only formats, zero custom fork esolang runners in `vendor/`, and zero fork-side CLI/file-reading accommodations.
 
-[LANGUAGES.md](LANGUAGES.md) lists all **256 steps = 256 distinct languages** in exact A–Z run order.
+[LANGUAGES.md](LANGUAGES.md) lists all **256 steps** (`128 mame (Endoh Stamp) + 128 this fork`) in exact A–Z run order.
 
-## No-Cheating Rules & Disclosed Accommodations
+## Hardware / VM Limits & `vendor/` Inventory
 
-1. **No code on the command line** (no `-e`/`-c`, no CLI `printf` prepending code).
-2. **No reading files or stdin payload** (all printed text lives inside the program itself; `Malbolge Unshackled` uses zero `'/'` input ops).
-3. **Output on stdout only** (no temp-file + `cat`/`tail`, no stderr redirection into output).
-
-- **0 critical violations, 0 fork borderlines**; **248 / 256 steps** pass all 7 audit rules cleanly.
-- **8 remaining disclosed borderline steps** (all inherited from `mame/quine-relay`): `sed`, `Mustache`, `XSLT` (self-operand input); `Execline` (`/bin/echo`), `bc` (`BC_LINE_LENGTH`), `MiniZinc` (`--soln-sep ''`), `Promela` (`spin -T`), `Jq` (`-j`).
-- **Hardware/VM & runtime notes**: `6502 asm` (`xa`+`sim65`), `Z80 asm` (`z80asm`+`tnylpo`), and `Uxntal` (`uxnasm`+`uxncli`) all assemble and execute inside real `< 64 KiB` RAM/ROM limits (`< 64,000 B` hard guard enforced in `src/gen-aj.rb` and `src/vm-exec.rb`). `vendor/lazyk.c` raises `RDSTACK_SIZE` to `10,000,000` (semantics unchanged); `Taxi` uses upstream `-DNO_GREETINGS`; `vendor/` includes 4 MIT esolang runners (`underload.rb`, `emmental.rb`, `slashes.rb`, `beatnik.rb`).
+- **16-bit 64 KiB VMs (`< 64,000 B` hard guard in `src/gen-aj.rb` and `src/vm-exec.rb`)**:
+  - `6502 asm` (`xa` + `sim65`): `46,723 B` / `65,012 B` limit (`spare = 18,289 B`)
+  - `Z80 asm` (`z80asm` + `tnylpo`): `63,281 B` / `64,991 B` limit (`spare = 1,710 B`)
+  - `Uxntal` (`uxnasm` + `uxncli`): `57,065 B` / `65,280 B` limit (`spare = 8,215 B`)
+- **Pure stdout / zero-cheating checks**: Verified with an offline non-root lap, `strace` inspection, and a 1-byte engine canary patch (`256/256` intermediate hashes change, `QR.aj == QR2.aj`).
+- **What lives in `vendor/`**:
+  - Upstream `mame/quine-relay` helpers: `bf.rb`, `false.rb`, `ook-to-bf.rb`, `unlambda.rb`, `wasi-runtime.js`.
+  - Upstream third-party interpreters/compilers built by `vendor/Makefile`: `lci-0.10.5` (LOLCODE), `npiet-1.3e` (Piet), `cfunge-0.9.0` (Befunge), `Acme-Chef-1.03` (Chef), `spl-1.2.1` (Shakespeare), `lazyk.c` (Lazy K, upstream source with `RDSTACK_SIZE = 10,000,000`), `Velato_0_1.zip` (Velato), and `Unshackled.c` / `Unshackled-20.c` (Malbolge Unshackled).
+  - Upstream `Taxi` compiled with its own `-DNO_GREETINGS` flag.
+  - **Zero** custom fork esolang interpreters (`beatnik.rb`, `emmental.rb`, `slashes.rb`, `underload.rb` were all removed in v3).

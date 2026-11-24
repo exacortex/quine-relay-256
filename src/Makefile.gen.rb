@@ -74,7 +74,7 @@ CLEAN_FILES = %w[
   tmp.*proj work-obj93.cf
 ]
 EXTRA_CLEAN_FILES = %w[
-  QRMUMPS.* .apl.history QR.qbe.s QR.mth.c QR.gro QR.wasm
+  QRMUMPS.* .apl.history QR.qbe.s QR.mth.c QR.gro QR.wasm QR.ook.bf
   qr_austral QR.amx qr.com
 ]
 

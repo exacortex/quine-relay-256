@@ -1,24 +1,3 @@
-=== PRE-LAP IDENTITY & WORKDIR ===
-uid=1001(qr) gid=1001(qr) groups=1001(qr)
-total 252
-drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 .
-drwxr-xr-x 1 root root  4096 Nov 21 22:24 ..
--rwxr-xr-x 1 qr   qr   47514 Nov 23 00:46 Dockerfile
--rwxr-xr-x 1 qr   qr   10851 Nov 23 00:46 LANGUAGES.md
--rwxr-xr-x 1 qr   qr    1614 Nov 23 00:45 LICENSE
--rwxr-xr-x 1 qr   qr   49699 Nov 23 00:46 Makefile
--rwxr-xr-x 1 qr   qr   50342 Nov 23 00:46 QR.aj
--rwxr-xr-x 1 qr   qr    5235 Nov 23 00:47 README.md
--rwxr-xr-x 1 qr   qr    3791 Nov 23 00:47 RECORDS.md
-drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 qr_cs
-drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 qr_vb
-drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 qrgleam
-drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 qrpony
-drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 src
-drwxr-xr-x 1 qr   qr    4096 Nov 23 00:49 tools
-drwxr-xr-x 1 qr   qr    4096 Nov 23 00:51 vendor
-NO_STALE_QR_RB=OK
-
 ###############################
 ##  1: AspectJ -> Asymptote  ##
 ###############################
@@ -81,87 +60,81 @@ bash QR.bash > QR.bc
 BC_LINE_LENGTH=4000000 bc -q QR.bc > QR.bsh
 
 ###############################
-##  9: BeanShell -> Beatnik  ##
+##  9: BeanShell -> Befunge  ##
 ###############################
 
-bsh QR.bsh > QR.beatnik
-
-##############################
-##  10: Beatnik -> Befunge  ##
-##############################
-
-ruby vendor/beatnik.rb QR.beatnik > QR.bef
+bsh QR.bsh > QR.bef
 
 ############################
-##  11: Befunge -> Berry  ##
+##  10: Befunge -> Berry  ##
 ############################
 
 cfunge QR.bef > QR.be
 
 #########################
-##  12: Berry -> BLC8  ##
+##  11: Berry -> BLC8  ##
 #########################
 
 berry QR.be > QR.Blc
 
 #######################
-##  13: BLC8 -> Boo  ##
+##  12: BLC8 -> Boo  ##
 #######################
 
 ruby vendor/blc.rb < QR.Blc > QR.boo
 
 ########################
-##  14: Boo -> Boron  ##
+##  13: Boo -> Boron  ##
 ########################
 
 booi QR.boo > QR.boron
 
 ########################
-##  15: Boron -> BQN  ##
+##  14: Boron -> BQN  ##
 ########################
 
 boron QR.boron > QR.bqn
 
 #############################
-##  16: BQN -> Brain-Flak  ##
+##  15: BQN -> Brain-Flak  ##
 #############################
 
 bqn QR.bqn > QR.bflk
 
 ###################################
-##  17: Brain-Flak -> Brainfuck  ##
+##  16: Brain-Flak -> Brainfuck  ##
 ###################################
 
 craneflak -A QR.bflk > QR.bf
 
 ##########################
-##  18: Brainfuck -> C  ##
+##  17: Brainfuck -> C  ##
 ##########################
 
 ruby vendor/bf.rb QR.bf > QR.c
 
 ####################
-##  19: C -> C++  ##
+##  18: C -> C++  ##
 ####################
 
 cc -o QR QR.c
 ./QR > QR.cpp
 
 #####################
-##  20: C++ -> C#  ##
+##  19: C++ -> C#  ##
 #####################
 
 g++ -o QR QR.cpp
 ./QR > qr_cs/QR.cs
 
 ####################
-##  21: C# -> C3  ##
+##  20: C# -> C3  ##
 ####################
 
 DOTNET_NOLOGO=1 dotnet run --project qr_cs > QR.c3
 
 #######################
-##  22: C3 -> CDuce  ##
+##  21: C3 -> CDuce  ##
 #######################
 
 c3c compile QR.c3 -o QR
@@ -171,102 +144,102 @@ Program linked to executable 'QR'.
 ./QR > QR.cd
 
 ###############################
-##  23: CDuce -> ChaiScript  ##
+##  22: CDuce -> ChaiScript  ##
 ###############################
 
 cduce QR.cd > QR.chai
 
 ################################
-##  24: ChaiScript -> Chapel  ##
+##  23: ChaiScript -> Chapel  ##
 ################################
 
 chai QR.chai > QR.chpl
 
 ##########################
-##  25: Chapel -> Chef  ##
+##  24: Chapel -> Chef  ##
 ##########################
 
 chpl -o qrchpl QR.chpl
 ./qrchpl > QR.chef
 
 ########################
-##  26: Chef -> CJam  ##
+##  25: Chef -> CJam  ##
 ########################
 
 PERL5LIB=vendor/local/lib/perl5 compilechef QR.chef QR.chef.pl
 perl QR.chef.pl > QR.cjam
 
 #########################
-##  27: CJam -> Clean  ##
+##  26: CJam -> Clean  ##
 #########################
 
 java -jar /opt/cjam/cjam-0.6.5.jar QR.cjam > QR.icl
 
 ##########################
-##  28: Clean -> CLIPS  ##
+##  27: Clean -> CLIPS  ##
 ##########################
 
 clm -nt -nr QR -o QR > /dev/null
 ./QR > QR.clp
 
 ############################
-##  29: CLIPS -> Clojure  ##
+##  28: CLIPS -> Clojure  ##
 ############################
 
 clips -f2 QR.clp > QR.clj
 
 ############################
-##  30: Clojure -> CMake  ##
+##  29: Clojure -> CMake  ##
 ############################
 
 clojure QR.clj > QR.cmake
 
 ##########################
-##  31: CMake -> Cobol  ##
+##  30: CMake -> Cobol  ##
 ##########################
 
 cmake -P QR.cmake > QR.cob
 
 #################################
-##  32: Cobol -> CoffeeScript  ##
+##  31: Cobol -> CoffeeScript  ##
 #################################
 
 cobc -O2 -x QR.cob
 ./QR > QR.coffee
 
 #######################################
-##  33: CoffeeScript -> Common Lisp  ##
+##  32: CoffeeScript -> Common Lisp  ##
 #######################################
 
 coffee --nodejs --stack_size=100000 QR.coffee > QR.lisp
 
 ##################################
-##  34: Common Lisp -> Crystal  ##
+##  33: Common Lisp -> Crystal  ##
 ##################################
 
 clisp QR.lisp > QR.cr
 
 ############################
-##  35: Crystal -> Cyber  ##
+##  34: Crystal -> Cyber  ##
 ############################
 
 crystal QR.cr > QR.cy
 
 ######################
-##  36: Cyber -> D  ##
+##  35: Cyber -> D  ##
 ######################
 
 cyber QR.cy > QR.d
 
 ######################
-##  37: D -> Dafny  ##
+##  36: D -> Dafny  ##
 ######################
 
 gdc -o QR QR.d
 ./QR > QR.dfy
 
 #########################
-##  38: Dafny -> Dart  ##
+##  37: Dafny -> Dart  ##
 #########################
 
 dafny build -o dafny-out/QR QR.dfy
@@ -275,31 +248,31 @@ Dafny program verifier finished with 0 verified, 0 errors
 DOTNET_ROLL_FORWARD=Major dotnet dafny-out/QR.dll > QR.dart
 
 ######################
-##  39: Dart -> dc  ##
+##  38: Dart -> dc  ##
 ######################
 
 dart run QR.dart > QR.dc
 
 #######################
-##  40: dc -> Dhall  ##
+##  39: dc -> Dhall  ##
 #######################
 
 dc QR.dc > QR.dhall || true
 
 #########################
-##  41: Dhall -> Dyon  ##
+##  40: Dhall -> Dyon  ##
 #########################
 
 dhall text --file QR.dhall > QR.dyon
 
 ######################
-##  42: Dyon -> eC  ##
+##  41: Dyon -> eC  ##
 ######################
 
 dyonrun QR.dyon > QR_ec.ec
 
 ########################
-##  43: eC -> Effekt  ##
+##  42: eC -> Effekt  ##
 ########################
 
 ecp -c QR_ec.ec -o QR_ec.sym
@@ -311,7 +284,7 @@ gcc -std=gnu17 -w -o QR_ec QR_ec.c QR_ec.main.c -lecereCOM
 ./QR_ec > QR.effekt
 
 ############################
-##  44: Effekt -> Elixir  ##
+##  43: Effekt -> Elixir  ##
 ############################
 
 rm -rf qr_effekt_out
@@ -323,98 +296,92 @@ WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
 rm -rf qr_effekt_out
 
 ############################
-##  45: Elixir -> Elvish  ##
+##  44: Elixir -> Elvish  ##
 ############################
 
 elixir QR.exs > QR.elv
 
 ################################
-##  46: Elvish -> Emacs Lisp  ##
+##  45: Elvish -> Emacs Lisp  ##
 ################################
 
 elvish QR.elv > QR.el
 
-##################################
-##  47: Emacs Lisp -> Emmental  ##
-##################################
+################################
+##  46: Emacs Lisp -> Erlang  ##
+################################
 
-emacs -Q --script QR.el > QR.emmental
-
-##############################
-##  48: Emmental -> Erlang  ##
-##############################
-
-ruby vendor/emmental.rb QR.emmental > QR.erl
+emacs -Q --script QR.el > QR.erl
 
 ##############################
-##  49: Erlang -> Euphoria  ##
+##  47: Erlang -> Euphoria  ##
 ##############################
 
 escript QR.erl > QR.ex
 
 ################################
-##  50: Euphoria -> Execline  ##
+##  48: Euphoria -> Execline  ##
 ################################
 
 eui QR.ex > QR.e
 
 ##########################
-##  51: Execline -> F#  ##
+##  49: Execline -> F#  ##
 ##########################
 
 execlineb QR.e > QR.fsx
 
 ########################
-##  52: F# -> Factor  ##
+##  50: F# -> Factor  ##
 ########################
 
 DOTNET_NOLOGO=1 dotnet fsi --quiet --exec QR.fsx > QR.factor
 
 ############################
-##  53: Factor -> Falcon  ##
+##  51: Factor -> Falcon  ##
 ############################
 
 /opt/factor/factor QR.factor > QR.fal
 
 ###########################
-##  54: Falcon -> FALSE  ##
+##  52: Falcon -> FALSE  ##
 ###########################
 
 falcon QR.fal > QR.false
 
 ###########################
-##  55: FALSE -> Fantom  ##
+##  53: FALSE -> Fantom  ##
 ###########################
 
 ruby vendor/false.rb QR.false > QR.fan
 
 ############################
-##  56: Fantom -> Fennel  ##
+##  54: Fantom -> Fennel  ##
 ############################
 
 fan QR.fan > QR.fnl
 
 ################################
-##  57: Fennel -> ><> (Fish)  ##
+##  55: Fennel -> ><> (Fish)  ##
 ################################
 
 fennel QR.fnl > QR.fish.fish
 
 ##############################
-##  58: ><> (Fish) -> Fish  ##
+##  56: ><> (Fish) -> Fish  ##
 ##############################
 
 python3 /opt/fish/fish.py QR.fish.fish > QR.fish
 
 
 ########################
-##  59: Fish -> Flex  ##
+##  57: Fish -> Flex  ##
 ########################
 
 fish QR.fish > QR.fl
 
 ########################
-##  60: Flex -> Flix  ##
+##  58: Flex -> Flix  ##
 ########################
 
 flex -o QR.fl.c QR.fl
@@ -422,26 +389,33 @@ gcc -o QR QR.fl.c
 ./QR > QR.flix
 
 #########################
-##  61: Flix -> Forth  ##
+##  59: Flix -> Forth  ##
 #########################
 
 java -XX:TieredStopAtLevel=1 -jar /opt/flix/flix.jar QR.flix > QR.fs
 
 ##############################
-##  62: Forth -> Fortran90  ##
+##  60: Forth -> FORTRAN77  ##
 ##############################
 
-gforth QR.fs > QR.f90
+gforth QR.fs > QR.f
+
+##################################
+##  61: FORTRAN77 -> Fortran90  ##
+##################################
+
+gfortran -o QR QR.f
+./QR > QR.f90
 
 ##############################
-##  63: Fortran90 -> Frege  ##
+##  62: Fortran90 -> Frege  ##
 ##############################
 
 gfortran -o QR QR.f90
 ./QR > QR.fr
 
 ##################################
-##  64: Frege -> Gambas script  ##
+##  63: Frege -> Gambas script  ##
 ##################################
 
 mkdir -p frege-out
@@ -450,28 +424,34 @@ calling: javac -cp /usr/local/lib/frege.jar:frege-out -d frege-out -sourcepath .
 java -cp frege-out:/usr/local/lib/frege.jar QR > QR.gbs
 
 ################################
-##  65: Gambas script -> GAP  ##
+##  64: Gambas script -> GAP  ##
 ################################
 
 gbs3 QR.gbs > QR.g
 
 ######################
-##  66: GAP -> GDB  ##
+##  65: GAP -> GDB  ##
 ######################
 
 gap -q QR.g > QR.gdb
 
 ###############################
-##  67: GDB -> GEL (Genius)  ##
+##  66: GDB -> GEL (Genius)  ##
 ###############################
 
 gdb -q -x QR.gdb > QR.gel
 
-#################################
-##  68: GEL (Genius) -> Glass  ##
-#################################
+########################################################
+##  67: GEL (Genius) -> Generator Scripting Language  ##
+########################################################
 
-genius QR.gel > QR.glass
+genius QR.gel > QR.gsl
+
+#################################################
+##  68: Generator Scripting Language -> Glass  ##
+#################################################
+
+gsl -q QR.gsl > QR.glass
 
 ##########################
 ##  69: Glass -> Gleam  ##
@@ -571,17 +551,17 @@ gravity -q QR.gravity > QR.gri
 
 gri -output QR.gri.ps QR.gri > QR.groovy
 
-########################################################
-##  84: Groovy -> GSL (Generator Scripting Language)  ##
-########################################################
+##########################
+##  84: Groovy -> Gzip  ##
+##########################
 
-groovy QR.groovy > QR.gsl
+groovy QR.groovy > QR.gz
 
-######################################################
-##  85: GSL (Generator Scripting Language) -> Hare  ##
-######################################################
+########################
+##  85: Gzip -> Hare  ##
+########################
 
-gsl -q QR.gsl > QR.ha
+gzip -cd QR.gz > QR.ha
 
 ###########################
 ##  86: Hare -> Haskell  ##
@@ -702,38 +682,44 @@ java QR > QR.js
 
 nodejs QR.js > QR.jq
 
-########################
-##  104: Jq -> Julia  ##
-########################
+#########################
+##  104: Jq -> JSFuck  ##
+#########################
 
-jq -j -n -f QR.jq > QR.jl
+jq -r -n -f QR.jq > QR.jsfuck
+
+############################
+##  105: JSFuck -> Julia  ##
+############################
+
+ulimit -s unlimited && nodejs --stack_size=100000 QR.jsfuck > QR.jl
 
 ###############################
-##  105: Julia -> K (ngn/k)  ##
+##  106: Julia -> K (ngn/k)  ##
 ###############################
 
 julia QR.jl > QR.k.k
 
 ################################
-##  106: K (ngn/k) -> Kipple  ##
+##  107: K (ngn/k) -> Kipple  ##
 ################################
 
 ngnk QR.k.k < /dev/null > QR.kpl
 
 ############################
-##  107: Kipple -> Klong  ##
+##  108: Kipple -> Klong  ##
 ############################
 
 cipple QR.kpl > QR.kg
 
 ##########################
-##  108: Klong -> Koka  ##
+##  109: Klong -> Koka  ##
 ##########################
 
 kg QR.kg < /dev/null > qr.kk
 
 ###########################
-##  109: Koka -> Kotlin  ##
+##  110: Koka -> Kotlin  ##
 ###########################
 
 koka -v0 -o qrkoka qr.kk
@@ -755,7 +741,7 @@ chmod +x qrkoka
 ./qrkoka > QR.kt
 
 ###########################
-##  110: Kotlin -> Koto  ##
+##  111: Kotlin -> Koto  ##
 ###########################
 
 kotlinc QR.kt -include-runtime -d QR.jar
@@ -772,114 +758,114 @@ WARNING: Restricted methods will be blocked in a future release unless native ac
 kotlin QR.jar > QR.koto
 
 ########################
-##  111: Koto -> ksh  ##
+##  112: Koto -> ksh  ##
 ########################
 
 koto QR.koto > QR.ksh
 
 ##########################
-##  112: ksh -> Lazy K  ##
+##  113: ksh -> Lazy K  ##
 ##########################
 
 ksh QR.ksh > QR.lazy
 
 #############################
-##  113: Lazy K -> Lean 4  ##
+##  114: Lazy K -> Lean 4  ##
 #############################
 
 ulimit -s unlimited && lazyk QR.lazy > QR.lean
 
 ##########################
-##  114: Lean 4 -> LFE  ##
+##  115: Lean 4 -> LFE  ##
 ##########################
 
 lean --run QR.lean > QR.lfe
 
 ########################
-##  115: LFE -> Lily  ##
+##  116: LFE -> Lily  ##
 ########################
 
 lfe QR.lfe > QR.lily
 
 ###########################
-##  116: Lily -> Lisaac  ##
+##  117: Lily -> Lisaac  ##
 ###########################
 
 lily QR.lily > qr.li
 
 #################################
-##  117: Lisaac -> LiveScript  ##
+##  118: Lisaac -> LiveScript  ##
 #################################
 
 lisaac -gcc -Wno-implicit-function-declaration qr.li > /dev/null
 Depending pass: .......... (10)
 Executing pass: *.......*.. (11)
- => 2 second(s).
+ => 1 second(s).
 ./qr > QR.ls
 
 ###################################
-##  118: LiveScript -> LLVM asm  ##
+##  119: LiveScript -> LLVM asm  ##
 ###################################
 
 lsc QR.ls > QR.ll
 
 ################################
-##  119: LLVM asm -> Lobster  ##
+##  120: LLVM asm -> Lobster  ##
 ################################
 
 llvm-as QR.ll
 lli QR.bc > QR.lobster
 
 ###############################
-##  120: Lobster -> LOLCODE  ##
+##  121: Lobster -> LOLCODE  ##
 ###############################
 
 lobster QR.lobster > QR.lol
 
 ###########################
-##  121: LOLCODE -> Lua  ##
+##  122: LOLCODE -> Lua  ##
 ###########################
 
 lci QR.lol > QR.lua
 
 ######################
-##  122: Lua -> M4  ##
+##  123: Lua -> M4  ##
 ######################
 
 lua5.3 QR.lua > QR.m4
 
 ############################
-##  123: M4 -> Macaulay2  ##
+##  124: M4 -> Macaulay2  ##
 ############################
 
 m4 QR.m4 > QR.m2
 
 ##################################
-##  124: Macaulay2 -> Makefile  ##
+##  125: Macaulay2 -> Makefile  ##
 ##################################
 
 M2 --script QR.m2 > QR.mk
 
 ############################################
-##  125: Makefile -> Malbolge Unshackled  ##
+##  126: Makefile -> Malbolge Unshackled  ##
 ############################################
 
 make -f QR.mk > QR.mb
 
 ###########################################
-##  126: Malbolge Unshackled -> Mathics  ##
+##  127: Malbolge Unshackled -> Mathics  ##
 ###########################################
 
 unshackled QR.mb < /dev/null > QR.wl
 
 ##############################
-##  127: Mathics -> Maxima  ##
+##  128: Mathics -> Maxima  ##
 ##############################
 
 mathics -q --no-completion -f QR.wl < /dev/null > QR.mac
 
 ##############################
-##  128: Maxima -> Mercury  ##
+##  129: Maxima -> Mercury  ##
 ##############################
 
 maxima -q --init-mac=QR.mac > qr_mercury.m
@@ -891,7 +877,7 @@ SIMPLE-WARNING: Maxima is unable to set up the help system.
 
 
 ##################################
-##  129: Mercury -> MiniScript  ##
+##  130: Mercury -> MiniScript  ##
 ##################################
 
 mmc --make qr_mercury > /dev/null
@@ -903,38 +889,38 @@ Making qr_mercury
 ./qr_mercury > QR.ms
 
 ###################################
-##  130: MiniScript -> MiniZinc  ##
+##  131: MiniScript -> MiniZinc  ##
 ###################################
 
 miniscript QR.ms > QR.mzn
 
 ################################
-##  131: MiniZinc -> Miranda  ##
+##  132: MiniZinc -> Miranda  ##
 ################################
 
 minizinc --solver COIN-BC --soln-sep '' QR.mzn > QR.mira
 
 #############################
-##  132: Miranda -> Mirth  ##
+##  133: Miranda -> Mirth  ##
 #############################
 
 mira -exec QR.mira > QR.mth
 
 ##########################
-##  133: Mirth -> MMIX  ##
+##  134: Mirth -> MMIX  ##
 ##########################
 
 mirth -p std:/opt/mirth/lib/std -p qr:. ./QR.mth -o QR.mth.c > /dev/null
 Compiling ./QR.mth
 Building.
-[32mNo errors.[0m
+No errors.
 Running specializer.
 Running codegen.
 cc -O2 -Wno-trigraphs -o QR QR.mth.c
 ./QR > QR.mms
 
 #############################
-##  134: MMIX -> Modula-2  ##
+##  135: MMIX -> Modula-2  ##
 #############################
 
 mmixal -b 2000000 -o QR.mmo QR.mms
@@ -942,14 +928,14 @@ mmix QR.mmo > QR.mod
 rm -f QR.mmo
 
 #############################
-##  135: Modula-2 -> MSIL  ##
+##  136: Modula-2 -> MSIL  ##
 #############################
 
 gm2 -fiso QR.mod -o QR
 ./QR > QR.il
 
 ##########################
-##  136: MSIL -> MUMPS  ##
+##  137: MSIL -> MUMPS  ##
 ##########################
 
 ilasm QR.il
@@ -959,25 +945,25 @@ Operation completed successfully
 mono QR.exe > QRMUMPS.m
 
 ###########################
-##  137: MUMPS -> Murex  ##
+##  138: MUMPS -> Murex  ##
 ###########################
 
 ydb_dist=/opt/yottadb ydb_routines=. /opt/yottadb/yottadb -run QRMUMPS > QR.mx
 
 ##############################
-##  138: Murex -> Mustache  ##
+##  139: Murex -> Mustache  ##
 ##############################
 
 murex QR.mx > QR.mustache
 
 #############################
-##  139: Mustache -> NASM  ##
+##  140: Mustache -> NASM  ##
 #############################
 
 mustache QR.mustache QR.mustache > QR.asm
 
 #########################
-##  140: NASM -> Neko  ##
+##  141: NASM -> Neko  ##
 #########################
 
 nasm -felf QR.asm
@@ -985,64 +971,64 @@ ld -m elf_i386 -o QR QR.o
 ./QR > QR.neko
 
 ##########################
-##  141: Neko -> Nelua  ##
+##  142: Neko -> Nelua  ##
 ##########################
 
 nekoc QR.neko
 neko QR.n > QR.nelua
 
 ##########################
-##  142: Nelua -> nesC  ##
+##  143: Nelua -> nesC  ##
 ##########################
 
 nelua --no-cache QR.nelua > QR.nc
 
 ############################
-##  143: nesC -> newLISP  ##
+##  144: nesC -> newLISP  ##
 ############################
 
 nescc -gcc=gcc-14 -o QR QR.nc
 ./QR > QR.nl
 
 ############################
-##  144: newLISP -> Nial  ##
+##  145: newLISP -> Nial  ##
 ############################
 
 newlisp -n QR.nl > QR.ndf
 
 ###########################
-##  145: Nial -> Nickle  ##
+##  146: Nial -> Nickle  ##
 ###########################
 
 nial -defs QR.ndf < /dev/null > QR.5c
 
 ##########################
-##  146: Nickle -> Nim  ##
+##  147: Nickle -> Nim  ##
 ##########################
 
 nickle QR.5c > QR.nim
 
 ##########################
-##  147: Nim -> Numbat  ##
+##  148: Nim -> Numbat  ##
 ##########################
 
 nim compile --hints:off --warnings:off QR.nim
 ./QR > QR.nbt
 
 ##############################
-##  148: Numbat -> Nushell  ##
+##  149: Numbat -> Nushell  ##
 ##############################
 
 numbat QR.nbt > QR.nu
 
 ##############################
-##  149: Nushell -> Oberon  ##
+##  150: Nushell -> Oberon  ##
 ##############################
 
 nu --no-config-file QR.nu > QR.obn
 
 ##################################
-##  150: Oberon -> Objective-C  ##
+##  151: Oberon -> Objective-C  ##
 ##################################
 
 rm -rf QR .obnc
@@ -1051,52 +1037,59 @@ obnc QR.obn >/dev/null
 rm -rf QR .obnc
 
 #################################
-##  151: Objective-C -> OCaml  ##
+##  152: Objective-C -> OCaml  ##
 #################################
 
 gcc -o QR QR.m -lobjc
 ./QR > QR.ml
 
 ############################
-##  152: OCaml -> Octave  ##
+##  153: OCaml -> Octave  ##
 ############################
 
 ocaml QR.ml > QR.octave
 
 ###########################
-##  153: Octave -> Odin  ##
+##  154: Octave -> Odin  ##
 ###########################
 
 mv QR.m QR.m.bak
 octave -qf QR.octave > QR.odin
 mv QR.m.bak QR.m
 
+#########################
+##  155: Odin -> Ook!  ##
+#########################
+
+odin run QR.odin -file > QR.ook
+
 ############################
-##  154: Odin -> PARI/GP  ##
+##  156: Ook! -> PARI/GP  ##
 ############################
 
-odin run QR.odin -file > QR.gp
+ruby vendor/ook-to-bf.rb QR.ook QR.ook.bf
+ruby vendor/bf.rb QR.ook.bf > QR.gp
 
 #########################################
-##  155: PARI/GP -> Parrot asm (PASM)  ##
+##  157: PARI/GP -> Parrot asm (PASM)  ##
 #########################################
 
 gp -f -q QR.gp > QR.pasm
 
 ##########################################
-##  156: Parrot asm (PASM) -> Parser 3  ##
+##  158: Parrot asm (PASM) -> Parser 3  ##
 ##########################################
 
 parrot QR.pasm > QR.p
 
 ###############################
-##  157: Parser 3 -> Pascal  ##
+##  159: Parser 3 -> Pascal  ##
 ###############################
 
 parser3 QR.p > QR.pas
 
 ###########################
-##  158: Pascal -> Pawn  ##
+##  160: Pascal -> Pawn  ##
 ###########################
 
 fpc QR.pas
@@ -1105,11 +1098,11 @@ Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling QR.pas
 Linking QR
-1903 lines compiled, 0.2 sec
+1770 lines compiled, 0.2 sec
 ./QR > QR.pawn
 
 ###########################
-##  159: Pawn -> Perl 5  ##
+##  161: Pawn -> Perl 5  ##
 ###########################
 
 pawncc -C64 QR.pawn -oQR.amx > /dev/null
@@ -1117,106 +1110,106 @@ pawnrun QR.amx > QR.pl
 rm -f QR.amx
 
 #############################
-##  160: Perl 5 -> Perl 6  ##
+##  162: Perl 5 -> Perl 6  ##
 #############################
 
 perl QR.pl > QR.pl6
 
 ##########################
-##  161: Perl 6 -> PHP  ##
+##  163: Perl 6 -> PHP  ##
 ##########################
 
 perl6 QR.pl6 > QR.php
 
 #########################
-##  162: PHP -> Picat  ##
+##  164: PHP -> Picat  ##
 #########################
 
 php QR.php > QR.pi
 
 ##############################
-##  163: Picat -> PicoLisp  ##
+##  165: Picat -> PicoLisp  ##
 ##############################
 
 picat QR.pi > QR.l
 
 #############################
-##  164: PicoLisp -> Piet  ##
+##  166: PicoLisp -> Piet  ##
 #############################
 
 pil QR.l > QR.ppm
 
 #########################
-##  165: Piet -> Pike  ##
+##  167: Piet -> Pike  ##
 #########################
 
 npiet QR.ppm > QR.pike
 
 ###############################
-##  166: Pike -> PocketLang  ##
+##  168: Pike -> PocketLang  ##
 ###############################
 
 pike QR.pike > QR.pk
 
 ###############################
-##  167: PocketLang -> Pony  ##
+##  169: PocketLang -> Pony  ##
 ###############################
 
 pocket QR.pk > qrpony/main.pony
 
 ###############################
-##  168: Pony -> PostScript  ##
+##  170: Pony -> PostScript  ##
 ###############################
 
 ponyc -V0 -b qrpony.out -o . qrpony
 ./qrpony.out > QR.ps
 
 #####################################
-##  169: PostScript -> PowerShell  ##
+##  171: PostScript -> PowerShell  ##
 #####################################
 
 gs -dNODISPLAY -q QR.ps > QR.ps1
 
 #################################
-##  170: PowerShell -> Prolog  ##
+##  172: PowerShell -> Prolog  ##
 #################################
 
 DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 POWERSHELL_TELEMETRY_OPTOUT=1 pwsh -NoProfile -NonInteractive -File QR.ps1 > QR.prolog
 
 #####################################
-##  171: Prolog -> Promela (Spin)  ##
+##  173: Prolog -> Promela (Spin)  ##
 #####################################
 
 swipl -q -t qr -f QR.prolog > QR.pr
 
 #########################################
-##  172: Promela (Spin) -> PureScript  ##
+##  174: Promela (Spin) -> PureScript  ##
 #########################################
 
 spin -T QR.pr > QRP.purs
 
 ################################
-##  173: PureScript -> Pyret  ##
+##  175: PureScript -> Pyret  ##
 ################################
 
 purs compile -o purs_out QRP.purs '/opt/purs/lib/*/src/**/*.purs'
-[ 1 of 57] Compiling Type.Proxy
-[ 2 of 57] Compiling Record.Unsafe
-[ 3 of 57] Compiling Data.Void
+[ 1 of 57] Compiling Record.Unsafe
 [ 4 of 57] Compiling Data.Unit
+[ 2 of 57] Compiling Type.Proxy
+[ 3 of 57] Compiling Data.Void
 [ 5 of 57] Compiling Data.NaturalTransformation
 [ 6 of 57] Compiling Data.Boolean
 [ 7 of 57] Compiling Control.Semigroupoid
 [ 8 of 57] Compiling Control.Category
 [ 9 of 57] Compiling Data.Symbol
-[11 of 57] Compiling Data.HeytingAlgebra
-[10 of 57] Compiling Data.Semiring
-[12 of 57] Compiling Data.Semigroup
+[10 of 57] Compiling Data.Semigroup
+[11 of 57] Compiling Data.Semiring
+[12 of 57] Compiling Data.HeytingAlgebra
 [13 of 57] Compiling Data.Show
 [14 of 57] Compiling Data.Ring
 [15 of 57] Compiling Data.Generic.Rep
-[17 of 57] Compiling Data.BooleanAlgebra
-[16 of 57] Compiling Data.Eq
+[16 of 57] Compiling Data.BooleanAlgebra
+[17 of 57] Compiling Data.Eq
 [18 of 57] Compiling Data.CommutativeRing
 [19 of 57] Compiling Data.Ordering
 [20 of 57] Compiling Data.EuclideanRing
@@ -1224,9 +1217,9 @@ purs compile -o purs_out QRP.purs '/opt/purs/lib/*/src/**/*.purs'
 [22 of 57] Compiling Data.DivisionRing
 [23 of 57] Compiling Data.Field
 [24 of 57] Compiling Data.Bounded
-[25 of 57] Compiling Data.Monoid
-[26 of 57] Compiling Data.Function
-[27 of 57] Compiling Data.Reflectable
+[25 of 57] Compiling Data.Reflectable
+[26 of 57] Compiling Data.Monoid
+[27 of 57] Compiling Data.Function
 [28 of 57] Compiling Data.Functor
 [29 of 57] Compiling Control.Apply
 [30 of 57] Compiling Data.Bounded.Generic
@@ -1235,33 +1228,33 @@ purs compile -o purs_out QRP.purs '/opt/purs/lib/*/src/**/*.purs'
 [33 of 57] Compiling Control.Bind
 [34 of 57] Compiling Control.Monad
 [35 of 57] Compiling Prelude
-[36 of 57] Compiling Data.HeytingAlgebra.Generic
-[37 of 57] Compiling Data.Monoid.Dual
-[38 of 57] Compiling Data.Monoid.Endo
-[39 of 57] Compiling Data.Ord.Generic
-[40 of 57] Compiling Data.Monoid.Disj
-[41 of 57] Compiling Data.Monoid.Additive
-[42 of 57] Compiling Data.Semigroup.Generic
-[43 of 57] Compiling Data.Semigroup.First
-[44 of 57] Compiling Data.Show.Generic
-[45 of 57] Compiling Data.Semigroup.Last
-[46 of 57] Compiling Data.Monoid.Conj
-[47 of 57] Compiling Data.Ring.Generic
-[48 of 57] Compiling Data.Semiring.Generic
-[49 of 57] Compiling Data.Monoid.Multiplicative
-[50 of 57] Compiling Data.Eq.Generic
-[51 of 57] Compiling Effect
-[52 of 57] Compiling Effect.Unsafe
-[53 of 57] Compiling Effect.Class
-[55 of 57] Compiling Effect.Uncurried
-[54 of 57] Compiling Effect.Console
+[36 of 57] Compiling Data.Semigroup.Last
+[37 of 57] Compiling Data.Semigroup.First
+[38 of 57] Compiling Data.Semiring.Generic
+[39 of 57] Compiling Data.Monoid.Additive
+[40 of 57] Compiling Data.Monoid.Multiplicative
+[41 of 57] Compiling Data.Monoid.Disj
+[42 of 57] Compiling Data.Monoid.Endo
+[44 of 57] Compiling Data.Monoid.Conj
+[43 of 57] Compiling Data.HeytingAlgebra.Generic
+[45 of 57] Compiling Data.Monoid.Dual
+[46 of 57] Compiling Data.Ord.Generic
+[47 of 57] Compiling Effect
+[48 of 57] Compiling Data.Show.Generic
+[49 of 57] Compiling Data.Ring.Generic
+[50 of 57] Compiling Data.Semigroup.Generic
+[51 of 57] Compiling Data.Eq.Generic
+[52 of 57] Compiling Effect.Class
+[55 of 57] Compiling Effect.Unsafe
+[53 of 57] Compiling Effect.Console
+[54 of 57] Compiling Effect.Uncurried
 [56 of 57] Compiling QRP
 [57 of 57] Compiling Effect.Class.Console
 node purs_out/QRP/index.js > QR.arr
 rm -rf purs_out
 
 ##########################
-##  174: Pyret -> Pyth  ##
+##  176: Pyret -> Pyth  ##
 ##########################
 
 pyretc QR.arr QR.jarr
@@ -1270,19 +1263,19 @@ Cleaning up and generating standalone...
 NODE_PATH=/opt/b05/node_modules node QR.jarr > QR.pyth
 
 ###########################
-##  175: Pyth -> Python  ##
+##  177: Pyth -> Python  ##
 ###########################
 
 python3 /opt/pyth/pyth.py -n QR.pyth > QR.py
 
 ##########################
-##  176: Python -> QBE  ##
+##  178: Python -> QBE  ##
 ##########################
 
 python3 QR.py > QR.ssa
 
 #####################
-##  177: QBE -> R  ##
+##  179: QBE -> R  ##
 #####################
 
 qbe QR.ssa > QR.qbe.s
@@ -1290,25 +1283,25 @@ cc QR.qbe.s -o QR
 ./QR > QR.R
 
 ########################
-##  178: R -> Racket  ##
+##  180: R -> Racket  ##
 ########################
 
 R --slave -f QR.R > QR.rkt
 
 ###########################
-##  179: Racket -> Rail  ##
+##  181: Racket -> Rail  ##
 ###########################
 
 racket QR.rkt > QR.rail
 
 ###########################
-##  180: Rail -> Ratfor  ##
+##  182: Rail -> Ratfor  ##
 ###########################
 
 rail QR.rail > QR.ratfor
 
 #########################
-##  181: Ratfor -> rc  ##
+##  183: Ratfor -> rc  ##
 #########################
 
 ratfor -o QR.ratfor.f QR.ratfor
@@ -1316,44 +1309,44 @@ gfortran -o QR QR.ratfor.f
 ./QR > QR.rc
 
 ###############################
-##  182: rc -> rep (librep)  ##
+##  184: rc -> rep (librep)  ##
 ###############################
 
 rc QR.rc > QR.rep
 
 #####################################
-##  183: rep (librep) -> ReScript  ##
+##  185: rep (librep) -> ReScript  ##
 #####################################
 
 rep QR.rep > QR.res
 
 #############################
-##  184: ReScript -> REXX  ##
+##  186: ReScript -> REXX  ##
 #############################
 
 bsc QR.res > QR.res.js
 node QR.res.js > QR.rexx
 
 #########################
-##  185: REXX -> Rhai  ##
+##  187: REXX -> Rhai  ##
 #########################
 
 rexx ./QR.rexx > QR.rhai
 
 #########################
-##  186: Rhai -> Ring  ##
+##  188: Rhai -> Ring  ##
 #########################
 
 rhai-run QR.rhai > QR.ring
 
 ###############################
-##  187: Ring -> RISC-V asm  ##
+##  189: Ring -> RISC-V asm  ##
 ###############################
 
 ring QR.ring > QR.rv.s
 
 ##############################
-##  188: RISC-V asm -> Roc  ##
+##  190: RISC-V asm -> Roc  ##
 ##############################
 
 rm -f QR
@@ -1362,51 +1355,51 @@ qemu-riscv64 ./QR > QR.roc
 rm -f QR
 
 ############################
-##  189: Roc -> Rockstar  ##
+##  191: Roc -> Rockstar  ##
 ############################
 
 roc build --output qrroc QR.roc
-[1;32m0[0m errors and [1;32m0[0m warnings found in 316 ms while successfully building:
+0 errors and 0 warnings found in 408 ms while successfully building:
 
     qrroc
 ./qrroc > QR.rock
 rm -f qrroc
 
 #############################
-##  190: Rockstar -> Ruby  ##
+##  192: Rockstar -> Ruby  ##
 #############################
 
 rockstar QR.rock > QR.rb
 
 #########################
-##  191: Ruby -> Rust  ##
+##  193: Ruby -> Rust  ##
 #########################
 
 ruby QR.rb > QR.rs
 
 ########################
-##  192: Rust -> Rye  ##
+##  194: Rust -> Rye  ##
 ########################
 
 rustc QR.rs
 ./QR > QR.rye
 
 #########################
-##  193: Rye -> Scala  ##
+##  195: Rye -> Scala  ##
 #########################
 
 rye QR.rye > QR.scala
 Warning: Could not open debug log file: open /tmp/rye_debug.log: permission denied
 
 ############################
-##  194: Scala -> Scheme  ##
+##  196: Scala -> Scheme  ##
 ############################
 
 scalac QR.scala
 scala QR > QR.scm
 
 #############################
-##  195: Scheme -> Scilab  ##
+##  197: Scheme -> Scilab  ##
 #############################
 
 guile QR.scm > QR.sci
@@ -1416,25 +1409,25 @@ guile QR.scm > QR.sci
 ;;; compiled /home/qr/.cache/guile/ccache/3.0-LE-8-4.7/usr/local/share/quine-relay/QR.scm.go
 
 ##########################
-##  196: Scilab -> sed  ##
+##  198: Scilab -> sed  ##
 ##########################
 
 scilab-cli -nb -f QR.sci > QR.sed
 
 #########################
-##  197: sed -> Seed7  ##
+##  199: sed -> Seed7  ##
 #########################
 
 sed -E -f QR.sed QR.sed > QR.sd7
 
 #################################
-##  198: Seed7 -> Shakespeare  ##
+##  200: Seed7 -> Shakespeare  ##
 #################################
 
 s7 -q QR.sd7 > QR.spl
 
 ##################################
-##  199: Shakespeare -> Simula  ##
+##  201: Shakespeare -> Simula  ##
 ##################################
 
 spl2c < QR.spl > QR.spl.c
@@ -1442,7 +1435,7 @@ gcc -O0 -z muldefs -o QR -I ./vendor/local/include -L ./vendor/local/lib QR.spl.
 ./QR > QR.sim
 
 ###############################
-##  200: Simula -> Singular  ##
+##  202: Simula -> Singular  ##
 ###############################
 
 cim -q -b -w QR.sim
@@ -1450,34 +1443,22 @@ cim -q -b -w QR.sim
 rm -f QR QR.o
 
 ###############################
-##  201: Singular -> S-Lang  ##
+##  203: Singular -> S-Lang  ##
 ###############################
 
 Singular -q QR.sing > QR.sl
 
-##########################
-##  202: S-Lang -> ///  ##
-##########################
+##############################
+##  204: S-Lang -> SNOBOL4  ##
+##############################
 
-slsh QR.sl > QR.slashes
+slsh QR.sl > QR.sno
 
-###########################
-##  203: /// -> SNOBOL4  ##
-###########################
+################################
+##  205: SNOBOL4 -> Squirrel  ##
+################################
 
-ruby vendor/slashes.rb QR.slashes > QR.sno
-
-####################################
-##  204: SNOBOL4 -> SQL (SQLite)  ##
-####################################
-
-snobol4 -b QR.sno > QR.sql
-
-#####################################
-##  205: SQL (SQLite) -> Squirrel  ##
-#####################################
-
-sqlite3 < QR.sql > QR.nut
+snobol4 -b QR.sno > QR.nut
 
 ####################################
 ##  206: Squirrel -> Standard ML  ##
@@ -1566,49 +1547,48 @@ ucblogo QR.logo > QR.ua
 
 uiua run --no-format QR.ua > QR.um
 
-##############################
-##  220: Umka -> Underload  ##
-##############################
+#############################
+##  220: Umka -> Unlambda  ##
+#############################
 
-umka QR.um > QR.ul
-
-##################################
-##  221: Underload -> Unlambda  ##
-##################################
-
-ruby vendor/underload.rb QR.ul > QR.unl
+umka QR.um > QR.unl
 
 ###############################
-##  222: Unlambda -> Uxntal  ##
+##  221: Unlambda -> Uxntal  ##
 ###############################
 
 ruby vendor/unlambda.rb QR.unl > QR.tal
 
 ########################
-##  223: Uxntal -> V  ##
+##  222: Uxntal -> V  ##
 ########################
 
 uxnasm QR.tal QR.rom
-Assembled QR.rom in 62.45kb(98.36% used), 8 labels, 0 macros.
+Assembled QR.rom in 55.73kb(87.81% used), 10 labels, 0 macros.
 uxncli QR.rom > QR.vlang.v
 Loaded QR.rom
 rm -f QR.rom
 
 ######################
-##  224: V -> Vala  ##
+##  223: V -> Vala  ##
 ######################
 
 v run QR.vlang.v > QR.vala
 
 #########################
-##  225: Vala -> Vale  ##
+##  224: Vala -> Vale  ##
 #########################
 
 valac QR.vala
+/usr/local/share/quine-relay/QR.vala.c: In function '_vala_main':
+/usr/local/share/quine-relay/QR.vala.c:281:26: warning: trigraph '??!' ignored, use '-trigraphs' to enable [-Wtrigraphs]
+  281 | "R/WsfH02P.)Y0wiiF!RV9HIp??!#3C\\\\\\\\\\\\\\\\%);$ZG_#4ugAa,]-mA]4Fc9B" \
+/usr/local/share/quine-relay/QR.vala.c:1269:4: warning: trigraph '??>' ignored, use '-trigraphs' to enable [-Wtrigraphs]
+ 1269 | ".s??>LP\\{jtO\\\\\\\\\\\\\\\\%\\{7,BVF.218vLv6XDt\\}~,_d(FOYhvW1/\\};z" \
 ./QR > QR.vale
 
 ###########################
-##  226: Vale -> Velato  ##
+##  225: Vale -> Velato  ##
 ###########################
 
 rm -rf qr_vale_out
@@ -1617,7 +1597,7 @@ valec build qr=QR.vale --output_dir qr_vale_out > /dev/null
 rm -rf qr_vale_out
 
 ##############################
-##  227: Velato -> Verilog  ##
+##  226: Velato -> Verilog  ##
 ##############################
 
 mono vendor/local/bin/Vlt.exe /s QR.mid
@@ -1626,14 +1606,14 @@ Using default runtime: v4.0.30319
 mono QR.exe > QR.v
 
 ############################
-##  228: Verilog -> VHDL  ##
+##  227: Verilog -> VHDL  ##
 ############################
 
 iverilog -o QR QR.v
 ./QR -vcd-none > QR.vhdl
 
 ##############################
-##  229: VHDL -> Vimscript  ##
+##  228: VHDL -> Vimscript  ##
 ##############################
 
 ghdl -a QR.vhdl
@@ -1641,16 +1621,24 @@ ghdl -e qr
 ghdl -r qr > QR.vim
 
 ######################################
-##  230: Vimscript -> Visual Basic  ##
+##  229: Vimscript -> Visual Basic  ##
 ######################################
 
 vim -EsS QR.vim > qr_vb/QR.vb
 
-######################################################
-##  231: Visual Basic -> WebAssembly (Text format)  ##
-######################################################
+########################################################
+##  230: Visual Basic -> WebAssembly (Binary format)  ##
+########################################################
 
-DOTNET_NOLOGO=1 dotnet run --project qr_vb > QR.wat
+DOTNET_NOLOGO=1 dotnet run --project qr_vb > QR.wasm
+
+#####################################################################
+##  231: WebAssembly (Binary format) -> WebAssembly (Text format)  ##
+#####################################################################
+
+node --experimental-wasi-unstable-preview1 vendor/wasi-runtime.js QR.wasm > QR.wat
+(node:5027) ExperimentalWarning: WASI is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
 
 ####################################################
 ##  232: WebAssembly (Text format) -> Whitespace  ##
@@ -1658,7 +1646,7 @@ DOTNET_NOLOGO=1 dotnet run --project qr_vb > QR.wat
 
 wat2wasm QR.wat -o QR.wat.wasm
 node --experimental-wasi-unstable-preview1 vendor/wasi-runtime.js QR.wat.wasm > QR.ws
-(node:5049) ExperimentalWarning: WASI is an experimental feature and might change at any time
+(node:5041) ExperimentalWarning: WASI is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 ###############################
@@ -1770,8 +1758,8 @@ ruby vendor/aheui.rb QR.aheui > QR.alg
 #################################
 
 marst QR.alg -o QR.alg.c
-QR.alg:93: warning: unlabelled dummy statement
-QR.alg:95: warning: unlabelled dummy statement
+QR.alg:99: warning: unlabelled dummy statement
+QR.alg:101: warning: unlabelled dummy statement
 gcc QR.alg.c -lalgol -lm -o QR
 ./QR > QR.a68
 rm -f QR QR.alg.c
@@ -1831,27 +1819,3 @@ ag++ --keywords -o QR QR.cc
 
 diff -s QR.aj QR2.aj
 Files QR.aj and QR2.aj are identical
-=== MAKE_ALL_RC=0 LAP_SECONDS=1957 ===
-=== ROUNDTRIP CHECK ===
-Files QR.aj and QR2.aj are identical
-65c6b3ca59af6c51dbdbbcf5cfbb881ae09ad741699c1260f16522a9f4896024  QR.aj
-65c6b3ca59af6c51dbdbbcf5cfbb881ae09ad741699c1260f16522a9f4896024  QR2.aj
-=== MALBOLGE U20 PARITY ===
-U20_PARITY=OK (212028 B, sha256=16778935af3bc5b3f2c53130c47c4570cba108459c819cc778df755ea704752b)
-=== CAPTURE ALL 256 STEP HASHES ===
-STEP_FILE_COUNT=256
-SHA256SUMS_256=OK (256/256)
-=== KEY INTERMEDIATE SIZES ===
--rwxr-xr-x 1 qr qr    50342 Nov 23 00:46 QR.aj
--rw-r--r-- 1 qr qr   900680 Nov 23 00:52 QR.asy
--rw-r--r-- 1 qr qr 12439884 Nov 23 01:06 QR.lazy
--rw-r--r-- 1 qr qr  4056485 Nov 23 01:13 QR.mb
--rw-r--r-- 1 qr qr   601423 Nov 23 01:19 QR.rb
--rw-r--r-- 1 qr qr 39674963 Nov 23 01:20 QR.spl
--rw-r--r-- 1 qr qr   212028 Nov 23 01:13 QR.wl
--rw-r--r-- 1 qr qr    50342 Nov 23 01:24 QR2.aj
--rw-r--r-- 1 qr qr   826401 Nov 23 01:19 QRP.purs
--rw-r--r-- 1 qr qr   411797 Nov 23 00:53 qr_cs/QR.cs
--rw-r--r-- 1 qr qr    68000 Nov 23 01:23 qr_vb/QR.vb
--rw-r--r-- 1 qr qr   379010 Nov 23 00:59 qrgleam/src/qr.gleam
--rw-r--r-- 1 qr qr   191435 Nov 23 01:19 qrpony/main.pony

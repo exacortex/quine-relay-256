@@ -27,6 +27,12 @@ static void byt(StringBuilder r, byte[] b, int n) {
     r.append(i < b.length ? (b[i] & 255) : 0);
   }
 }
+static void uxh(StringBuilder r, byte[] b, int n) {
+  for (int i = 0; i < n; i++) {
+    if (i > 0) r.append(i % 120 == 0 ? '\n' : ' ');
+    r.append(String.format("%02x", b[i] & 255));
+  }
+}
 
 static String procs(ArrayList<String> ac, int sz, String hdr, String pp, String pm, String pe, String mid, String cp, String end, int w) {
   StringBuilder r = sb(hdr);
@@ -248,7 +254,27 @@ static String step(String s) throws Exception {
       byte[] buf = new byte[8192];
       while (!df.finished()) bo.write(buf, 0, df.deflate(buf));
       df.end();
-      String b64 = Base64.getEncoder().encodeToString(bo.toByteArray());
+      byte[] zb = bo.toByteArray();
+      if (m == 4) {
+        int[] bq = new int[91];
+        for (int i = 33, k = 0; i <= 126; i++) if (i != 34 && i != 39 && i != 92) bq[k++] = i;
+        StringBuilder r = sb(pre);
+        int b = 0, n = 0;
+        for (byte xb : zb) {
+          b |= (xb & 255) << n; n += 8;
+          if (n > 13) {
+            int v = b & 8191;
+            if (v > 88) { b >>= 13; n -= 13; } else { v = b & 16383; b >>= 14; n -= 14; }
+            r.append((char) bq[v % 91]).append((char) bq[v / 91]);
+          }
+        }
+        if (n > 0) {
+          r.append((char) bq[b % 91]);
+          if (n > 7 || b > 90) r.append((char) bq[b / 91]);
+        }
+        return r.append(suf).toString();
+      }
+      String b64 = Base64.getEncoder().encodeToString(zb);
       if (m == 2) b64 = b64.replace("//", "/\"<>\"/");
       if (m == 3) {
         StringBuilder r = sb(pre);
@@ -728,8 +754,7 @@ static String step(String s) throws Exception {
       }
       return r.append(c).toString();
     }
-    case 44: { // RePair VMs: mode 0=Asm6502, 2=Uxntal
-      int mode = ri();
+    case 44: { // RePair VM: Asm6502
       String hdr = rs();
       int[] rng = new int[159];
       int k = 0;
@@ -746,49 +771,19 @@ static String step(String s) throws Exception {
         d1[idx] = w[(np - 1 - i) * 2 + 1];
       }
       StringBuilder r = sb(hdr);
-      if (mode == 2) {
-        for (int i = 0; i < dp; i++) {
-          if (i > 0 && (i * 2) % 120 == 0) r.append('\n');
-          else if (i > 0) r.append(' ');
-          r.append(String.format("%02x %02x", d0[i] & 255, d1[i] & 255));
-        }
-        r.append("\n@s\n");
-        for (int i = 0; i < t.length; i++) {
-          if (i > 0 && i % 120 == 0) r.append('\n');
-          else if (i > 0) r.append(' ');
-          r.append(String.format("%02x", t[i] & 255));
-        }
-        r.append(" 00\n");
-      } else {
-        byt(r, d0, dp);
-        r.append("\ndict1:\n");
-        byt(r, d1, dp);
-        r.append("\nmsg:\n");
-        byt(r, t, t.length + 1);
-        r.append('\n');
-      }
+      byt(r, d0, dp);
+      r.append("\ndict1:\n");
+      byt(r, d1, dp);
+      r.append("\nmsg:\n");
+      byt(r, t, t.length + 1);
+      r.append('\n');
       return r.toString();
     }
-    case 45: { // VisualBasic_WebAssemblyText_Whitespace(p1, p2, p3)
-      String p1 = rs(), p2 = rs(), p3 = rs();
-      int pages = (s.getBytes(U).length + 4200) / 65536 + 1;
-      return p1 + dbl(s, '"').replace("\n", "\"& VbLf &\"") + p2 + pages + p3;
-    }
-    case 46: { // Underload_Unlambda
-      int n = s.length(), b = 32 - Integer.numberOfLeadingZeros(n);
-      StringBuilder r = sb("(`)");
-      for (int i = 0; i < b; i++) {
-        if (((n >> i) & 1) == 1) r.append(":S");
-        if (i + 1 < b) r.append(":*");
-      }
-      r.append("!(");
-      for (int i = 0; i < n; i++) {
-        char c = s.charAt(i);
-        if (c == '\n') r.append('r');
-        else r.append('.').append(c);
-      }
-      r.append("k)S");
-      return r.toString();
+    case 45: { // VisualBasic_WebAssemblyBinary_WebAssemblyText_Whitespace(p1, p2, p3, p4, c2)
+      String p1 = rs(), p2 = rs(), p3 = rs(), p4 = rs();
+      int c2 = ri();
+      int sz = s.getBytes(U).length;
+      return p1 + (sz * 16 + 3) + p2 + (sz + c2) + p3 + dbl(s, '"').replace("\n", "\"& VbLf &\"") + p4;
     }
     case 47: { // UCBLogo
       String a = rs(), b = rs(), c0 = rs(), d = rs();
@@ -913,6 +908,73 @@ static String step(String s) throws Exception {
         if (!ps[i].isEmpty()) r.append('"').append(ps[i].replace("\\", "\\\\").replace("\n", "\\n")).append(c);
       }
       return r.append("]}").toString();
+    }
+    case 55: { // JuliaLang LZ77(pre, suf)
+      String pre = rs(), suf = rs();
+      byte[] bs = s.getBytes(U);
+      int n = bs.length;
+      int[] hd = new int[256];
+      Arrays.fill(hd, -1);
+      int[] pv = new int[n];
+      StringBuilder b = sb(), l = sb();
+      int sk = 0;
+      for (int i = 0; i < n; i++) {
+        int c = bs[i] & 255;
+        if (sk > 0) sk--;
+        else {
+          int bk = 0, bj = 0;
+          if (c != 91 && c != 93) {
+            for (int j = hd[c]; j >= 0 && (i - j) <= 5829; j = pv[j]) {
+              int k = 0;
+              while (k < 90 && i + k < n && bs[i + k] != 91 && bs[i + k] != 93 && bs[i + k] == bs[j + k]) k++;
+              if (k > bk) { bk = k; bj = j; if (k == 90) break; }
+            }
+          }
+          if (bk >= 4) {
+            for (int p = 0; p < b.length(); p += 20) {
+              int m = Math.min(20, b.length() - p);
+              int x = m - 1;
+              l.append((char) (x < 54 ? x + 37 : x + 40)).append(b, p, p + m);
+            }
+            b.setLength(0);
+            int d = i - bj - 1;
+            int d1 = 20 + d / 87, d2 = d % 87, d3 = bk - 4;
+            l.append((char) (d1 < 54 ? d1 + 37 : d1 + 40));
+            l.append((char) (d2 < 54 ? d2 + 37 : d2 + 40));
+            l.append((char) (d3 < 54 ? d3 + 37 : d3 + 40));
+            sk = bk - 1;
+          } else b.append((char) c);
+        }
+        pv[i] = hd[c];
+        hd[c] = i;
+      }
+      for (int p = 0; p < b.length(); p += 20) {
+        int m = Math.min(20, b.length() - p);
+        int x = m - 1;
+        l.append((char) (x < 54 ? x + 37 : x + 40)).append(b, p, p + m);
+      }
+      return pre + esc(l.toString()).replace("$", "\\$") + suf;
+    }
+    case 56: { // Uxntal Base64 ROM pack
+      String hdr = rs();
+      int p1 = s.indexOf("base64.decode('");
+      int bs = p1 + 15;
+      int p2 = s.indexOf('\'', bs);
+      String pre = s.substring(0, bs);
+      String b64 = s.substring(bs, p2);
+      String suf = s.substring(p2);
+      byte[] raw = Base64.getDecoder().decode(b64);
+      int n3 = (raw.length / 3) * 3;
+      String tail = b64.substring((n3 / 3) * 4) + suf;
+      byte[] pb = (pre + '\0').getBytes(U);
+      byte[] tb = (tail + '\0').getBytes(U);
+      StringBuilder r = sb(hdr);
+      uxh(r, pb, pb.length);
+      r.append("\n@z\n");
+      if (n3 > 0) { uxh(r, raw, n3); r.append('\n'); }
+      r.append("@ze\n@suf\n");
+      uxh(r, tb, tb.length);
+      return r.append('\n').toString();
     }
     default: throw new RuntimeException("bad op " + op);
   }

@@ -44,6 +44,32 @@ end
 
 PROBE = "___QR_PROBE_XYZ___"
 
+# Base91 encoder using printable ASCII 33..126 minus '"' (34), ':' (58), '\\' (92)
+# and B91Q excluding '\'' (39) instead of ':' (58) for Zig/V literals
+B91  = (33..126).reject { |c| c == 34 || c == 58 || c == 92 }.map(&:chr)
+B91Q = (33..126).reject { |c| c == 34 || c == 39 || c == 92 }.map(&:chr)
+def b91_encode(bytes, alpha = B91)
+  out = +""
+  b = 0; n = 0
+  bytes.each_byte do |x|
+    b |= x << n; n += 8
+    if n > 13
+      v = b & 8191
+      if v > 88
+        b >>= 13; n -= 13
+      else
+        v = b & 16383; b >>= 14; n -= 14
+      end
+      out << alpha[v % 91] << alpha[v / 91]
+    end
+  end
+  if n > 0
+    out << alpha[b % 91]
+    out << alpha[b / 91] if n > 7 || b > 90
+  end
+  out
+end
+
 def probe_wrap(step)
   out = eval_step(step, PROBE)
   parts = out.split(PROBE, -1)
@@ -131,13 +157,17 @@ def compile_step(buf, step)
 
   # --- Simple e[PREV] WRAP ---
   when "Rhai", "LibRep", "PythonLang", "Pyret", "Prolog", "Pony", "Pike", "PARIGP",
-       "Odin", "OCaml", "ObjC", "Nickle", "Mustache_NASM", "MSIL", "MiniZinc",
+       "Odin_Ook", "OCaml", "ObjC", "Nickle", "Mustache_NASM", "MSIL", "MiniZinc",
        "LFE", "Janet", "IoLang", "Hy", "GDB", "GAP", "Gambas", "Flex",
        "Fennel", "Dyon", "Crystal", "AFNIX_Aheui", "VimScript",
        "Vala", "TypeScript", "TXR", "Swift", "StandardML_Subleq", "Squirrel",
-       "Rye", "Rust", "EmacsLisp_Emmental"
+       "Rye", "Rust", "EmacsLisp", "Umka_Unlambda"
     pre, suf = probe_wrap(step)
     buf.wrap(pre, suf, F_E)
+
+  when "JavaScript_Jq_JSFuck"
+    pre, suf = probe_wrap(step)
+    buf.wrap(pre, suf, F_CHOMP | F_E)
 
   # --- e[PREV] + extra flag WRAP ---
   when "PocketLang"
@@ -148,8 +178,6 @@ def compile_step(buf, step)
     pre, suf = probe_wrap(step); buf.wrap(pre, suf, F_E | F_QMARK)
   when "LiveScriptLang"
     pre, suf = probe_wrap(step); buf.wrap(pre, suf, F_E | F_HASH)
-  when "JavaScript_Jq"
-    pre, suf = probe_wrap(step); buf.wrap(pre, suf, F_E | F_CTRL_HEX)
   when "GolfScript"
     pre, suf = probe_wrap(step); buf.wrap(pre, suf, F_CHOMP | F_E | F_HASH | F_HI_HEX)
   when "Gnuplot"
@@ -160,15 +188,13 @@ def compile_step(buf, step)
     pre, suf = probe_wrap(step); buf.wrap(pre, suf, F_E | F_PCT)
   when "Vale_Velato"
     pre, suf = probe_wrap(step); buf.wrap(pre, suf, F_E | F_BRACE_BS)
-  when "Umka"
-    pre, suf = probe_wrap(step); buf.wrap(pre, suf, F_E | F_PCT2)
   when "Cyber"
     pre, suf = probe_wrap(step); buf.map_wrap(pre, suf, [["$(", "\\$("]], F_E, 0)
 
   # --- Simple d / Q WRAP ---
   when "BQN_BrainFlak_Brainfuck", "DafnyLang"
     pre, suf = probe_wrap(step); buf.wrap(pre, suf, F_DQ)
-  when "GNUSmalltalk", "Falcon", "Elvish", "SQL"
+  when "GNUSmalltalk", "Falcon", "Elvish"
     pre, suf = probe_wrap(step); buf.wrap(pre, suf, F_SQ)
   when "C3"
     pre, suf = probe_wrap(step); buf.wrap(pre, suf, F_BQ)
@@ -208,14 +234,19 @@ def compile_step(buf, step)
   when "Nial"
     pre, suf = probe_wrap(step)
     buf.map_wrap(pre, suf, [["'", "''"], ["\n", "' (char 10) '"]])
-  when "Ksh_LazyK", "IonShell", "Zsh"
+  when "Ksh_LazyK", "Zsh"
     pre, suf = probe_wrap(step)
     buf.map_wrap(pre, suf, [["'", "'\"'\"'"]])
+  when "IonShell"
+    buf.map_wrap("echo -n '", "'", [["'", "'\"'\"'"], ["@{", "@''{"], ["@(", "@''("], ["${", "$''{"], ["$(", "$''("]])
   when "TcshLang"
     buf.chunk("set echo_style=bsd\n", "\n", "echo -n '", "'", "\n", 1000, 0, 0, [["'", "'\"'\"'"], ["\n", "'\necho ''\necho -n '"]])
   when "JuliaLang"
-    pre, suf = probe_wrap(step)
-    buf.map_wrap(pre, suf, [["%", "%0"], ["\\", "%1"], ['"', "%2"], ["$", "%5"], ["\n", "%4"]])
+    out = eval_step(step, PROBE)
+    tok = (PROBE.bytesize - 1 + 37).chr + PROBE
+    pre, suf = out.split(tok, -1)
+    raise "Julia probe mismatch" unless pre && suf && out.split(tok, -1).size == 2
+    buf.byte(55).str(pre).str(suf)
   when "J"
     pre, suf = probe_wrap(step)
     buf.map_wrap(pre, suf, [["'", "''"], ["\n", "',(10{a.),'"]])
@@ -313,8 +344,6 @@ def compile_step(buf, step)
       pre, suf = probe_wrap(step)
       buf.map_wrap(pre, suf, [["\\", "\\\\"], ['"', '\\"'], ["$", "\\$"], ["[", "\\["]])
     end
-  when "Slashes"
-    buf.map_wrap("", "", [["\\", "\\\\"], ["/", "\\/"]])
 
   # --- CHUNK classes (Op 2) ---
   when "RLang"
@@ -356,7 +385,7 @@ def compile_step(buf, step)
   when "Haxe_Hexagony"
     pre, suf = probe_chunk_ends(step, 'u.add("', '");')
     buf.chunk(pre, suf, 'u.add("', '");', "", 4000, F_E)
-  when "Groovy"
+  when "Groovy_Gzip"
     if code.include?("Deflate")
       out = eval_step(step, PROBE)
       b64 = [Zlib::Deflate.deflate(PROBE, 9)].pack("m0")
@@ -375,7 +404,7 @@ def compile_step(buf, step)
     buf.chunk("", "", 'printn("', '");', "", 61 * 255, F_E)
   when "Frege"
     buf.chunk("module QR where main args = do {", "}", 'putStr("', '")', ";", 15000, F_E)
-  when "Forth_Fortran90"
+  when "Forth_FORTRAN77_Fortran90"
     pre, suf = probe_chunk_ends(step, 'S\" ', "\" GO\n")
     buf.chunk(pre, suf, 'S\" ', "\" GO\n", "", 4000, F_E)
   when "Flix"
@@ -413,9 +442,8 @@ def compile_step(buf, step)
   when "Berry_BLC8"
     pre, suf = probe_chunk_ends(step, '+"', '"')
     buf.chunk(pre, suf, '+"', '"', "", 2000, F_E)
-  when "BeanShell_Beatnik"
-    pre, suf = probe_chunk_ends(step, 'f("', '");')
-    buf.chunk(pre, suf, 'f("', '");', "", 4000, F_E)
+  when "BeanShell"
+    buf.chunk("", "", 'System.out.print("', '");', "", 15000, F_E)
   when "Ballerina"
     buf.chunk("import ballerina/io;public function main(){", " }", 'io:print("', '");', "", 15000, F_E)
   when "Awk"
@@ -480,7 +508,18 @@ def compile_step(buf, step)
       pre, suf = probe_wrap(step)
       buf.wrap(pre, suf, code.include?("e[") ? F_E : 0)
     end
-  when "Zig", "VLang"
+  when "Zig"
+    if code.include?("Deflate")
+      out = eval_step(step, PROBE)
+      b91 = b91_encode(Zlib::Deflate.deflate(PROBE, 9), B91Q)
+      pre, suf = out.split(b91, -1)
+      raise "#{name} B91Q split failed!" unless pre && suf && out.split(b91, -1).size == 2
+      buf.byte(3).str(pre).str(suf).varint(4)
+    else
+      pre, suf = probe_wrap(step)
+      buf.wrap(pre, suf, code.include?("e[") ? F_E : 0)
+    end
+  when "VLang"
     if code.include?("Deflate")
       out = eval_step(step, PROBE)
       b64 = [Zlib::Deflate.deflate(PROBE, 9)].pack("m0")
@@ -589,21 +628,28 @@ def compile_step(buf, step)
     r = Random.new(42)
     rich = Array.new(4000) { (32 + r.rand(90)).chr }.join
     hdr = eval_step(step, rich).split("dict0:\n", 2)[0] + "dict0:\n"
-    buf.byte(44).varint(0).str(hdr)
+    buf.byte(44).str(hdr)
   when "Z80Asm"
     hdr = eval_step(step, PROBE).split(" db \"#{PROBE}\"", 2)[0]
     buf.byte(16).str(hdr).str("[\\x20\\x21\\x23-\\x7e]{1,2000}|.").str("\"\n").str(" db ").str("").str(' db "').str('"').str("\n").str("\n db 0\n")
   when "Uxntal"
-    r = Random.new(42)
-    rich = Array.new(4000) { (32 + r.rand(90)).chr }.join
-    hdr = eval_step(step, rich).split("@dict\n", 2)[0] + "@dict\n"
-    buf.byte(44).varint(2).str(hdr)
-  when "VisualBasic_WebAssemblyText_Whitespace"
-    out = eval_step(step, PROBE)
-    p1, rest = out.split(PROBE, 2)
-    p2, p3 = rest.split("(memory 1)", 2)
-    buf.byte(45).str(p1).str(p2 + "(memory ").str(")" + p3)
-  when "Underload_Unlambda" then buf.byte(46)
+    up = "pre\nbase64.decode('QUJDRQ==')suf"
+    hdr = eval_step(step, up).split("@pre\n", 2)[0] + "@pre\n"
+    buf.byte(56).str(hdr)
+  when "VisualBasic_WebAssemblyBinary_WebAssemblyText_Whitespace"
+    p2_probe = PROBE + "Q" * 1000
+    out = eval_step(step, p2_probe)
+    v1 = (p2_probe.bytesize * 16 + 3).to_s
+    p1, rest1 = out.split(v1, -1)
+    raise "VB probe p1 mismatch" unless p1 && rest1 && out.split(v1, -1).size == 2
+    m = rest1.match(/\(8\*c-(\d+)\)/)
+    raise "VB probe c2 mismatch" unless m
+    c2 = m[1].to_i - p2_probe.bytesize
+    p2, rest2 = rest1.split(m[1], -1)
+    raise "VB probe p2 mismatch" unless p2 && rest2 && rest1.split(m[1], -1).size == 2
+    p3, p4 = rest2.split(p2_probe, -1)
+    raise "VB probe p3/p4 mismatch" unless p3 && p4 && rest2.split(p2_probe, -1).size == 2
+    buf.byte(45).str(p1).str(p2).str(p3).str(p4).varint(c2)
   when "UCBLogo"
     buf.byte(47).str("CHAR ").str("FIRST [|").str("TYPE (WORD ").str(" BYE")
   when "Taxi"
@@ -708,30 +754,6 @@ ordered.each { |st| compile_step(buf, st) }
 raw_eng = File.read(ENGINE_PATH, encoding: "UTF-8")
 min_eng = minify_java(raw_eng)
 
-# Base91 encoder using printable ASCII 33..126 minus '"' (34), ':' (58), '\\' (92)
-B91 = (33..126).reject { |c| c == 34 || c == 58 || c == 92 }.map(&:chr)
-def b91_encode(bytes)
-  out = +""
-  b = 0; n = 0
-  bytes.each_byte do |x|
-    b |= x << n; n += 8
-    if n > 13
-      v = b & 8191
-      if v > 88
-        b >>= 13; n -= 13
-      else
-        v = b & 16383; b >>= 14; n -= 14
-      end
-      out << B91[v % 91] << B91[v / 91]
-    end
-  end
-  if n > 0
-    out << B91[b % 91]
-    out << B91[b / 91] if n > 7 || b > 90
-  end
-  out
-end
-
 # Pack [min_eng, step_count, step_specs...] into ONE single zlib-9 blob B (Base91)!
 full_buf = BinBuf.new
 full_buf.str(min_eng)
@@ -774,7 +796,8 @@ ordered[0, 30].each do |st|
       if system("command -v xa >/dev/null 2>&1")
         Dir.mktmpdir do |d|
           File.binwrite("#{d}/QR.s", nxt_rom.encode("UTF-8").b)
-          bin_sz = File.size("#{d}/QR.bin") if system("xa -o #{d}/QR.bin #{d}/QR.s >/dev/null 2>&1")
+          raise "xa failed to assemble Asm6502 ROM!" unless system("xa -o #{d}/QR.bin #{d}/QR.s >/dev/null 2>&1")
+          bin_sz = File.size("#{d}/QR.bin")
         end
       end
       bin_sz ||= nxt_rom.scan(/\.byt\s+([^\n]+)/).sum { |m| m[0].split(",").size } + 160
@@ -782,7 +805,8 @@ ordered[0, 30].each do |st|
       if system("command -v z80asm >/dev/null 2>&1")
         Dir.mktmpdir do |d|
           File.binwrite("#{d}/QR.z80", nxt_rom.encode("UTF-8").b)
-          bin_sz = File.size("#{d}/qr.com") if system("z80asm -o #{d}/qr.com #{d}/QR.z80 >/dev/null 2>&1")
+          raise "z80asm failed to assemble Z80Asm ROM!" unless system("z80asm -o #{d}/qr.com #{d}/QR.z80 >/dev/null 2>&1")
+          bin_sz = File.size("#{d}/qr.com")
         end
       end
       bin_sz ||= nxt_rom.scan(/^\s*db\s+([^\n]+)/).sum { |m| m[0].split(",").size } + 96
@@ -790,10 +814,11 @@ ordered[0, 30].each do |st|
       if system("command -v uxnasm >/dev/null 2>&1")
         Dir.mktmpdir do |d|
           File.binwrite("#{d}/QR.tal", nxt_rom.encode("UTF-8").b)
-          bin_sz = File.size("#{d}/QR.rom") if system("uxnasm #{d}/QR.tal #{d}/QR.rom >/dev/null 2>&1")
+          raise "uxnasm failed to assemble Uxntal ROM!" unless system("uxnasm #{d}/QR.tal #{d}/QR.rom >/dev/null 2>&1")
+          bin_sz = File.size("#{d}/QR.rom")
         end
       end
-      bin_sz ||= (nxt_rom[/&d\s+(.*)\z/m, 1] || "").scan(/[0-9a-f]{2}/i).size + 96
+      bin_sz ||= (nxt_rom[/@z\n(.*?)\n@ze/m, 1] || "").scan(/[0-9a-f]{2}/i).size + 360
     end
     limit = rom_limits[st.name]
     $stderr.puts format("ROM guard %-8s: %d B / %d B (guard < %d B, spare=%d B)", st.name, bin_sz, limit, ROM_GUARD, limit - bin_sz)

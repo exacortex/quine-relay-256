@@ -41,8 +41,12 @@ Aheui: aheui.rb
   * self-made (mame/quine-relay)
   * License: MIT
 
-WebAssembly (Text format) WASI shim: wasi-runtime.js
+WebAssembly (Binary format & Text format) WASI shim: wasi-runtime.js
   * Node.js WASI preview1 runner (mame/quine-relay)
+  * License: MIT
+
+Ook!: ook-to-bf.rb
+  * self-made (mame/quine-relay)
   * License: MIT
 
 ## 2. Inherited from upstream mame/quine-relay — third-party interpreters & archives
@@ -95,7 +99,7 @@ Velato: Velato_0_1.zip
 Malbolge Unshackled: Unshackled.c
   * Matthias Lutter (https://github.com/Lutter/malbolge-unshackled)
   * License: CC0 1.0 Public Domain
-  * Untouched upstream reference interpreter executed by Makefile step 252.
+  * Untouched upstream reference interpreter executed by the relay Makefile.
 
 Malbolge Unshackled (fixed 20-trit parity verifier): Unshackled-20.c
   * Matthias Lutter (https://github.com/Lutter/malbolge-unshackled)
@@ -109,25 +113,5 @@ K (ngn/k): ngnk-b9eeb91e.tar.gz
   * License: AGPLv3 (complete upstream source archive including LICENSE;
     vendored because upstream archived the repository)
 
-## 4. Added in this fork — minimal spec-complete esolang runners (MIT)
-# Following mame/quine-relay's precedent for tiny esolangs lacking packaged
-# Ubuntu interpreters (each implements the full language spec).
-
-Underload: underload.rb
-  * self-made, complete 8/8 Underload spec (https://esolangs.org/wiki/Underload)
-  * License: MIT
-
-Emmental: emmental.rb
-  * self-made, complete 13/13 Emmental spec with lexical '!' capture, verified
-    against Chris Pressey's catseye/Emmental (https://esolangs.org/wiki/Emmental)
-  * License: MIT
-
-/// (Slashes): slashes.rb
-  * self-made, exact leftmost single-step substitution spec (with O(N) fast path
-    for non-overlapping 1-byte patterns) (https://esolangs.org/wiki////)
-  * License: MIT
-
-Beatnik: beatnik.rb
-  * self-made, complete Beatnik spec (halts strictly on score 17; scores <5 and
-    >=18 are no-ops) (https://esolangs.org/wiki/Beatnik)
-  * License: MIT
+# Zero self-written fork interpreters are included in this directory; every fork-added
+# language runs on a third-party upstream compiler or interpreter.

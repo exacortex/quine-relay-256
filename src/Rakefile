@@ -26,6 +26,7 @@ LIBS = %w(
   blc-boot.dat
   grass-boot.dat
   malbolge-boot.dat
+  wasm-tmpl.dat
 )
 
 file "lazyk-boot.dat" => "lazyk-boot.dat.gen.rb" do
@@ -42,6 +43,10 @@ end
 
 file "malbolge-boot.dat" => "malbolge-boot.dat.gen.py" do
   sh "python3", "malbolge-boot.dat.gen.py"
+end
+
+file "wasm-tmpl.dat" => "wasm-tmpl.dat.gen.rb" do
+  ruby "wasm-tmpl.dat.gen.rb"
 end
 
 file "../QR.aj" => ["gen-aj.rb", "engine_body.java", *LIBS] do

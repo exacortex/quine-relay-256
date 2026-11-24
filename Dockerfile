@@ -4,10 +4,10 @@ RUN dpkg-divert --quiet --local --rename --add /usr/bin/sync && ln -sf /bin/true
 RUN chronic apt-get -qq install -y 9base afnix algol68g aspectc++ aspectj asymptote ats2-lang bash bc bison brotli bsh ca-certificates cc65 clang clips clisp clojure cmake coffeescript && chronic apt-get clean
 RUN chronic apt-get -qq install -y crystal curl dc default-jdk-headless dhall dotnet-sdk-10.0 elixir elvish emacs-nox erlang erlang-nox execline fennel fish flex fp-compiler g++ gambas3-gb-pcre gambas3-scripter gap && chronic apt-get clean
 RUN chronic apt-get -qq install -y gawk gcc gcc-aarch64-linux-gnu gcc-riscv64-linux-gnu gdb gdc generator-scripting-language genius gforth gfortran ghc ghdl ghostscript git gm2 gnat gnucobol4 gnuplot gobjc golang && chronic apt-get clean
-RUN chronic apt-get -qq install -y gpt gri groovy guile-3.0 hare haxe hy icont iconx intercal iverilog jasmin-sable jq kotlin ksh libevent-dev libfl-dev libgd-dev libpng-dev libpolyml-dev && chronic apt-get clean
-RUN chronic apt-get -qq install -y livescript llvm lua5.3 m4 macaulay2 make maxima minizinc mono-devel nasm neko newlisp nickle nim node-typescript nodejs ocaml octave openjdk-25-jdk pari-gp && chronic apt-get clean
-RUN chronic apt-get -qq install -y parser3-cgi perl php-cli picolisp pike8.0 polyml python3 qbe qemu-user r-base racket rakudo ratfor rc regina-rexx rep ruby ruby-mustache rustc scala && chronic apt-get clean
-RUN chronic apt-get -qq install -y scilab-cli sed singular slsh spin sqlite3 squirrel3 surgescript swi-prolog swiftlang tcl tcsh unzip valac vim wabt xa65 xsltproc yabasic yorick && chronic apt-get clean
+RUN chronic apt-get -qq install -y gpt gri groovy guile-3.0 gzip hare haxe hy icont iconx intercal iverilog jasmin-sable jq kotlin ksh libevent-dev libfl-dev libgd-dev libpng-dev && chronic apt-get clean
+RUN chronic apt-get -qq install -y libpolyml-dev livescript llvm lua5.3 m4 macaulay2 make maxima minizinc mono-devel nasm neko newlisp nickle nim node-typescript nodejs ocaml octave openjdk-25-jdk && chronic apt-get clean
+RUN chronic apt-get -qq install -y pari-gp parser3-cgi perl php-cli picolisp pike8.0 polyml python3 qbe qemu-user r-base racket rakudo ratfor rc regina-rexx rep ruby ruby-mustache rustc && chronic apt-get clean
+RUN chronic apt-get -qq install -y scala scilab-cli sed singular slsh spin squirrel3 surgescript swi-prolog swiftlang tcl tcsh unzip valac vim wabt xa65 xsltproc yabasic yorick && chronic apt-get clean
 RUN chronic apt-get -qq install -y z80asm zoem zsh && chronic apt-get clean
 RUN chronic apt-get -qq install -y python3-pip golang-go cargo && chronic apt-get clean
 RUN GOBIN=/usr/local/bin go install github.com/d5/tengo/v2/cmd/tengo@v2.17.0 && GOBIN=/usr/local/bin go install github.com/mattn/anko@v0.1.15
