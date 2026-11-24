@@ -793,32 +793,26 @@ ordered[0, 30].each do |st|
     bin_sz = nil
     case st.name
     when "Asm6502"
-      if system("command -v xa >/dev/null 2>&1")
-        Dir.mktmpdir do |d|
-          File.binwrite("#{d}/QR.s", nxt_rom.encode("UTF-8").b)
-          raise "xa failed to assemble Asm6502 ROM!" unless system("xa -o #{d}/QR.bin #{d}/QR.s >/dev/null 2>&1")
-          bin_sz = File.size("#{d}/QR.bin")
-        end
+      raise "Asm6502 ROM guard requires 'xa' on PATH (run inside the Ubuntu 26.04 Docker image or install xa65)" unless system("command -v xa >/dev/null 2>&1")
+      Dir.mktmpdir do |d|
+        File.binwrite("#{d}/QR.s", nxt_rom.encode("UTF-8").b)
+        raise "xa failed to assemble Asm6502 ROM!" unless system("xa -o #{d}/QR.bin #{d}/QR.s >/dev/null 2>&1")
+        bin_sz = File.size("#{d}/QR.bin")
       end
-      bin_sz ||= nxt_rom.scan(/\.byt\s+([^\n]+)/).sum { |m| m[0].split(",").size } + 160
     when "Z80Asm"
-      if system("command -v z80asm >/dev/null 2>&1")
-        Dir.mktmpdir do |d|
-          File.binwrite("#{d}/QR.z80", nxt_rom.encode("UTF-8").b)
-          raise "z80asm failed to assemble Z80Asm ROM!" unless system("z80asm -o #{d}/qr.com #{d}/QR.z80 >/dev/null 2>&1")
-          bin_sz = File.size("#{d}/qr.com")
-        end
+      raise "Z80Asm ROM guard requires 'z80asm' on PATH (run inside the Ubuntu 26.04 Docker image or install z80asm)" unless system("command -v z80asm >/dev/null 2>&1")
+      Dir.mktmpdir do |d|
+        File.binwrite("#{d}/QR.z80", nxt_rom.encode("UTF-8").b)
+        raise "z80asm failed to assemble Z80Asm ROM!" unless system("z80asm -o #{d}/qr.com #{d}/QR.z80 >/dev/null 2>&1")
+        bin_sz = File.size("#{d}/qr.com")
       end
-      bin_sz ||= nxt_rom.scan(/^\s*db\s+([^\n]+)/).sum { |m| m[0].split(",").size } + 96
     when "Uxntal"
-      if system("command -v uxnasm >/dev/null 2>&1")
-        Dir.mktmpdir do |d|
-          File.binwrite("#{d}/QR.tal", nxt_rom.encode("UTF-8").b)
-          raise "uxnasm failed to assemble Uxntal ROM!" unless system("uxnasm #{d}/QR.tal #{d}/QR.rom >/dev/null 2>&1")
-          bin_sz = File.size("#{d}/QR.rom")
-        end
+      raise "Uxntal ROM guard requires 'uxnasm' on PATH (run inside the Ubuntu 26.04 Docker image or install uxnasm)" unless system("command -v uxnasm >/dev/null 2>&1")
+      Dir.mktmpdir do |d|
+        File.binwrite("#{d}/QR.tal", nxt_rom.encode("UTF-8").b)
+        raise "uxnasm failed to assemble Uxntal ROM!" unless system("uxnasm #{d}/QR.tal #{d}/QR.rom >/dev/null 2>&1")
+        bin_sz = File.size("#{d}/QR.rom")
       end
-      bin_sz ||= (nxt_rom[/@z\n(.*?)\n@ze/m, 1] || "").scan(/[0-9a-f]{2}/i).size + 360
     end
     limit = rom_limits[st.name]
     $stderr.puts format("ROM guard %-8s: %d B / %d B (guard < %d B, spare=%d B)", st.name, bin_sz, limit, ROM_GUARD, limit - bin_sz)
