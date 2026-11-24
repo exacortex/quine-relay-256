@@ -238,7 +238,11 @@ def compile_step(buf, step)
     pre, suf = probe_wrap(step)
     buf.map_wrap(pre, suf, [["'", "'\"'\"'"]])
   when "IonShell"
-    buf.map_wrap("echo -n '", "'", [["'", "'\"'\"'"], ["@{", "@''{"], ["@(", "@''("], ["${", "$''{"], ["$(", "$''("]])
+    pre = "let q = \"'\"\nlet b = \"\\\\\"\nlet d = '$'\nlet a = '@'\nlet l = '['\nlet r = ']'\nlet o = '{'\nlet c = '}'\nlet p = '('\nlet k = ')'\nlet x = ''\n"
+    buf.chunk(pre, "\necho -n $x\n", "let x ++= '", "'", "\n", 4000, 0, 0,
+      [["'", "'$q'"], ["\\", "'$b'"], ["$", "'$d'"], ["@", "'$a'"],
+       ["[", "'$l'"], ["]", "'$r'"], ["{", "'$o'"], ["}", "'$c'"],
+       ["(", "'$p'"], [")", "'$k'"]])
   when "TcshLang"
     buf.chunk("set echo_style=bsd\n", "\n", "echo -n '", "'", "\n", 1000, 0, 0, [["'", "'\"'\"'"], ["\n", "'\necho ''\necho -n '"]])
   when "JuliaLang"

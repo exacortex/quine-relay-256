@@ -7,7 +7,7 @@ These notes document how [exacortex/quine-relay-256](https://github.com/exacorte
 | Relay | Steps | Composition | Order | Verification |
 |---|---:|---|---|---|
 | [`mame/quine-relay`](https://github.com/mame/quine-relay) *(upstream original, 2013–2026)* | **128** | All 128 steps of Endoh's Ubuntu 26.04 relay | Hand-tuned (`Ruby -> ... -> Ruby`) | Upstream CI, Ubuntu 26.04 (`QR.rb` 13,664 B) |
-| **[exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256)** *(this fork, v3 "The Endoh Stamp")* | **256** | **128** upstream Endoh steps (`100%` preserved) + **128** standalone fork additions | **Strict A–Z** (`AspectJ -> Asymptote -> ... -> Zsh -> 6502 asm -> A+ -> ... -> AspectC++ -> AspectJ`) | Offline `--network=none` non-root `USER qr` lap (`39.9 min` / `2,396.8s`, `QR.aj` 54,047 B `sha256: ed0fbe68...` == `QR2.aj`, **256/256** `SHA256SUMS`, `U20_PARITY=OK`; [proof](proof/)) |
+| **[exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256)** *(this fork, v3.1 "The Endoh Stamp")* | **256** | **128** upstream Endoh steps (`100%` preserved) + **128** standalone fork additions | **Strict A–Z** (`AspectJ -> Asymptote -> ... -> Zsh -> 6502 asm -> A+ -> ... -> AspectC++ -> AspectJ`) | Offline `--network=none` non-root `USER qr` lap (`38.7 min` / `2,319.8s`, `QR.aj` 54,170 B `sha256: 126a0c37...` == `QR2.aj`, **256/256** `SHA256SUMS`, `U20_PARITY=OK`; [proof](proof/)) |
 
 ## Counting Table (Rule 7 Disclosure)
 
@@ -34,19 +34,19 @@ Yusuke Endoh invented and hand-crafted Quine Relay across more than a decade. Ra
 2. **Every one of our 128 fork additions stands on its own canonical third-party upstream toolchain (`this fork`)**:
    - **246 / 256 steps** pass all 7 static purity rules cleanly, including **128 / 128** of our fork additions (zero fork-side tool accommodations, zero custom fork runners).
    - **16 / 20 historical `mame` retirees** restored (`AspectC++`, `Parrot asm (PASM)`, `Boo`, `Maxima`, `Gri`, `UCBLogo`, `GNU Smalltalk`, `Julia`, `Dafny`, `Generator Scripting Language`, `nesC`, `Lisaac`, `eC`, `CDuce`, `A+`, `Falcon`).
-   - **Malbolge Unshackled** (unbounded ternary Malbolge via CC0 `Unshackled.c` / `Unshackled-20.c`; zero `'/'` input ops executed, `0` stdin reads under `strace`, `MB_STDIN_SAME`, `U20_PARITY=OK`) — noting candidly that classic 10-trit Malbolge's `59,049`-cell limit remains unbroken in strict A–Z ordering.
+   - **Malbolge Unshackled** (unbounded ternary Malbolge via CC0 `Unshackled.c` / `Unshackled-20.c`; `MB_STDIN_SAME=OK` and `U20_PARITY=OK` on v3.1, with `0` `'/'` input ops executed and `0` stdin reads under `bb598ba` `strace`) — noting candidly that classic 10-trit Malbolge's `59,049`-cell limit remains unbroken in strict A–Z ordering.
    - **111 standalone fork languages**, with zero duplicate dialects/shells, zero query-only formats, and zero custom fork esolang runners in `vendor/`.
 
 [LANGUAGES.md](LANGUAGES.md) lists all **256 steps** (`128 mame (Endoh Stamp) + 128 this fork`) in exact A–Z run order.
 
 ## Reproducibility, Hardware / VM Limits & `vendor/` Inventory
 
-- **Deterministic rebuild scope**: Inside the Ubuntu 26.04 Docker image (matching the image's system `zlib` and with `xa`, `z80asm`, and `uxnasm` required on `PATH` for the ROM guard), `cd src && rake` reproduces `QR.aj` (`54,047 B`, `ed0fbe68141e50a7b8cb06c1ebbbe86e17b797823a20a9d1403df256f134e2c8`) byte-identically. Outside that image, differing host `zlib` versions yield a valid, slightly different-size `QR.aj` (for example `54,129 B`).
+- **Deterministic rebuild scope**: Inside the Ubuntu 26.04 Docker image (matching the image's system `zlib` and with `xa`, `z80asm`, and `uxnasm` required on `PATH` for the ROM guard), `cd src && rake` reproduces `QR.aj` (`54,170 B`, `126a0c37b07545182d95ebd060ad46241ff2033151fa9f061d66f89ae2f911f2`) byte-identically. Outside that image, differing host `zlib` versions yield a valid, slightly different-size `QR.aj` (for example `54,129 B`).
 - **16-bit 64 KiB VMs (`< 64,000 B` hard guard in `src/gen-aj.rb` and `src/vm-exec.rb`; raises if assembler missing)**:
-  - `6502 asm` (`xa` + `sim65`): `46,723 B` / `65,012 B` limit (`spare = 18,289 B`)
-  - `Z80 asm` (`z80asm` + `tnylpo`): `63,281 B` / `64,991 B` limit (`spare = 1,710 B`)
-  - `Uxntal` (`uxnasm` + `uxncli`): `57,065 B` / `65,280 B` limit (`spare = 8,215 B`)
-- **Pure stdout / zero-cheating checks**: Verified with an offline non-root lap, `strace` inspection, and a 1-byte engine canary patch (`256/256` intermediate hashes change, `QR.aj == QR2.aj`).
+  - `6502 asm` (`xa` + `sim65`): `46,799 B` / `65,012 B` limit (`spare = 18,213 B`)
+  - `Z80 asm` (`z80asm` + `tnylpo`): `63,563 B` / `64,991 B` limit (`spare = 1,428 B`)
+  - `Uxntal` (`uxnasm` + `uxncli`): `57,371 B` / `65,280 B` limit (`spare = 7,909 B`)
+- **Pure stdout / zero-cheating checks**: Verified with an offline non-root lap, `"bad op "` -> `"QRCAN! "` engine canary patch (`256/256` intermediate hashes change, `QR.aj == QR2.aj`), and baseline `bb598ba` `strace` inspection (`0` critical violations, `0` stdin reads on Malbolge).
 - **Complete `vendor/` inventory**:
   - **13 byte-identical `mame/quine-relay` helpers**: `aheui.rb`, `ante.rb`, `bf.rb`, `blc.rb`, `false.rb`, `golfscript.rb`, `grass.rb`, `ook-to-bf.rb`, `subleq.rb`, `thue.rb`, `unlambda.rb`, `wasi-runtime.js`, `whitespace.rb`.
   - **Bundled upstream source / binaries compiled by `vendor/Makefile`**: `ngnk-b9eeb91e.tar.gz` (K), `lci-0.10.5.zip` (LOLCODE), `npiet-1.3e.tar.gz` (Piet), `cfunge-0.9.0.tar.bz2` (Befunge), `Acme-Chef-1.03.tar.gz` (Chef), `spl-1.2.1.tar.gz` (Shakespeare), `lazyk.c` (Lazy K, upstream source with `RDSTACK_SIZE = 10,000,000`), `Velato_0_1.zip` (Velato), and `Unshackled.c` / `Unshackled-20.c` (Malbolge Unshackled).

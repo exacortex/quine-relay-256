@@ -2072,7 +2072,7 @@ class IonShell < CodeGen
   File = "QR.ion"
   Cmd = "ion QR.ion > OUTFILE"
   Apt = [nil]
-  Code = %q(%(echo -n '#{(PREV).gsub(?',%('"'"')).gsub(/([@$])([\x28\x7b])/){$1+"''"+$2}}'))
+  Code = %q(("let q = \"'\"\nlet b = \"#{B*2}\"\nlet d = '$'\nlet a = '@'\nlet l = '['\nlet r = ']'\nlet o = '{'\nlet c = '}'\nlet p = '('\nlet k = ')'\nlet x = ''\n"+PREV.scan(/.{1,4000}/m).map{|i9c|"let x ++= '"+i9c.gsub(/[#{B*2}'$@\[\]{}()]/,{"'"=>"'$q'",B=>"'$b'","$"=>"'$d'","@"=>"'$a'","["=>"'$l'","]"=>"'$r'","{"=>"'$o'","}"=>"'$c'","("=>"'$p'",")"=>"'$k'"})+"'"}*N+"\necho -n $x\n"))
   def check(prev)
     raise if prev.include?("\0") || prev.include?("\r") || prev.start_with?("-")
   end

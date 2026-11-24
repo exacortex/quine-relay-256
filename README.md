@@ -7,17 +7,17 @@ This repository builds in gratitude on [Yusuke Endoh's (mame) Quine Relay](https
 ## Highlights
 
 - **128 + 128 = 256 ("The Endoh Stamp")**: Every single step from Endoh's Ubuntu 26.04 relay (including `FORTRAN77`, `Gzip`, `JSFuck`, `Ook!`, and `WebAssembly (Binary format)`) stays intact by Endoh's own standard (`256` relay steps; `251` strict distinct languages, or `246` under a stricter no-superset/dialect lens — see the counting table in [RECORDS.md](RECORDS.md)). Every one of our **128** fork additions (`16/20` restored `mame` retirees + `Malbolge Unshackled` + `111` standalone languages) uses a canonical third-party upstream toolchain with zero custom fork runners in `vendor/` and zero fork-side tool accommodations.
-- **Strict A–Z alphabetical order (`out of order: 0`)**: Ignoring case and punctuation, every step proceeds in A–Z order around the 256-step cycle, rotated to enter at **Step #1 `AspectJ` (`QR.aj`)** so all three 16-bit 64 KiB hardware/VM targets (`6502 asm`, `Z80 asm`, `Uxntal`) sit near the compact inner tail and assemble cleanly inside real `< 64 KiB` RAM/ROM limits (`Asm6502` 46,723 B / 65,012 B; `Z80 asm` 63,281 B / 64,991 B; `Uxntal` 57,065 B / 65,280 B), enforced by a `< 64,000 B` hard guard in `src/gen-aj.rb` and `src/vm-exec.rb`.
-- **Self-reproducing AspectJ seed (`QR.aj`, `54,047 B`, `sha256: ed0fbe68...`)**: Genuine AspectJ (`aspect Q { before(): execution(void QR.main(..)) { ... } } public class QR { public static void main(String[] a) {} }`), storing its compressed engine + 224-step spec table in chunked printable-ASCII Base91 string literals (`java.util.zip.InflaterInputStream`), with zero file I/O, zero CLI code, and zero external processes. Inside the Ubuntu 26.04 Docker image (matching the image's system `zlib` and with `xa`, `z80asm`, and `uxnasm` on `PATH`), `cd src && rake` rebuilds `QR.aj` byte-identically; outside the image, different host `zlib` versions produce a valid, slightly different-sized `QR.aj` (e.g., `54,129 B`).
+- **Strict A–Z alphabetical order (`out of order: 0`)**: Ignoring case and punctuation, every step proceeds in A–Z order around the 256-step cycle, rotated to enter at **Step #1 `AspectJ` (`QR.aj`)** so all three 16-bit 64 KiB hardware/VM targets (`6502 asm`, `Z80 asm`, `Uxntal`) sit near the compact inner tail and assemble cleanly inside real `< 64 KiB` RAM/ROM limits (`Asm6502` 46,799 B / 65,012 B; `Z80 asm` 63,563 B / 64,991 B; `Uxntal` 57,371 B / 65,280 B), enforced by a `< 64,000 B` hard guard in `src/gen-aj.rb` and `src/vm-exec.rb`.
+- **Self-reproducing AspectJ seed (`QR.aj`, `54,170 B`, `sha256: 126a0c37...`)**: Genuine AspectJ (`aspect Q { before(): execution(void QR.main(..)) { ... } } public class QR { public static void main(String[] a) {} }`), storing its compressed engine + 224-step spec table in chunked printable-ASCII Base91 string literals (`java.util.zip.InflaterInputStream`), with zero file I/O, zero CLI code, and zero external processes. Inside the Ubuntu 26.04 Docker image (matching the image's system `zlib` and with `xa`, `z80asm`, and `uxnasm` on `PATH`), `cd src && rake` rebuilds `QR.aj` byte-identically; outside the image, different host `zlib` versions produce a valid, slightly different-sized `QR.aj` (e.g., `54,129 B`).
 - **Verified offline proof lap ([proof/](proof/))**:
-  - **256 / 256 steps PASS** (`39.9 min` / `2,396.8s`, `--network=none`, non-root `USER qr` `uid=1001`).
-  - **Exact roundtrip**: `diff -s QR.aj QR2.aj` -> `Files QR.aj and QR2.aj are identical` (`54,047 B`).
+  - **256 / 256 steps PASS** (`38.7 min` / `2,319.8s`, `--network=none`, non-root `USER qr` `uid=1001`).
+  - **Exact roundtrip**: `diff -s QR.aj QR2.aj` -> `Files QR.aj and QR2.aj are identical` (`54,170 B`).
   - **Full `SHA256SUMS`**: **256 / 256** step file hashes verified (`sha256sum --quiet -c SHA256SUMS`).
-  - **Malbolge Unshackled `U20` parity**: `U20_PARITY=OK` (`Unshackled.c` vs `Unshackled-20.c` byte-identical on real `QR.mb` (`197,676 B` `QR.wl`) with zero `'/'` input ops executed, `0` stdin reads under `strace`, `MB_STDIN_SAME`).
+  - **Malbolge Unshackled `U20` parity**: `U20_PARITY=OK` (`Unshackled.c` vs `Unshackled-20.c` byte-identical on real `QR.mb` (`3,811,135 B` -> `198,440 B` `QR.wl`), `MB_STDIN_SAME=OK`).
 
 ## Transparency & Engineering Notes
 
-This fork follows the principles Yusuke Endoh established for Quine Relay: no code on the command line, no reading payload from files or stdin, and output on stdout only. **246 / 256** steps (including **128 / 128** fork additions) pass all 7 static rules cleanly, verified with an automated `strace` + 1-byte engine canary lap confirming **0** fork-side tool accommodations and **256 / 256** live hash sensitivity.
+This fork follows the principles Yusuke Endoh established for Quine Relay: no code on the command line, no reading payload from files or stdin, and output on stdout only. **246 / 256** steps (including **128 / 128** fork additions) pass all 7 static rules cleanly, verified against a `"bad op "` -> `"QRCAN! "` engine canary lap confirming `Files QR.aj and QR2.aj are identical` and **256 / 256** live step-hash sensitivity (`39.0 min`).
 
 Disclosed engineering details:
 - **10 Endoh-method exceptions** (inherited unchanged from `mame/quine-relay`, run with Endoh's own commands):
@@ -50,6 +50,7 @@ cd src && rake
 - **2013–2026**: [Yusuke Endoh (@mametter)](https://github.com/mame/quine-relay) — original 50 / 100 / 128-language Quine Relay (MIT License).
 - **2026-11-21**: `quine-relay-256` initial 256-language prototype (`QR.rb`).
 - **2026-11-22**: `quine-relay-256` strict A–Z `AspectJ` seed refactor (`QR.aj`, non-root `USER qr`, `< 64,000 B` 6502/Z80/Uxntal ROMs).
-- **2026-11-23**: `quine-relay-256` **"The Endoh Stamp"** edition — all 128/128 upstream Endoh steps restored intact + 128 standalone upstream-toolchain additions = 256 steps (`QR.aj` 54,047 B).
+- **2026-11-23**: `quine-relay-256` **"The Endoh Stamp"** edition — all 128/128 upstream Endoh steps restored intact + 128 standalone upstream-toolchain additions = 256 steps (`QR.aj`).
+- **2026-11-24**: `v3.1` — `IonShell` `CHUNK_NOBR` quoting hardening (`let x ++= '...'` variable concatenation), verified offline (`38.7 min` / `2,319.8s`, `256/256` `SHA256SUMS`) and against the `"bad op "` -> `"QRCAN! "` engine canary (`39.0 min`, `256/256` hashes changed, `QR.aj` `54,170 B`).
 
 See [LICENSE](LICENSE) for full MIT license terms.
