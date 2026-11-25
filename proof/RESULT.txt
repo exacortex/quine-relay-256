@@ -19,7 +19,7 @@ Seed & Generated Outputs (reproduced inside Ubuntu 26.04 Docker image):
   Makefile                                   sha256: 142998c75daf7419dff2d94097732a4f6e617ada7f33979a948f55043a2233ca
   Dockerfile                                 sha256: b9079d7447b1b54e3b91a3df33312b28fc8093ffaebded18760a5322035dc84f
   main.yml                                   sha256: c95895bdbe65e4fc574acdd3cc70558c80aa414e05730d4703723b158bc52ba8
-  README.md                                  sha256: f02c6b0327ec79f786dd5e3aed4584c6a616635aec209980c1a7e38f54e0951f
+  README.md                                  sha256: 32a6bd41ecb6c147924d321e9739959c13b7a3640a75f2e71da0b97a9b162ef2
   SHA256SUMS  256 lines                      sha256: e821f3110dfa3cc19b6d9a19d0b49100e3490365cdb7cd62ab424ff7b1ea7214
 
 Engine & VM Verification (Ubuntu 26.04 container):

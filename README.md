@@ -17,7 +17,7 @@ This fork builds on [Yusuke Endoh's (mame) Quine Relay](https://github.com/mame/
 
 ## Transparency & Engineering Notes
 
-This fork follows Yusuke Endoh's relay principles: no code passed on the command line, no reading payload data from files or stdin, and output written to stdout only. **246 / 256** steps (including **128 / 128** additions in this fork) pass all seven rules cleanly ([proof/AUDIT.md](proof/AUDIT.md), [proof/RESULT.txt](proof/RESULT.txt)).
+This fork enforces strict seven-rule relay purity: no code passed on the command line, no reading payload data from files or stdin, and output written to stdout only. **246 / 256** steps (including **128 / 128** additions in this fork) pass all seven rules cleanly ([proof/AUDIT.md](proof/AUDIT.md), [proof/RESULT.txt](proof/RESULT.txt)).
 
 Disclosed engineering notes:
 - **10 steps following upstream `mame/quine-relay` tool methods**:
