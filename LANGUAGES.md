@@ -2,7 +2,7 @@
 
 Every step of the relay, in exact A–Z run order, from the [AspectJ seed](README.md) through all 256 steps. See [RECORDS.md](RECORDS.md) for how upstream entries and fork additions are counted.
 
-**Totals: 256 steps = 128 preserved from `mame/quine-relay` + 128 additions in this fork (16/20 restored historical `mame` languages + Malbolge Unshackled + 111 additional standalone languages, all using third-party upstream compilers or interpreters).**
+**Totals: 256 steps = all 128 languages from `mame/quine-relay` (run on the same upstream tools) + 128 additions in this fork (16/20 restored historical `mame` languages + Malbolge Unshackled + 111 additional upstream-toolchain languages).**
 
 | # | Language | Origin | Note |
 |---|---|---|---|
@@ -66,7 +66,7 @@ Every step of the relay, in exact A–Z run order, from the [AspectJ seed](READM
 | 58 | Flex | mame/quine-relay |  |
 | 59 | Flix | this fork |  |
 | 60 | Forth | mame/quine-relay |  |
-| 61 | FORTRAN77 | mame/quine-relay | preserved from upstream mame/quine-relay |
+| 61 | FORTRAN77 | mame/quine-relay | included from upstream mame/quine-relay |
 | 62 | Fortran90 | mame/quine-relay |  |
 | 63 | Frege | this fork |  |
 | 64 | Gambas script | mame/quine-relay |  |
@@ -90,7 +90,7 @@ Every step of the relay, in exact A–Z run order, from the [AspectJ seed](READM
 | 82 | Gravity | this fork |  |
 | 83 | Gri | this fork | retired from earlier Ubuntu editions of mame/quine-relay; restored here |
 | 84 | Groovy | mame/quine-relay |  |
-| 85 | Gzip | mame/quine-relay | preserved from upstream mame/quine-relay |
+| 85 | Gzip | mame/quine-relay | included from upstream mame/quine-relay |
 | 86 | Hare | this fork |  |
 | 87 | Haskell | mame/quine-relay |  |
 | 88 | Haxe | mame/quine-relay |  |
@@ -110,7 +110,7 @@ Every step of the relay, in exact A–Z run order, from the [AspectJ seed](READM
 | 102 | Java | mame/quine-relay |  |
 | 103 | JavaScript | mame/quine-relay |  |
 | 104 | Jq | mame/quine-relay |  |
-| 105 | JSFuck | mame/quine-relay | preserved from upstream mame/quine-relay |
+| 105 | JSFuck | mame/quine-relay | included from upstream mame/quine-relay |
 | 106 | Julia | this fork | retired from earlier Ubuntu editions of mame/quine-relay; restored here |
 | 107 | K (ngn/k) | this fork |  |
 | 108 | Kipple | this fork |  |
@@ -161,7 +161,7 @@ Every step of the relay, in exact A–Z run order, from the [AspectJ seed](READM
 | 153 | OCaml | mame/quine-relay |  |
 | 154 | Octave | mame/quine-relay |  |
 | 155 | Odin | this fork |  |
-| 156 | Ook! | mame/quine-relay | preserved from upstream mame/quine-relay |
+| 156 | Ook! | mame/quine-relay | included from upstream mame/quine-relay |
 | 157 | PARI/GP | mame/quine-relay |  |
 | 158 | Parrot asm (PASM) | this fork | retired from earlier Ubuntu editions of mame/quine-relay; restored here |
 | 159 | Parser 3 | mame/quine-relay |  |
@@ -236,7 +236,7 @@ Every step of the relay, in exact A–Z run order, from the [AspectJ seed](READM
 | 228 | VHDL | this fork |  |
 | 229 | Vimscript | mame/quine-relay |  |
 | 230 | Visual Basic | mame/quine-relay |  |
-| 231 | WebAssembly (Binary format) | mame/quine-relay | preserved from upstream mame/quine-relay |
+| 231 | WebAssembly (Binary format) | mame/quine-relay | included from upstream mame/quine-relay |
 | 232 | WebAssembly (Text format) | mame/quine-relay |  |
 | 233 | Whitespace | mame/quine-relay |  |
 | 234 | Wren | this fork |  |

@@ -20,7 +20,7 @@ MAME_128 = %w[
   "Lazy K", "LLVM asm", "Parser 3", "Perl 5", "Perl 6", "Promela (Spin)"
 ]
 
-# All 128 steps from mame/quine-relay (Ubuntu 26.04) are preserved unchanged.
+# All 128 languages from mame/quine-relay (Ubuntu 26.04) are included on the same upstream tools.
 
 # Classic languages retired from earlier Ubuntu editions of mame/quine-relay
 # (16 of 20 historical retirees restored here).
@@ -32,7 +32,7 @@ RESTORED_MAME = [
 ]
 
 # Fork additions retired so every fork addition runs on a canonical third-party upstream toolchain
-# (no duplicate dialects/shells, no custom fork runners in vendor/, no query-only formats).
+# (no custom fork runners in vendor/, no query-only formats).
 CUT_OURS = [
   "mksh", "BusyBox ash", "yash", "Chicken Scheme", "Chez Scheme",
   "Deadfish~", "Hush", "Genie", "groff", "Starlark", "Rego",
@@ -49,7 +49,7 @@ NOTES = {
   "Malbolge Unshackled" => "unbounded Malbolge (CC0 Unshackled.c / Unshackled-20.c; verified with dual-interpreter parity and stdin-invariance tests)",
 }
 UPSTREAM_FORMAT_NOTES.each do |name|
-  NOTES[name] ||= "preserved from upstream mame/quine-relay"
+  NOTES[name] ||= "included from upstream mame/quine-relay"
 end
 RESTORED_MAME.each do |name|
   NOTES[name] ||= "retired from earlier Ubuntu editions of mame/quine-relay; restored here"
@@ -78,7 +78,7 @@ File.binwrite("../LANGUAGES.md", <<END)
 
 Every step of the relay, in exact A–Z run order, from the [AspectJ seed](README.md) through all #{ step_names.size } steps. See [RECORDS.md](RECORDS.md) for how upstream entries and fork additions are counted.
 
-**Totals: #{ step_names.size } steps = #{ mame_count } preserved from `mame/quine-relay` + #{ step_names.size - mame_count } additions in this fork (#{ retiree_count }/#{ TOTAL_MAME_RETIREES } restored historical `mame` languages + Malbolge Unshackled + #{ fork_only_count } additional standalone languages, all using third-party upstream compilers or interpreters).**
+**Totals: #{ step_names.size } steps = all #{ mame_count } languages from `mame/quine-relay` (run on the same upstream tools) + #{ step_names.size - mame_count } additions in this fork (#{ retiree_count }/#{ TOTAL_MAME_RETIREES } restored historical `mame` languages + Malbolge Unshackled + #{ fork_only_count } additional upstream-toolchain languages).**
 
 | # | Language | Origin | Note |
 |---|---|---|---|
