@@ -2,7 +2,7 @@
 
 **All 128 languages from Yusuke Endoh's relay + 128 additions = 256 steps in strict A–Z alphabetical order**, forming a closed self-reproducing loop (`AspectJ -> Asymptote -> ATS -> ... -> Zsh -> 6502 asm -> A+ -> ... -> Arturo -> AspectC++ -> AspectJ`).
 
-This fork builds on [Yusuke Endoh's (mame) Quine Relay](https://github.com/mame/quine-relay) (started in **2013**, MIT License). All **128** languages of Endoh's Ubuntu 26.04 relay are kept and run on the same upstream tools alongside **128** additions in this fork running on canonical third-party upstream compilers and interpreters, verified offline in Docker (`--network=none`) as an unprivileged user (`USER qr`). Because every step payload was rewritten for the strict A–Z cycle order, 11 Makefile commands differ in flags or build layout from upstream (`AspectJ`, `ALGOL 68`, `C#`, `F#`, `Visual Basic`, `FORTRAN77`, `Lazy K`, `Nim`, `Objective-C`, `Piet`, and `Shakespeare`).
+This fork builds on [Yusuke Endoh's (mame) Quine Relay](https://github.com/mame/quine-relay) (started in **2013**, MIT License). All **128** languages of Endoh's Ubuntu 26.04 relay are kept and run on the same upstream tools alongside **128** additions in this fork running on canonical third-party upstream compilers and interpreters, verified offline in Docker (`--network=none`) as an unprivileged user (`USER qr`). Every step payload was rewritten for the strict A–Z cycle order. Separately, 11 Makefile commands differ in flags or build layout from upstream (`AspectJ`, `ALGOL 68`, `C#`, `F#`, `Visual Basic`, `FORTRAN77`, `Lazy K`, `Nim`, `Objective-C`, `Piet`, and `Shakespeare`).
 
 ## Highlights
 
@@ -17,7 +17,7 @@ This fork builds on [Yusuke Endoh's (mame) Quine Relay](https://github.com/mame/
 
 ## Transparency & Engineering Notes
 
-This fork enforces strict seven-rule relay purity: no code passed on the command line, no reading payload data from files or stdin, and output written to stdout only. **246 / 256** steps (including **128 / 128** additions in this fork) pass all seven rules cleanly ([proof/AUDIT.md](proof/AUDIT.md), [proof/RESULT.txt](proof/RESULT.txt)).
+This fork holds its 128 additions to seven purity rules (no code passed on the command line, no reading payload data from files or stdin, and output written to stdout only). Across the full relay, **246 / 256** steps (including **128 / 128** additions in this fork) pass all seven rules cleanly ([proof/AUDIT.md](proof/AUDIT.md), [proof/RESULT.txt](proof/RESULT.txt)).
 
 Disclosed engineering notes:
 - **10 steps following upstream `mame/quine-relay` tool methods**:
