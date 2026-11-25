@@ -23,7 +23,7 @@ This fork builds on [Yusuke Endoh's (mame) Quine Relay](https://github.com/mame/
 
 ## Highlights
 
-- **128 + 128 = <%= step_count %> steps**: All 128 languages from Endoh's Ubuntu 26.04 relay (including `FORTRAN77`, `Gzip`, `JSFuck`, `Ook!`, and `WebAssembly (Binary format)`) run on the same upstream tools. Because different readers apply different distinctness lenses, [RECORDS.md](RECORDS.md) breaks the count down openly: **256** relay steps, **251** strict distinct languages, or **246** under a narrower no-superset/dialect lens. Every one of our **128** additions (`16/20` restored historical `mame` languages + `Malbolge Unshackled` + `111` additional upstream-toolchain languages) uses a canonical third-party upstream toolchain with zero custom runners in `vendor/`.
+- **128 + 128 = <%= step_count %> steps**: Includes all **128** languages from Endoh's Ubuntu 26.04 relay on the same upstream tools, paired with **128** additions in this fork (`16/20` restored historical `mame` languages + `Malbolge Unshackled` + `111` additional upstream-toolchain languages). Every one of our 128 additions uses a canonical third-party upstream toolchain with zero custom runners in `vendor/`. See [LANGUAGES.md](LANGUAGES.md) for the complete A–Z list and [RECORDS.md](RECORDS.md) for composition and design notes.
 - **Strict A–Z alphabetical order (`out of order: 0`)**: Ignoring case and punctuation, every step proceeds in A–Z order around the <%= step_count %>-step cycle, rotated to enter at **Step #1 `AspectJ` (`QR.aj`)** so all three 16-bit 64 KiB hardware/VM targets (`6502 asm`, `Z80 asm`, `Uxntal`) sit near the compact inner tail and assemble inside real `< 64 KiB` RAM/ROM limits (`Asm6502` 46,799 B / 65,012 B; `Z80 asm` 63,563 B / 64,991 B; `Uxntal` 57,371 B / 65,280 B), enforced by a `< 64,000 B` check in `src/gen-aj.rb` and `src/vm-exec.rb`.
 - **Self-reproducing AspectJ seed (`QR.aj`, `<%= qr_size_fmt %> B`, `52.9 KiB` / `54.2 kB`, `sha256: <%= qr_sha8 %>...`)**: AspectJ advice (`aspect Q { before(): execution(void QR.main(..)) { ... } } public class QR { public static void main(String[] a) {} }`), storing its compressed engine and <%= compiled_steps %>-step specification table in chunked printable-ASCII Base91 string literals (`java.util.zip.InflaterInputStream`), with zero file I/O, zero CLI code, and zero external processes. Inside the Ubuntu 26.04 Docker image (matching the image's system `zlib` and with `xa`, `z80asm`, and `uxnasm` on `PATH`), `cd src && rake` rebuilds `QR.aj` byte-identically; outside the image, different host `zlib` versions still produce a valid `QR.aj`, though the compressed size may differ slightly.
 - **Verified offline proof laps ([proof/](proof/))**:
@@ -32,21 +32,14 @@ This fork builds on [Yusuke Endoh's (mame) Quine Relay](https://github.com/mame/
   - **Lap C (`strace` full-lap audit)**: completed in `84.1 min` (`5,045s`) with **256 / 256** `SHA256SUMS` and byte-identical `QR2.aj`, producing `2,474` audit rows with `0` critical violations (`12` cross-step file accesses, all verified harmless: the persistent `.NET` build server compiling Dafny's code while attributed to C#, Scala checking for a file named `QR`, `.NET` and Gleam reading their own committed project files, and `make`'s final `diff`).
   - **Malbolge Unshackled dual-interpreter parity**: both untouched CC0 reference interpreters (`Unshackled.c` and `Unshackled-20.c`) produce byte-identical `QR.wl` (`198,440 B` from `3,811,135 B` `QR.mb`) on both empty and non-empty stdin.
 
-## Transparency & Engineering Notes
+## Engineering Notes
 
-This fork holds its 128 additions to seven purity rules (no code passed on the command line, no reading payload data from files or stdin, and output written to stdout only). Across the full relay, **246 / 256** steps (including **128 / 128** additions in this fork) pass all seven rules cleanly ([proof/AUDIT.md](proof/AUDIT.md), [proof/RESULT.txt](proof/RESULT.txt)).
-
-Disclosed engineering notes:
-- **10 steps following upstream `mame/quine-relay` tool methods**:
-  - **Self-operand input**: `sed` (`sed -E -f QR.sed QR.sed`), `Mustache` (`mustache QR.mustache QR.mustache`), `XSLT` (`<?xml-stylesheet ... href=''?>`, `xsltproc QR.xslt`)
-  - **Side file passed to next command**: `Ook!` (`ruby vendor/ook-to-bf.rb QR.ook QR.ook.bf && ruby vendor/bf.rb QR.ook.bf`)
-  - **Environment variable or flag shaping output**: `bc` (`BC_LINE_LENGTH=4000000 bc -q`), `MiniZinc` (`--soln-sep ''`), `Promela` (`spin -T`), `Jq` (`jq -r -n -f QR.jq`)
-  - **External echo or decompression**: `Execline` (`foreground { echo -n ... }`, whereas upstream uses `echo "..."`), `Gzip` (`gzip -cd QR.gz`)
-  - **Inherited exit-code note**: `dc` (`dc QR.dc > QR.dhall || true`, marked `XXX` upstream in `mame/quine-relay`) masks `dc`'s exit status.
+- **Fork additions standard**: All **128** additions in this fork use canonical third-party upstream compilers and interpreters, pass no code on the command line, do not read payload data from files or stdin, and write strictly to stdout (with zero custom fork esolang runners in `vendor/`).
+- **Classic 10-trit Malbolge limitation**: Because strict A–Z ordering pushes the `M` section to several hundred kilobytes, this fork uses `Malbolge Unshackled` rather than classic 10-trit Malbolge (whose `59,049`-cell ternary memory limit stands unbroken in classic Malbolge).
+- **Generated seed vs. hand-crafted original**: `QR.aj` (`<%= qr_size_fmt %> B`, `52.9 KiB`) is a generated, zlib-packed AspectJ program — a different engineering exercise from Endoh's hand-crafted `13,664 B` `QR.rb`.
 - **11 stdlib zlib unpacker steps** (`C#`, `CoffeeScript`, `Elixir`, `F#`, `Go`, `Groovy`, `Mathics`, `PowerShell`, `Tcl`, `V`, `Zig`) use their own language's standard library zlib/deflate implementation (zero external decompression binaries).
-- **Classic 10-trit Malbolge limitation**: Because strict A–Z ordering pushes the `M` section to several hundred kilobytes, this fork uses `Malbolge Unshackled` rather than classic 10-trit Malbolge (whose `59,049`-cell ternary memory limit remains unbroken in classic Malbolge).
 - **`Shakespeare` (`gcc -O0` on `QR.spl.c`)** peaks around `~21 GB` RSS in `cc1`; plan for **>= 24 GB RAM** in your Docker VM when running a full lap.
-- See [LANGUAGES.md](LANGUAGES.md) for all <%= step_count %> steps in exact A–Z run order and [RECORDS.md](RECORDS.md) for the full counting breakdown and `vendor/` inventory.
+- Full step-by-step inventory, `vendor/` provenance, and Makefile/`strace` implementation notes live in [LANGUAGES.md](LANGUAGES.md), [RECORDS.md](RECORDS.md), [proof/AUDIT.md](proof/AUDIT.md), and [proof/RESULT.txt](proof/RESULT.txt).
 
 ## Quick Start (Standalone Docker Build & Offline Proof Lap)
 

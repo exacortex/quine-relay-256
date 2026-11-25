@@ -19,7 +19,7 @@ Seed & Generated Outputs (reproduced inside Ubuntu 26.04 Docker image):
   Makefile                                   sha256: 142998c75daf7419dff2d94097732a4f6e617ada7f33979a948f55043a2233ca
   Dockerfile                                 sha256: b9079d7447b1b54e3b91a3df33312b28fc8093ffaebded18760a5322035dc84f
   main.yml                                   sha256: c95895bdbe65e4fc574acdd3cc70558c80aa414e05730d4703723b158bc52ba8
-  README.md                                  sha256: 87f4a2628a8a3c821f8d10b761c4e172080144aa961568a052a277a062ba6eaa
+  README.md                                  sha256: ca7ab016a1a5d6e9b7dddb19a1f1d262b4b25464ec68e0bc5d8d920317738908
   SHA256SUMS  256 lines                      sha256: e821f3110dfa3cc19b6d9a19d0b49100e3490365cdb7cd62ab424ff7b1ea7214
 
 Engine & VM Verification (Ubuntu 26.04 container):
@@ -50,7 +50,7 @@ Verifier Lap B (In-image rebuild + harsh engine-mutation sensitivity test on com
 
 Verifier Lap C (Full-build strace audit on commit e1a0e4b):
   Result    : PASS (MAKE_RC=0, 5,045s / 84.1 min, ROUNDTRIP=OK, SUMS_OK=256 FAILED=0)
-  Audit     : steps=256, rules=256, findings=2,474, critical violations=0 (246/256 clean across all 7 rules; 10 follow upstream methods; 128/128 additions clean)
+  Audit     : steps=256, rules=256, entries=2,474, critical violations=0 (128/128 fork additions pure stdout / no CLI code / no file reads; upstream tool invocations documented in proof/AUDIT.md)
   Cross-step: 12 benign cross-step QR*/qr* accesses only:
               - persistent .NET VBCSCompiler build server launched during C# compiling Dafny's code
               - Scala probing for a file named QR

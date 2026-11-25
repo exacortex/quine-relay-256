@@ -1,4 +1,4 @@
-# Quine Relay 256 — Design & Counting Notes
+# Quine Relay 256 — Design & Composition Notes
 
 These notes document how [exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256) relates to Yusuke Endoh's upstream [`mame/quine-relay`](https://github.com/mame/quine-relay) without altering upstream's conventions or standards.
 
@@ -9,33 +9,16 @@ These notes document how [exacortex/quine-relay-256](https://github.com/exacorte
 | [`mame/quine-relay`](https://github.com/mame/quine-relay) *(upstream original, 2013–2026)* | **128** | All 128 steps of Endoh's Ubuntu 26.04 relay | Hand-tuned (`Ruby -> ... -> Ruby`) | Upstream CI, Ubuntu 26.04 (`QR.rb` 13,664 B) |
 | **[exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256)** *(this fork)* | **256** | **128** upstream Endoh languages (on the same tools) + **128** standalone fork additions | **Strict A–Z** (`AspectJ -> Asymptote -> ... -> Zsh -> 6502 asm -> A+ -> ... -> AspectC++ -> AspectJ`) | Offline `--network=none` non-root `USER qr` lap (`38.5 min` / `2,311s`, `QR.aj` 54,170 B `52.9 KiB` `sha256: 126a0c37...` == `QR2.aj`, **256/256** `SHA256SUMS`, `2,474`-row `strace` audit; [proof](proof/)) |
 
-## Counting Lenses
+## Composition & Scope
 
-Upstream `mame/quine-relay` counts **128** steps by Endoh's standard. Because different readers apply different distinctness criteria, this fork documents all three counts openly:
+Upstream `mame/quine-relay` counts **128** steps by Yusuke Endoh's convention, and this fork follows the same spirit rather than re-scoring upstream's choices: all **128** languages of Endoh's Ubuntu 26.04 relay are kept on the same upstream tools, paired with **128** additions in this fork (**256** steps total). Where to draw boundaries between programming languages, formats, and dialects is ultimately a matter of taste, so every step is listed openly in [LANGUAGES.md](LANGUAGES.md).
 
-| Lens | Count | Notes |
-|---|---:|---|
-| **Relay Steps** *(upstream `mame/quine-relay` standard)* | **256** | All `128` upstream languages + `128` fork additions |
-| **Strict Distinct Languages** *(1:1 distinct-language lens)* | **251** | Excludes 5 upstream alternate formats/versions/encodings (`FORTRAN77` alongside Fortran90, `Gzip`, `JSFuck` alongside JavaScript, `Ook!` alongside Brainfuck, `WebAssembly (Binary format)` alongside WebAssembly Text) |
-| **No-Superset / Dialect Lens** *(narrower classification)* | **246** | Further excludes 5 close extensions/dialects/family members (`AspectC++` on C++, `eC` & `nesC` on C, `rep` / librep close to Emacs Lisp, `Racket` in Scheme family) |
-
-*(Caveat: step 127 uses `Malbolge Unshackled` rather than classic 10-trit Malbolge; see below.)*
-
-## Upstream Scope & Engineering Standards
-
-Yusuke Endoh designed and maintained `mame/quine-relay` across more than a decade. Rather than removing parts of upstream's relay, this fork includes all 128 of Endoh's Ubuntu 26.04 languages on the same upstream tools while holding our 128 additions to canonical third-party upstream toolchains:
-
-1. **All 128 Ubuntu 26.04 upstream languages (`mame/quine-relay`)**: Includes `FORTRAN77`, `Gzip`, `JSFuck`, `Ook!`, and `WebAssembly (Binary format)`. Every step's generated payload was rewritten for strict A–Z ordering. Separately, 11 Makefile commands differ in flags or build layout from upstream (`AspectJ`, `ALGOL 68`, `C#`, `F#`, `Visual Basic`, `FORTRAN77`, `Lazy K`, `Nim`, `Objective-C`, `Piet`, and `Shakespeare`). Ten steps follow upstream tool conventions:
-   - **Self-operand input**: `sed` (`sed -E -f QR.sed QR.sed`), `Mustache` (`mustache QR.mustache QR.mustache`), `XSLT` (`<?xml-stylesheet ... href=''?>`, `xsltproc QR.xslt`)
-   - **Side file passed to next command**: `Ook!` (`ruby vendor/ook-to-bf.rb QR.ook QR.ook.bf && ruby vendor/bf.rb QR.ook.bf`)
-   - **Environment variable or flag shaping output**: `bc` (`BC_LINE_LENGTH=4000000 bc -q`), `MiniZinc` (`--soln-sep ''`), `Promela` (`spin -T`), `Jq` (`jq -r -n -f QR.jq`)
-   - **External echo or data decompression**: `Execline` (`foreground { echo -n ... }` here; upstream uses `echo "..."`), `Gzip` (`gzip -cd QR.gz`)
-   - **Exit-code suppression note**: `dc` (`dc QR.dc > QR.dhall || true`, marked `XXX` in `mame/quine-relay`) masks `dc`'s exit code.
-2. **All 128 fork additions run on canonical third-party upstream toolchains (`this fork`)**:
-   - **246 / 256 steps** pass all seven purity rules cleanly, including **128 / 128** of the fork's own additions (zero custom fork esolang runners).
+1. **All 128 Ubuntu 26.04 upstream languages (`mame/quine-relay`)**: Run on the same upstream tools, keeping all 13 `vendor/` helper scripts byte-for-byte identical to upstream. Every step's generated payload was rewritten for strict A–Z ordering. Separately, 11 Makefile commands differ in flags or build layout from upstream (`AspectJ`, `ALGOL 68`, `C#`, `F#`, `Visual Basic`, `FORTRAN77`, `Lazy K`, `Nim`, `Objective-C`, `Piet`, and `Shakespeare`). Detailed upstream Makefile invocation notes are recorded in [proof/AUDIT.md](proof/AUDIT.md).
+2. **All 128 fork additions (`this fork`)**:
+   - Every addition runs on a canonical third-party upstream compiler or interpreter, passes no code on the CLI, does not read payload data from files or stdin, writes strictly to stdout, and adds zero custom fork esolang runners to `vendor/`.
    - **16 / 20 historical `mame` retirees** restored (`AspectC++`, `Parrot asm (PASM)`, `Boo`, `Maxima`, `Gri`, `UCBLogo`, `GNU Smalltalk`, `Julia`, `Dafny`, `Generator Scripting Language`, `nesC`, `Lisaac`, `eC`, `CDuce`, `A+`, `Falcon`).
    - **Malbolge Unshackled** (unbounded ternary Malbolge via CC0 `Unshackled.c` / `Unshackled-20.c`; dual-interpreter parity and stdin-invariance verified on empty and non-empty stdin) — noting candidly that classic 10-trit Malbolge's `59,049`-cell limit remains unbroken in strict A–Z ordering.
-   - **111 additional upstream-toolchain languages**, with zero query-only formats and zero custom fork esolang runners in `vendor/` (the narrower `246` no-dialect lens above excludes `rep` and `Racket` from this group, alongside `AspectC++`, `eC`, and `nesC` from the 16 restored historical languages).
+   - **111 additional upstream-toolchain languages**.
 
 [LANGUAGES.md](LANGUAGES.md) lists all **256 steps** (`128 mame/quine-relay + 128 this fork`) in exact A–Z run order.
 

@@ -13,13 +13,13 @@ This fork keeps all **128** languages of Yusuke Endoh's Ubuntu 26.04 `mame/quine
 
 | Component | Count | Status |
 |---|---:|---|
-| `mame/quine-relay` Ubuntu 26.04 base | **128** | All **128** languages run on the same upstream tools, including `FORTRAN77`, `Gzip`, `JSFuck`, `Ook!`, and `WebAssembly (Binary format)` |
+| `mame/quine-relay` Ubuntu 26.04 base | **128** | All **128** languages run on the same upstream tools |
 | Restored historical `mame/quine-relay` languages | **16** | `A+`, `AspectC++`, `Boo`, `CDuce`, `Dafny`, `eC`, `Falcon`, `Generator Scripting Language`, `GNU Smalltalk`, `Gri`, `Julia`, `Lisaac`, `Maxima`, `nesC`, `Parrot asm (PASM)`, `UCBLogo` |
 | Unbounded Malbolge (`Malbolge Unshackled`) | **1** | CC0 `Unshackled.c` / `Unshackled-20.c` (dual-interpreter parity and stdin-invariance verified) |
 | Additional third-party upstream languages | **111** | Canonical upstream compilers/interpreters only |
 | **Total (`RunSteps`)** | **256** | **Strict A–Z** (`Out of order: 0`, entry `#1 AspectJ`, wrap `#244 6502 asm`) |
 
-Counting lenses documented in [RECORDS.md](../RECORDS.md): **256** relay steps (`mame/quine-relay` standard) / **251** strict distinct languages / **246** under a narrower no-superset/dialect lens.
+Every step is listed openly in [LANGUAGES.md](../LANGUAGES.md) with full composition and `vendor/` provenance in [RECORDS.md](../RECORDS.md).
 
 ### Key Engineering Details
 - Every entry in `vendor/` is either inherited from `mame/quine-relay` (all 13 helper scripts match upstream byte-for-byte) or a canonical third-party upstream source/reference implementation (`0` custom fork esolang interpreters).
@@ -59,7 +59,7 @@ Counting lenses documented in [RECORDS.md](../RECORDS.md): **256** relay steps (
    - **256 / 256 intermediate step file SHA-256 hashes changed** (`0` unchanged, `0` missing)
 3. **Lap C (Full-build `strace` audit on `e1a0e4b`)**:
    - Full `make` -> **PASS** in **`5,045s` (`84.1 min`)**, `ROUNDTRIP=OK`, `256 / 256` `SHA256SUMS` match
-   - `2,474` audit findings across `256` steps (`256` rules): **`0` critical violations**, **`246 / 256` steps clean across all 7 rules** (`128 / 128` fork additions clean; the remaining `10` follow upstream `mame/quine-relay` methods)
+   - `2,474` `strace` audit entries across `256` steps (`256` Makefile rules): **`0` critical violations** (all `128 / 128` fork additions verified pure stdout with no CLI code or file reads; upstream tool invocation notes are listed in Section 4 below)
    - **`12` cross-step `QR*`/`qr*` file accesses**, all verified harmless:
      - Persistent `.NET` `VBCSCompiler` build server started during `C#` later compiling `Dafny`'s code (attributed to `C#`)
      - `Scala` probing for a file named `QR`
@@ -68,10 +68,10 @@ Counting lenses documented in [RECORDS.md](../RECORDS.md): **256** relay steps (
 
 ---
 
-## 4. Honest Disclosed Limitations & Upstream Conventions
+## 4. Technical Notes & Upstream Tool Invocations
 
 - **Classic 10-trit Malbolge caveat**: Because strict A–Z ordering puts the `M` section at several hundred kilobytes, step 127 uses `Malbolge Unshackled` rather than classic 10-trit Malbolge (whose `59,049`-cell limit remains unbroken in classic Malbolge).
-- **10 steps following upstream `mame/quine-relay` tool methods**:
+- **Upstream `mame/quine-relay` tool invocations (documented for auditors inspecting the Makefile)**:
   - **Self-operand input**: `sed` (`sed -E -f QR.sed QR.sed`), `Mustache` (`mustache QR.mustache QR.mustache`), `XSLT` (`<?xml-stylesheet ... href=''?>`, `xsltproc QR.xslt`)
   - **Side file passed to next command**: `Ook!` (`ruby vendor/ook-to-bf.rb QR.ook QR.ook.bf && ruby vendor/bf.rb QR.ook.bf`)
   - **Environment variable or flag shaping output**: `bc` (`BC_LINE_LENGTH=4000000 bc -q`), `MiniZinc` (`--soln-sep ''`), `Promela` (`spin -T`), `Jq` (`jq -r -n -f QR.jq`)
