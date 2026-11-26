@@ -125,7 +125,21 @@ def slot_for(name: str) -> int:
     return 0
 
 
-def render_frame(runs, tick: int, cur_step: int, f_m, f_b, f_s, victory: bool = False) -> Image.Image:
+def load_qr_matrix(aj_path: str) -> list[list[bool]]:
+    with open(aj_path, "r", encoding="utf-8", errors="replace") as fh:
+        raw_lines = [ln.rstrip("\r\n") for ln in fh]
+    n_mod = len(raw_lines) // 9
+    grid: list[list[bool]] = []
+    for mr in range(n_mod):
+        row = [
+            any(raw_lines[mr * 9 + dr][mc * 18 : (mc + 1) * 18].strip() for dr in range(9))
+            for mc in range(n_mod)
+        ]
+        grid.append(row)
+    return grid
+
+
+def render_frame(runs, tick: int, cur_step: int, f_m, f_b, f_s, f_vm, f_vb, qr_grid=None, victory: bool = False) -> Image.Image:
     W, H = 920, 520
     img = Image.new("RGB", (W, H), BG)
     dr = ImageDraw.Draw(img)
@@ -139,26 +153,51 @@ def render_frame(runs, tick: int, cur_step: int, f_m, f_b, f_s, victory: bool = 
     dr.text((86, 14), "docker run --rm -it --network=none quine-relay-256", fill=MUTED, font=f_s)
 
     if victory:
-        # Show final victory card inside terminal
-        bx0, by0, bx1, by1 = 62, 110, W - 62, 390
+        # Left panel: verified round-trip summary card
+        bx0, by0, bx1, by1 = 26, 68, 606, 444
         dr.rounded_rectangle((bx0, by0, bx1, by1), radius=8, fill=(24, 23, 20), outline=BRASS, width=2)
-        dr.line([(bx0, by0 + 54), (bx1, by0 + 54)], fill=BRASS, width=1)
-        dr.ellipse((bx0 + 24, by0 + 20, bx0 + 38, by0 + 34), fill=GREEN)
-        dr.text((bx0 + 50, by0 + 18), "QUINE RELAY 256 — VERIFIED ROUND-TRIP COMPLETE", fill=GREEN, font=f_b)
+        dr.line([(bx0, by0 + 52), (bx1, by0 + 52)], fill=BRASS, width=1)
+        dr.ellipse((bx0 + 20, by0 + 19, bx0 + 34, by0 + 33), fill=GREEN)
+        dr.text((bx0 + 44, by0 + 17), "QUINE RELAY 256 — VERIFIED ROUND-TRIP", fill=GREEN, font=f_vb)
 
         lines = [
             ("Steps:",   "256 / 256 Strict A–Z (128 upstream + 128 fork)"),
-            ("Match:",   "diff -s QR.aj QR2.aj  ->  identical (133,101 B)"),
-            ("Hashes:",  "sha256sum --quiet -c SHA256SUMS  ->  256 / 256 OK"),
-            ("Peak:",    "190.34 MiB (#167 Piet QR.ppm)  ·  33.4 MiB (#201 Shakespeare)"),
-            ("16-bit:",  "6502 57,006 B  ·  Z80 61,603 B  ·  Uxntal 55,661 B  (all < 64 KiB)"),
+            ("Match:",   "diff -s QR.aj QR2.aj -> identical (133,101 B)"),
+            ("Hashes:",  "sha256sum --quiet -c SHA256SUMS -> 256/256 OK"),
+            ("Peak:",    "190.34 MiB (#167 Piet) · 33.4 MiB (Shakespeare)"),
+            ("16-bit:",  "6502 57,006 B · Z80 61,603 B · Uxntal 55,661 B"),
+            ("QR.aj:",   "sha256: 85ae8e2a... · Unicode QR -> GitHub"),
         ]
         y = by0 + 78
         for k, v in lines:
-            dr.text((bx0 + 28, y), k, fill=BRASS, font=f_b)
-            dr.text((bx0 + 122, y), v, fill=BONE, font=f_m)
-            y += 38
-        dr.text((bx0, by1 + 26), "$ _", fill=MUTED, font=f_m)
+            dr.text((bx0 + 20, y), k, fill=BRASS, font=f_vb)
+            dr.text((bx0 + 96, y), v, fill=BONE, font=f_vm)
+            y += 46
+
+        # Right panel: live-extracted scannable QR code from QR.aj
+        qx0, qy0, qx1, qy1 = 624, 68, 894, 444
+        dr.rounded_rectangle((qx0, qy0, qx1, qy1), radius=8, fill=(24, 23, 20), outline=BRASS, width=2)
+        if qr_grid:
+            quiet = 3
+            mod = 7
+            n_mod = len(qr_grid)
+            qr_px = (n_mod + 2 * quiet) * mod
+            qr_x = 637
+            qr_y = 82
+            dr.rectangle((qr_x, qr_y, qr_x + qr_px - 1, qr_y + qr_px - 1), fill=(255, 255, 255))
+            for r_i, row in enumerate(qr_grid):
+                for c_i, dark in enumerate(row):
+                    if dark:
+                        px = qr_x + (c_i + quiet) * mod
+                        py = qr_y + (r_i + quiet) * mod
+                        dr.rectangle((px, py, px + mod - 1, py + mod - 1), fill=(12, 12, 12))
+            qcx = (qx0 + qx1) / 2
+            cap1 = "QR.aj (522×261)"
+            cap2 = "Scan -> exacortex/quine-relay-256"
+            dr.text((qcx - dr.textlength(cap1, font=f_vb) / 2, 352), cap1, fill=BONE, font=f_vb)
+            dr.text((qcx - dr.textlength(cap2, font=f_s) / 2, 380), cap2, fill=MUTED, font=f_s)
+
+        dr.text((28, 466), "$ _", fill=MUTED, font=f_m)
         return img
 
     # Animated ExaCortex Ring & Dot mark (top-left)
@@ -279,6 +318,9 @@ def main() -> int:
     f_m = pick_font(mono, 14)
     f_b = pick_font(mono_b, 14)
     f_s = pick_font(mono, 12)
+    f_vm = pick_font(mono, 13)
+    f_vb = pick_font(mono_b, 13)
+    qr_grid = load_qr_matrix(os.path.join(ROOT, "QR.aj"))
 
     timeline = [
         (1, 4), (24, 3), (59, 3), (105, 4), (127, 4),
@@ -291,7 +333,7 @@ def main() -> int:
     keyframe_saved = False
     for step, count in timeline:
         for _ in range(count):
-            fr = render_frame(runs, tick, step, f_m, f_b, f_s, victory=False)
+            fr = render_frame(runs, tick, step, f_m, f_b, f_s, f_vm, f_vb, qr_grid=qr_grid, victory=False)
             frames.append(fr)
             durations.append(160)
             if step == 167 and not keyframe_saved:
@@ -299,10 +341,10 @@ def main() -> int:
                 keyframe_saved = True
             tick += 1
 
-    v_fr = render_frame(runs, tick, 256, f_m, f_b, f_s, victory=True)
+    v_fr = render_frame(runs, tick, 256, f_m, f_b, f_s, f_vm, f_vb, qr_grid=qr_grid, victory=True)
     v_fr.save(r"D:\DrawnWithCode\_tmp\demo_victory.png")
     frames.append(v_fr)
-    durations.append(2400)
+    durations.append(3200)
 
     # Quantize smoothly with adaptive palette for crisp compact GIF
     q_frames = [f.convert("P", palette=Image.Palette.ADAPTIVE, colors=64) for f in frames]
