@@ -124,6 +124,11 @@ DEMO_SNIPPETS = {
 
 
 def enable_windows_vt() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
     if os.name != "nt":
         return
     try:
@@ -483,9 +488,50 @@ def box_line(inner: str, width: int = 70) -> str:
     return f"{C_BRASS}│{C_RESET}  {inner}{' ' * pad}{C_BRASS}│{C_RESET}"
 
 
+def render_terminal_qr(aj_path: str, quiet: int = 3) -> list[str]:
+    """Decode the 18x9 char QR grid in QR.aj/QR2.aj into ANSI half-block lines."""
+    if not os.path.exists(aj_path):
+        return []
+    with open(aj_path, "r", encoding="utf-8", errors="replace") as fh:
+        raw_lines = [ln.rstrip("\r\n") for ln in fh]
+    n_lines = len(raw_lines)
+    if n_lines < 21 * 9 or n_lines % 9 != 0:
+        return []
+    n_mod = n_lines // 9
+    grid: list[list[bool]] = []
+    for mr in range(n_mod):
+        row: list[bool] = []
+        for mc in range(n_mod):
+            dark = any(raw_lines[mr * 9 + dr][mc * 18 : (mc + 1) * 18].strip() for dr in range(9))
+            row.append(dark)
+        grid.append(row)
+
+    total_w = n_mod + 2 * quiet
+    padded: list[list[bool]] = [[False] * total_w for _ in range(quiet)]
+    for row in grid:
+        padded.append([False] * quiet + row + [False] * quiet)
+    padded.extend([[False] * total_w for _ in range(quiet)])
+    if len(padded) % 2 == 1:
+        padded.append([False] * total_w)
+
+    pair_ch = {
+        (False, False): " ",
+        (True, True): "█",
+        (True, False): "▀",
+        (False, True): "▄",
+    }
+    out: list[str] = []
+    for y in range(0, len(padded), 2):
+        r0, r1 = padded[y], padded[y + 1]
+        chars = "".join(pair_ch[(r0[x], r1[x])] for x in range(total_w))
+        out.append(f"\x1b[30;107m{chars}{C_RESET}")
+    return out
+
+
 def print_victory_card(state: RelayState) -> None:
     dt = time.monotonic() - state.start_ts
     aj_path = os.path.join(state.root, "QR.aj")
+    aj2_path = os.path.join(state.root, "QR2.aj")
     aj_sz = os.path.getsize(aj_path) if os.path.exists(aj_path) else 133_101
     sha8 = ""
     if os.path.exists(aj_path):
@@ -505,6 +551,18 @@ def print_victory_card(state: RelayState) -> None:
     print(box_line(f"{C_BONE}Peak:{C_RESET}    {fmt_bytes(state.peak_bytes)} ({state.peak_label})"))
     print(box_line(f"{C_BONE}Elapsed:{C_RESET} {fmt_dur(dt).strip()}  ·  QR.aj sha256: {sha8}..."))
     print(f"{C_BRASS}╰{'─' * 70}╯{C_RESET}")
+
+    qr_src = aj2_path if os.path.exists(aj2_path) else aj_path
+    qr_lines = render_terminal_qr(qr_src)
+    if qr_lines:
+        vis_w = len(ANSI_RE.sub("", qr_lines[0]))
+        pad = " " * max(2, (72 - vis_w) // 2)
+        print()
+        for qln in qr_lines:
+            print(f"{pad}{qln}")
+        cap = "QR.aj (522×261) · scan -> https://github.com/exacortex/quine-relay-256"
+        cap_pad = " " * max(2, (72 - len(cap)) // 2)
+        print(f"{cap_pad}{C_MUTED}{cap}{C_RESET}")
     print()
 
 
