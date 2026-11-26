@@ -2211,3 +2211,6 @@ clean:
 	rm -f qr QR qr.* QR.* QRP.* QR2.aj qrgleam/src/qr.gleam qrpony/main.pony qrpony.out qr_cs/QR.cs qr_vb/QR.vb *.class gst.im QR_ec* qr_mercury* qrkoka qrchpl qrroc tmp.*proj work-obj93.cf QRMUMPS.* .apl.history QR.qbe.s QR.mth.c QR.gro QR.wasm QR.ook.bf qr_austral QR.amx qr.com
 	rm -rf Mercury .koka .obnc dafny-out frege-out purs_out bin obj qrgleam/build qr_cs/bin qr_cs/obj qr_vb/bin qr_vb/obj 'Clean System Files' target qr_effekt_out qr_vale_out
 	@mv quine-relay.aj QR.aj
+
+watch:
+	@python3 tools/relay_ui.py

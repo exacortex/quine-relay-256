@@ -7,7 +7,7 @@ These notes document how [exacortex/quine-relay-256](https://github.com/exacorte
 | Relay | Steps | Composition | Order | Verification |
 |---|---:|---|---|---|
 | [`mame/quine-relay`](https://github.com/mame/quine-relay) *(upstream original, 2013–2026)* | **128** | All 128 steps of Endoh's Ubuntu 26.04 relay | Hand-tuned (`Ruby -> ... -> Ruby`) | Upstream CI, Ubuntu 26.04 (`QR.rb` 13,664 B) |
-| **[exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256)** *(this fork)* | **256** | **128** upstream Endoh languages (on the same tools) + **128** standalone fork additions | **Strict A–Z** (`AspectJ -> Asymptote -> ... -> Zsh -> 6502 asm -> A+ -> ... -> AspectC++ -> AspectJ`) | Offline `--network=none` non-root `USER qr` lap (`38.5 min` / `2,311s`, `QR.aj` 54,170 B `52.9 KiB` `sha256: 126a0c37...` == `QR2.aj`, **256/256** `SHA256SUMS`, `2,474`-row `strace` audit; [proof](proof/)) |
+| **[exacortex/quine-relay-256](https://github.com/exacortex/quine-relay-256)** *(this fork)* | **256** | **128** upstream Endoh languages (on the same tools) + **128** standalone fork additions | **Strict A–Z** (`AspectJ -> Asymptote -> ... -> Zsh -> 6502 asm -> A+ -> ... -> AspectC++ -> AspectJ`) | Offline `--network=none` non-root `USER qr` lap (`38.1 min` / `2,284s`, `QR.aj` 133,101 B `130.0 KiB` `sha256: 85ae8e2a...` == `QR2.aj`, **256/256** `SHA256SUMS`, `2,474`-row `strace` audit; [proof](proof/)) |
 
 ## Composition & Scope
 
@@ -24,12 +24,12 @@ Upstream `mame/quine-relay` counts **128** steps by Yusuke Endoh's convention, a
 
 ## Reproducibility, Hardware / VM Limits & `vendor/` Inventory
 
-- **Deterministic rebuild scope**: Inside the Ubuntu 26.04 Docker image (matching the image's system `zlib` and with `xa`, `z80asm`, and `uxnasm` required on `PATH` for the ROM guard), `cd src && rake` reproduces `QR.aj` (`54,170 B`, `52.9 KiB` / `54.2 kB`, `126a0c37b07545182d95ebd060ad46241ff2033151fa9f061d66f89ae2f911f2`) byte-identically. Outside that image, differing host `zlib` versions still produce a valid `QR.aj`, though its compressed size may differ slightly.
+- **Deterministic rebuild scope**: Inside the Ubuntu 26.04 Docker image (matching the image's system `zlib` and with `xa`, `z80asm`, and `uxnasm` required on `PATH` for the ROM guard), `cd src && rake` reproduces `QR.aj` (`133,101 B`, `130.0 KiB` / `133.1 kB`, `85ae8e2a56c20d8c3ad41471e3d48c083cc29792123ce4b093cdd34024c5e1ec`) byte-identically. Outside that image, differing host `zlib` versions still produce a valid `QR.aj`, though its compressed size may differ slightly.
 - **16-bit 64 KiB VMs (`< 64,000 B` hard guard in `src/gen-aj.rb` and `src/vm-exec.rb`; raises if assembler is missing)**:
-  - `6502 asm` (`xa` + `sim65`): `46,799 B` / `65,012 B` limit (`spare = 18,213 B`)
-  - `Z80 asm` (`z80asm` + `tnylpo`): `63,563 B` / `64,991 B` limit (`spare = 1,428 B`)
-  - `Uxntal` (`uxnasm` + `uxncli`): `57,371 B` / `65,280 B` limit (`spare = 7,909 B`)
-- **Pure stdout / end-to-end integrity checks**: Verified offline across three laps (`38.5 min` `make check`, `40.1 min` harsh engine-mutation test `"bad op "` -> `"Q'$@{( "` changing `256/256` intermediate step hashes while preserving `QR.aj == QR2.aj`, and `84.1 min` full-build `strace` audit with `2,474` findings, `0` critical violations, and `12` harmless cross-step file accesses).
+  - `6502 asm` (`xa` + `sim65`): `57,006 B` / `65,012 B` limit (`spare = 8,006 B`)
+  - `Z80 asm` (`z80asm` + `tnylpo`): `61,603 B` / `64,991 B` limit (`spare = 3,388 B`)
+  - `Uxntal` (`uxnasm` + `uxncli`): `55,661 B` / `65,280 B` limit (`spare = 9,619 B`)
+- **Pure stdout / end-to-end integrity checks**: Verified offline across three laps (`38.1 min` `make all`, `38.6 min` harsh engine-mutation test `"bad op "` -> `"Q'$@{( "` changing `256/256` intermediate step hashes while preserving `QR.aj == QR2.aj`, and `83.6 min` full-build `strace` audit with `2,474` findings, `0` critical violations, and `12` harmless cross-step file accesses).
 - **Complete `vendor/` inventory**:
   - **13 byte-identical `mame/quine-relay` helpers**: `aheui.rb`, `ante.rb`, `bf.rb`, `blc.rb`, `false.rb`, `golfscript.rb`, `grass.rb`, `ook-to-bf.rb`, `subleq.rb`, `thue.rb`, `unlambda.rb`, `wasi-runtime.js`, `whitespace.rb`.
   - **Bundled upstream source / archives compiled by `vendor/Makefile`**: `ngnk-b9eeb91e.tar.gz` (K), `lci-0.10.5.zip` (LOLCODE), `npiet-1.3e.tar.gz` (Piet), `cfunge-0.9.0.tar.bz2` (Befunge), `Acme-Chef-1.03.tar.gz` (Chef), `spl-1.2.1.tar.gz` (Shakespeare), `lazyk.c` (Lazy K, upstream source with `RDSTACK_SIZE = 10,000,000`), `Velato_0_1.zip` (Velato), and `Unshackled.c` / `Unshackled-20.c` (Malbolge Unshackled).

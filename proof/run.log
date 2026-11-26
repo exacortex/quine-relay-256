@@ -914,7 +914,7 @@ mira -exec QR.mira > QR.mth
 mirth -p std:/opt/mirth/lib/std -p qr:. ./QR.mth -o QR.mth.c > /dev/null
 Compiling ./QR.mth
 Building.
-No errors.
+[32mNo errors.[0m
 Running specializer.
 Running codegen.
 cc -O2 -Wno-trigraphs -o QR QR.mth.c
@@ -1099,7 +1099,7 @@ Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling QR.pas
 Linking QR
-1777 lines compiled, 0.2 sec
+1729 lines compiled, 0.2 sec
 ./QR > QR.pawn
 
 ###########################
@@ -1194,61 +1194,61 @@ spin -T QR.pr > QRP.purs
 ################################
 
 purs compile -o purs_out QRP.purs '/opt/purs/lib/*/src/**/*.purs'
-[ 2 of 57] Compiling Record.Unsafe
+[ 3 of 57] Compiling Record.Unsafe
+[ 1 of 57] Compiling Type.Proxy
 [ 4 of 57] Compiling Data.Unit
-[ 3 of 57] Compiling Type.Proxy
-[ 1 of 57] Compiling Data.Void
+[ 2 of 57] Compiling Data.Void
 [ 5 of 57] Compiling Data.NaturalTransformation
 [ 6 of 57] Compiling Data.Boolean
 [ 7 of 57] Compiling Control.Semigroupoid
-[ 9 of 57] Compiling Control.Category
-[ 8 of 57] Compiling Data.Symbol
-[10 of 57] Compiling Data.Semiring
-[11 of 57] Compiling Data.HeytingAlgebra
+[ 8 of 57] Compiling Control.Category
+[ 9 of 57] Compiling Data.Symbol
+[11 of 57] Compiling Data.Semiring
+[10 of 57] Compiling Data.HeytingAlgebra
 [12 of 57] Compiling Data.Semigroup
 [13 of 57] Compiling Data.Show
 [14 of 57] Compiling Data.Ring
-[15 of 57] Compiling Data.Generic.Rep
-[17 of 57] Compiling Data.BooleanAlgebra
-[16 of 57] Compiling Data.Eq
+[15 of 57] Compiling Data.Eq
+[16 of 57] Compiling Data.BooleanAlgebra
+[17 of 57] Compiling Data.Generic.Rep
 [18 of 57] Compiling Data.CommutativeRing
-[19 of 57] Compiling Data.EuclideanRing
-[20 of 57] Compiling Data.Ordering
+[19 of 57] Compiling Data.Ordering
+[20 of 57] Compiling Data.EuclideanRing
 [21 of 57] Compiling Data.Ord
 [22 of 57] Compiling Data.DivisionRing
 [23 of 57] Compiling Data.Field
 [24 of 57] Compiling Data.Reflectable
-[25 of 57] Compiling Data.Monoid
+[25 of 57] Compiling Data.Function
 [26 of 57] Compiling Data.Bounded
-[27 of 57] Compiling Data.Function
+[27 of 57] Compiling Data.Monoid
 [28 of 57] Compiling Data.Functor
 [29 of 57] Compiling Control.Apply
-[30 of 57] Compiling Data.Bounded.Generic
-[31 of 57] Compiling Data.Monoid.Generic
+[30 of 57] Compiling Data.Monoid.Generic
+[31 of 57] Compiling Data.Bounded.Generic
 [32 of 57] Compiling Control.Applicative
 [33 of 57] Compiling Control.Bind
 [34 of 57] Compiling Control.Monad
 [35 of 57] Compiling Prelude
-[36 of 57] Compiling Data.Semigroup.Last
-[37 of 57] Compiling Data.Ring.Generic
-[38 of 57] Compiling Data.Semiring.Generic
-[39 of 57] Compiling Data.Monoid.Multiplicative
-[40 of 57] Compiling Data.Semigroup.First
-[41 of 57] Compiling Data.Monoid.Conj
-[42 of 57] Compiling Data.Monoid.Endo
-[43 of 57] Compiling Data.Ord.Generic
-[44 of 57] Compiling Data.Monoid.Disj
-[45 of 57] Compiling Data.Monoid.Additive
-[46 of 57] Compiling Data.Eq.Generic
-[47 of 57] Compiling Data.Semigroup.Generic
-[48 of 57] Compiling Data.Monoid.Dual
-[49 of 57] Compiling Data.Show.Generic
-[50 of 57] Compiling Data.HeytingAlgebra.Generic
-[51 of 57] Compiling Effect
-[53 of 57] Compiling Effect.Class
-[52 of 57] Compiling Effect.Console
-[54 of 57] Compiling Effect.Uncurried
-[55 of 57] Compiling Effect.Unsafe
+[36 of 57] Compiling Data.HeytingAlgebra.Generic
+[37 of 57] Compiling Data.Monoid.Disj
+[38 of 57] Compiling Data.Monoid.Conj
+[39 of 57] Compiling Data.Monoid.Endo
+[40 of 57] Compiling Data.Ord.Generic
+[41 of 57] Compiling Data.Semigroup.First
+[42 of 57] Compiling Data.Eq.Generic
+[43 of 57] Compiling Data.Monoid.Dual
+[44 of 57] Compiling Data.Show.Generic
+[45 of 57] Compiling Data.Semigroup.Generic
+[46 of 57] Compiling Data.Monoid.Additive
+[47 of 57] Compiling Data.Ring.Generic
+[49 of 57] Compiling Effect
+[48 of 57] Compiling Data.Monoid.Multiplicative
+[50 of 57] Compiling Data.Semigroup.Last
+[51 of 57] Compiling Data.Semiring.Generic
+[52 of 57] Compiling Effect.Uncurried
+[54 of 57] Compiling Effect.Unsafe
+[53 of 57] Compiling Effect.Console
+[55 of 57] Compiling Effect.Class
 [57 of 57] Compiling QRP
 [56 of 57] Compiling Effect.Class.Console
 node purs_out/QRP/index.js > QR.arr
@@ -1259,17 +1259,10 @@ rm -rf purs_out
 ##########################
 
 pyretc QR.arr QR.jarr
-Gathering dependencies...
-                         
-Compiling worklist...
-                     
-Loading existing compiled modules...
-                                    
-Compiling 1/1: QR.arr
-                     
-1/1 modules compiled (QR.arr)
+Gathering dependencies...                         Compiling worklist...                     Loading existing compiled modules...                                    Compiling 1/1: QR.arr                     1/1 modules compiled (QR.arr)
 Cleaning up and generating standalone...
 NODE_PATH=/opt/b05/node_modules node QR.jarr > QR.pyth
+
 ###########################
 ##  177: Pyth -> Python  ##
 ###########################
@@ -1367,7 +1360,7 @@ rm -f QR
 ############################
 
 roc build --output qrroc QR.roc
-[1;32m0[0m errors and [1;32m0[0m warnings found in 460 ms while successfully building:
+[1;32m0[0m errors and [1;32m0[0m warnings found in 481 ms while successfully building:
 
     qrroc
 ./qrroc > QR.rock
@@ -1572,8 +1565,8 @@ ruby vendor/unlambda.rb QR.unl > QR.tal
 ########################
 
 uxnasm QR.tal QR.rom
+Assembled QR.rom in 54.36kb(85.66% used), 10 labels, 0 macros.
 uxncli QR.rom > QR.vlang.v
-Assembled QR.rom in 56.03kb(88.28% used), 10 labels, 0 macros.
 Loaded QR.rom
 rm -f QR.rom
 
@@ -1640,7 +1633,7 @@ DOTNET_NOLOGO=1 dotnet run --project qr_vb > QR.wasm
 #####################################################################
 
 node --experimental-wasi-unstable-preview1 vendor/wasi-runtime.js QR.wasm > QR.wat
-(node:5028) ExperimentalWarning: WASI is an experimental feature and might change at any time
+(node:5023) ExperimentalWarning: WASI is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 ####################################################
@@ -1649,7 +1642,7 @@ node --experimental-wasi-unstable-preview1 vendor/wasi-runtime.js QR.wasm > QR.w
 
 wat2wasm QR.wat -o QR.wat.wasm
 node --experimental-wasi-unstable-preview1 vendor/wasi-runtime.js QR.wat.wasm > QR.ws
-(node:5042) ExperimentalWarning: WASI is an experimental feature and might change at any time
+(node:5037) ExperimentalWarning: WASI is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 ###############################
@@ -1761,8 +1754,8 @@ ruby vendor/aheui.rb QR.aheui > QR.alg
 #################################
 
 marst QR.alg -o QR.alg.c
-QR.alg:99: warning: unlabelled dummy statement
-QR.alg:101: warning: unlabelled dummy statement
+QR.alg:175: warning: unlabelled dummy statement
+QR.alg:177: warning: unlabelled dummy statement
 gcc QR.alg.c -lalgol -lm -o QR
 ./QR > QR.a68
 rm -f QR QR.alg.c

@@ -77,6 +77,6 @@ dockerfile << "WORKDIR /usr/local/share/quine-relay"
 dockerfile << "RUN make -C vendor && rm -f /usr/bin/sync && dpkg-divert --quiet --local --rename --remove /usr/bin/sync && chown -R qr:qr /usr/local/share/quine-relay"
 dockerfile << "USER qr"
 dockerfile << "ENV HOME=/home/qr DOTNET_CLI_HOME=/home/qr/.dotnet NUGET_PACKAGES=/home/qr/.nuget/packages XDG_CACHE_HOME=/home/qr/.cache GOCACHE=/home/qr/.cache/go-build"
-dockerfile << 'CMD ["make", "check", "-j", "10000"]'
+dockerfile << 'CMD ["python3", "tools/relay_ui.py"]'
 
 File.binwrite(File.join(__dir__, "../Dockerfile"), dockerfile.join("\n") + "\n")

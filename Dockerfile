@@ -294,4 +294,4 @@ WORKDIR /usr/local/share/quine-relay
 RUN make -C vendor && rm -f /usr/bin/sync && dpkg-divert --quiet --local --rename --remove /usr/bin/sync && chown -R qr:qr /usr/local/share/quine-relay
 USER qr
 ENV HOME=/home/qr DOTNET_CLI_HOME=/home/qr/.dotnet NUGET_PACKAGES=/home/qr/.nuget/packages XDG_CACHE_HOME=/home/qr/.cache GOCACHE=/home/qr/.cache/go-build
-CMD ["make", "check", "-j", "10000"]
+CMD ["python3", "tools/relay_ui.py"]

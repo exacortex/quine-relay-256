@@ -93,6 +93,9 @@ clean:
 \trm -f #{ (CLEAN_FILES + EXTRA_CLEAN_FILES).join(" ") }
 \trm -rf #{ (CLEAN_DIRS + EXTRA_CLEAN_DIRS).join(" ") }
 \t@mv quine-relay.aj QR.aj
+
+watch:
+\t@python3 tools/relay_ui.py
 END
 
 File.binwrite("../Makefile", OUT.join("\n"))
