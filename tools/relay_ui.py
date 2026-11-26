@@ -558,6 +558,7 @@ def run_live(state: RelayState) -> int:
     proc = subprocess.Popen(
         ["make", "check", "-j", "10000"],
         cwd=state.root,
+        stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -633,6 +634,10 @@ def main() -> int:
 
     if not demo:
         if plain or not sys.stdout.isatty() or os.environ.get("CI") == "true" or os.environ.get("NO_COLOR"):
+            if sys.stdin and sys.stdin.isatty():
+                devnull = os.open(os.devnull, os.O_RDONLY)
+                os.dup2(devnull, 0)
+                os.close(devnull)
             os.chdir(REPO_ROOT)
             os.execvp("make", ["make", "check", "-j", "10000"])
 
