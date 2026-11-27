@@ -49,10 +49,10 @@ C_DIM = "\x1b[38;2;86;82;76m"
 C_RED = "\x1b[38;2;248;113;113m"
 
 MILESTONES = [
-    ("JSFuck", "JSFuck", "20M []()!+"),
+    ("JSFuck", "JSFuck", "16M []()!+"),
     ("Malbolge Unshackled", "Malbolge", "Unshackled"),
-    ("Piet", "Piet", "199M PPM"),
-    ("Shakespeare", "Shakespeare", "35M Play"),
+    ("Piet", "Piet", "158M PPM"),
+    ("Shakespeare", "Shakespeare", "28M Play"),
     ("Uxntal", "Uxntal", "<64K ROM"),
     ("Z80 asm", "Z80", "<64K COM"),
     ("6502 asm", "6502", "<64K BIN"),
@@ -60,20 +60,20 @@ MILESTONES = [
 
 # Representative payload curve anchor sizes (step -> bytes) for --demo mode
 DEMO_ANCHORS = [
-    (1, 133_101), (2, 836_011), (10, 410_000), (25, 392_000),
-    (59, 345_000), (70, 315_000), (85, 289_000), (103, 243_371),
-    (105, 19_881_169), (110, 250_000), (125, 198_613), (127, 3_727_660),
-    (140, 210_000), (166, 173_889), (167, 199_588_242), (185, 290_000),
-    (200, 326_870), (201, 35_054_824), (215, 180_000), (222, 73_884),
-    (231, 66_285), (240, 61_603), (244, 204_128), (247, 195_690),
-    (253, 172_567), (255, 134_770), (256, 133_205),
+    (1, 54_812), (2, 710_423), (10, 346_964), (16, 26_067_446),
+    (25, 2_442_046), (59, 708_888), (70, 251_226), (85, 185_608),
+    (103, 205_139), (105, 16_740_100), (110, 234_507), (125, 167_117),
+    (127, 3_080_162), (140, 376_251), (166, 144_641), (167, 165_899_154),
+    (185, 475_261), (200, 270_532), (201, 28_988_217), (215, 149_785),
+    (222, 136_874), (231, 53_450), (240, 50_494), (244, 81_565),
+    (247, 91_100), (253, 65_403), (255, 56_230), (256, 54_916),
 ]
 
 DEMO_SNIPPETS = {
     "AspectJ": [
-        "import java.io.*;import java.util.*;import java.util.regex.*;import java.util.zip.*;/*##*/",
-        '  "MnQKRd95DF(]2;|^74DY.ZXp0c@8}   03hh4l]!As9c   <?_QNKYvwS4W_%O<RkeMFL;"',
-        "aspect Q{static String[]B={...};before():execution(void QR.main(..)){init();}}",
+        "import java.io.*;import java.util.*;import java.util.regex.*;import java.util.zip.*;",
+        'static String[]B={"MnQKRd95DF(]2;|^h7DY.ZXp0c@8}03hh4l]!As9/B(v>zr4&}Xe5z#mY...',
+        "aspect Q{static byte[]D;static int P;before():execution(void QR.main(..)){init();}}",
     ],
     "Chapel": [
         "use IO;proc main(){var s=\"\"\"...",
@@ -82,15 +82,15 @@ DEMO_SNIPPETS = {
     "JSFuck": [
         "[][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]][([][(![]+[])...",
         "+(+!+[]+[+!+[]]+(!![]+[])[!+[]+!+[]+!+[]]+[!+[]+!+[]]+[+[]])+[])[+!+[]]+...",
-        "(19,881,169 bytes strictly using []()!+)",
+        "(16,740,100 bytes strictly using []()!+)",
     ],
     "Malbolge Unshackled": [
         "(=<`#9]~6ZY327Uv4-QsqpMn&+Ij\"'E%e{Ab~w=_:]Kw%o44Uqp0/Q?xNvL:`H%c#DD2^WV>gY;Nj3?",
         "(&%$#\"!~}|{zyxwvutsrqponmlkjihgfedcba`_^]\\[ZYXWVUTSRQPONMLKJIHGFEDCBA@?>=<;:987",
-        "(3,727,660 bytes — zero '/' ops, dual-interpreter CC0 verified)",
+        "(3,080,162 bytes — zero '/' ops, dual-interpreter CC0 verified)",
     ],
     "Piet": [
-        "P6  512 129940 255  [199,588,242 bytes raw RGB PPM codel grid]",
+        "P6  432029 128 255  [165,899,154 bytes raw RGB PPM codel grid]",
         "000000 ffffff 00c0ff c000ff ff0000 00ff00 c0c000 ... [npiet codels]",
     ],
     "Shakespeare": [
@@ -100,15 +100,15 @@ DEMO_SNIPPETS = {
     ],
     "Uxntal": [
         "|0100 ;pre ;p JSR2 ;z @l DUP2 ;ze EQU2 ;d JCN2 LDAk #00 STZ INC2...",
-        "@t 41 42 43 44 45 46 47 48 ...   (ROM 55,661 B / 65,280 B)",
+        "@t 41 42 43 44 45 46 47 48 ...   (ROM 45,626 B / 65,280 B)",
     ],
     "Z80 asm": [
         " org 0100h / ld hl,msg / loop: ld a,(hl) / or a / jr z,done / call 5",
-        ' db "const s=@import(\\"std\\");pub fn main()!void{..." (COM 61,603 B / 64,991 B)',
+        ' db "const s=@import(\\"std\\");pub fn main()!void{..." (COM 50,152 B / 64,991 B)',
     ],
     "6502 asm": [
         ' .byt "sim65",2,0,2,$00,$02,$00,$02  * = $0200  ldx #$ff  txs  jsr emit',
-        ' .byt ".global _start",".text",10,"_start:",10,...  (BIN 57,006 B / 65,012 B)',
+        ' .byt ".global _start",".text",10,"_start:",10,...  (BIN 45,842 B / 65,012 B)',
     ],
     "ArnoldC": [
         "IT'S SHOWTIME",
@@ -279,7 +279,7 @@ def demo_size_for_step(step: int) -> int:
                 return b0
             t = (step - s0) / (s1 - s0)
             return int(round(10 ** (math.log10(b0) + t * (math.log10(b1) - math.log10(b0)))))
-    return 133_101
+    return 54_812
 
 
 class RelayState:
@@ -488,51 +488,25 @@ def box_line(inner: str, width: int = 70) -> str:
     return f"{C_BRASS}│{C_RESET}  {inner}{' ' * pad}{C_BRASS}│{C_RESET}"
 
 
-def render_terminal_qr(aj_path: str, quiet: int = 3) -> list[str]:
-    """Decode the 18x9 char QR grid in QR.aj/QR2.aj into ANSI half-block lines."""
-    if not os.path.exists(aj_path):
-        return []
-    with open(aj_path, "r", encoding="utf-8", errors="replace") as fh:
-        raw_lines = [ln.rstrip("\r\n") for ln in fh]
-    n_lines = len(raw_lines)
-    if n_lines < 21 * 9 or n_lines % 9 != 0:
-        return []
-    n_mod = n_lines // 9
-    grid: list[list[bool]] = []
-    for mr in range(n_mod):
-        row: list[bool] = []
-        for mc in range(n_mod):
-            dark = any(raw_lines[mr * 9 + dr][mc * 18 : (mc + 1) * 18].strip() for dr in range(9))
-            row.append(dark)
-        grid.append(row)
-
-    total_w = n_mod + 2 * quiet
-    padded: list[list[bool]] = [[False] * total_w for _ in range(quiet)]
-    for row in grid:
-        padded.append([False] * quiet + row + [False] * quiet)
-    padded.extend([[False] * total_w for _ in range(quiet)])
-    if len(padded) % 2 == 1:
-        padded.append([False] * total_w)
-
-    pair_ch = {
-        (False, False): " ",
-        (True, True): "█",
-        (True, False): "▀",
-        (False, True): "▄",
-    }
-    out: list[str] = []
-    for y in range(0, len(padded), 2):
-        r0, r1 = padded[y], padded[y + 1]
-        chars = "".join(pair_ch[(r0[x], r1[x])] for x in range(total_w))
-        out.append(f"\x1b[30;107m{chars}{C_RESET}")
-    return out
+def render_banner_256() -> list[str]:
+    """Crisp 5-row block-art '256' badge centered beneath the victory card."""
+    rows = [
+        (" ▄▄▄▄▄▄ ", " ██████ ", " ▄▄▄▄▄▄ "),
+        ("▀▀   ██ ", " ██     ", "██▀     "),
+        ("  ▄▄█▀  ", " █████▄ ", "██████▄ "),
+        (" ██     ", "     ██ ", "██   ██ "),
+        ("███████ ", " ▄▄▄▄█▀ ", "▀█████▀ "),
+    ]
+    return [
+        f"{C_BOLD}{C_BONE}{c2}  {C_BRASS}{c5}  {C_RUST}{c6}{C_RESET}"
+        for c2, c5, c6 in rows
+    ]
 
 
 def print_victory_card(state: RelayState) -> None:
     dt = time.monotonic() - state.start_ts
     aj_path = os.path.join(state.root, "QR.aj")
-    aj2_path = os.path.join(state.root, "QR2.aj")
-    aj_sz = os.path.getsize(aj_path) if os.path.exists(aj_path) else 133_101
+    aj_sz = os.path.getsize(aj_path) if os.path.exists(aj_path) else 54_812
     sha8 = ""
     if os.path.exists(aj_path):
         h = hashlib.sha256()
@@ -541,6 +515,11 @@ def print_victory_card(state: RelayState) -> None:
                 h.update(chunk)
         sha8 = h.hexdigest()[:16]
 
+    print()
+    for ln in render_banner_256():
+        vis_w = len(ANSI_RE.sub("", ln))
+        pad = " " * max(2, (72 - vis_w) // 2)
+        print(f"{pad}{ln}")
     print()
     print(f"{C_BRASS}╭{'─' * 70}╮{C_RESET}")
     print(box_line(f"{C_BOLD}{C_GREEN}● QUINE RELAY 256 — VERIFIED ROUND-TRIP COMPLETE{C_RESET}"))
@@ -551,18 +530,6 @@ def print_victory_card(state: RelayState) -> None:
     print(box_line(f"{C_BONE}Peak:{C_RESET}    {fmt_bytes(state.peak_bytes)} ({state.peak_label})"))
     print(box_line(f"{C_BONE}Elapsed:{C_RESET} {fmt_dur(dt).strip()}  ·  QR.aj sha256: {sha8}..."))
     print(f"{C_BRASS}╰{'─' * 70}╯{C_RESET}")
-
-    qr_src = aj2_path if os.path.exists(aj2_path) else aj_path
-    qr_lines = render_terminal_qr(qr_src)
-    if qr_lines:
-        vis_w = len(ANSI_RE.sub("", qr_lines[0]))
-        pad = " " * max(2, (72 - vis_w) // 2)
-        print()
-        for qln in qr_lines:
-            print(f"{pad}{qln}")
-        cap = "QR.aj (522×261) · scan -> https://github.com/exacortex/quine-relay-256"
-        cap_pad = " " * max(2, (72 - len(cap)) // 2)
-        print(f"{cap_pad}{C_MUTED}{cap}{C_RESET}")
     print()
 
 
@@ -605,7 +572,7 @@ def run_demo(state: RelayState, fast: bool = False) -> int:
     finally:
         sys.stdout.write("\x1b[?25h\x1b[?1049l")
         sys.stdout.flush()
-    state.peak_bytes = max(state.peak_bytes, 199_588_242)
+    state.peak_bytes = max(state.peak_bytes, 165_899_154)
     state.peak_label = "#167 Piet (QR.ppm)"
     print_victory_card(state)
     return 0

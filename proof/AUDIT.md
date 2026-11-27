@@ -1,9 +1,9 @@
 # Quine Relay 256 — Verification & Audit Summary
 
-**Date:** 2026-11-25  
-**Verified Snapshot:** v3.2 release snapshot (from commit `e9334ba`, prior to final doc/proof log updates)  
+**Date:** 2026-11-26  
+**Verified Snapshot:** v3.3 release (`QR.aj` `54,812 B` pure-code seed; `README.md`, `proof/*`, `assets/*`, and `tools/relay_ui.py` `--demo` display constants synced afterward to the measured Lap A outputs while `QR.aj`, `Makefile`, `Dockerfile`, `src/code-gen.rb`, `src/engine_body.java`, `src/gen-aj.rb`, `src/Rakefile`, and `vendor/*` remain byte-identical to the verified image)  
 **Platform:** Ubuntu 26.04 container environment  
-**Verified Image ID:** `sha256:1a67fe8da35fa8c01cc0a26c473f11bed2e1f5af20619415818974aab67468e2`
+**Verified Image ID:** `sha256:6faf3aa8deb65ec6f9fa244e94182de95086d4786dafca4dc5cf018ef96d7853`
 
 ---
 
@@ -24,44 +24,43 @@ Every step is listed openly in [LANGUAGES.md](../LANGUAGES.md) with full composi
 ### Key Engineering Details
 - Every entry in `vendor/` is either inherited from `mame/quine-relay` (all 13 helper scripts match upstream byte-for-byte) or a canonical third-party upstream source/reference implementation (`0` custom fork esolang interpreters).
 - Uses upstream `gfortran` (`FORTRAN77` -> `Fortran90`), `gzip -cd` (`Gzip`), pure `[]()!+` charset `JSFuck`, `vendor/ook-to-bf.rb` + `vendor/bf.rb` (`Ook!`), `vendor/wasi-runtime.js` + `wat2wasm` (`WebAssembly`), and `vendor/unlambda.rb` (`Unlambda`).
-- `src/qr_matrix.rb` + `src/gen-aj.rb` pack `QR.aj` into an edge-to-edge **29×29 ISO 18004 Version 3 EC-L scannable QR code (`522×261`)** encoding `https://github.com/exacortex/quine-relay-256`.
-- `src/code-gen.rb` compacts `Asm6502` printable runs into `.byt "..."` strings (excluding `"`/`\`) and raises `ARM64Asm` `.ascii` chunks from `{1,60}` to `{1,4000}`, keeping `Z80 asm` (`61,603 B`) and `Uxntal` (`55,661 B`) well under the 64 KiB ceiling despite the larger QR-shaped seed.
-- Compresses `Julia` (`QR.jl`) with deterministic LZ77 (skipping `[`, `\`, `]` tokens so `Jasmin#check` bracket balance and downstream `dc` remain intact) and packs `Uxntal` (`QR.tal`) via raw-byte `@z` plus in-Uxn Base64 decoding (`55,661 B` ROM).
-- Encodes `Ion` (`QR.ion`, `287,835 B` -> `QR.ijs` `250,174 B` -> `QR.janet` `248,591 B`) using variable concatenation across 4,000-byte single-quoted chunks, escaping all ten Redox `ion` syntax characters (`' \ $ @ [ ] { } ( )`) so escaped strings and harsh punctuation payloads propagate cleanly through Step 98 (`Ion -> J`).
-- Default Docker `CMD` launches `tools/relay_ui.py` for an animated terminal visualizer on interactive TTY runs and hands off cleanly to unmodified `make check -j 10000` when non-TTY (`CI=true`, `NO_COLOR`, `--plain`, or redirected stdout).
+- `src/gen-aj.rb` + `src/engine_body.java` emit a lean pure-code **`54,812 B` (`53.5 KiB`)** `QR.aj` seed with zero ASCII-art padding (`214.1 B/step`), while `src/code-gen.rb` compacts `Asm6502` printable runs into `.byt "..."` strings (excluding `"`/`\`) and raises `ARM64Asm` `.ascii` chunks from `{1,60}` to `{1,4000}` — giving all three 16-bit 64 KiB ROMs `14.5–19.2 KiB` of spare headroom (`45,842 B` / `50,152 B` / `45,626 B`).
+- Compresses `Julia` (`QR.jl`) with deterministic LZ77 (skipping `[`, `\`, `]` tokens so `Jasmin#check` bracket balance and downstream `dc` remain intact) and packs `Uxntal` (`QR.tal`, `136,874 B`) via raw-byte `@z` plus in-Uxn Base64 decoding (`45,626 B` ROM).
+- Encodes `Ion` (`QR.ion`, `241,741 B` -> `QR.ijs` `210,558 B` -> `QR.janet` `209,156 B`) using variable concatenation across 4,000-byte single-quoted chunks, escaping all ten Redox `ion` syntax characters (`' \ $ @ [ ] { } ( )`) so escaped strings and harsh punctuation payloads propagate cleanly through Step 98 (`Ion -> J`).
+- Default Docker `CMD` launches `tools/relay_ui.py` for an animated terminal visualizer with a bold `256` victory card on interactive TTY runs and hands off cleanly to unmodified `make check -j 10000` (with stdin detached to `/dev/null` on TTYs) when non-TTY (`CI=true`, `NO_COLOR`, `--plain`, or redirected stdout).
 
 ---
 
 ## 2. Deterministic Engine, Order, & 16-bit Hardware/VM Checks
 
 - **Order & uniqueness**: `256` unique `RunSteps` (`225` `GenSteps`, `224` code-generating entries), all `128` upstream languages present, all `16` restored historical languages present, `Out of order: 0`.
-- **Differential engine check**: `self() == QR.aj` byte-for-byte (`133,101 B` / `130.0 KiB` / `133.1 kB`, `sha256: 85ae8e2a56c20d8c3ad41471e3d48c083cc29792123ce4b093cdd34024c5e1ec`), **Phase 1 `exact=224/224`, `fails=0`**, **Phase 2 Java chain `check()`s `224/224` passed** and Ruby-vs-Java parity (`QR.asy` = `836,011 B`).
-- **Generator determinism**: `cd src && rake` inside the Ubuntu 26.04 Docker image reproduces `QR.aj` (`133,101 B`, `85ae8e2a...`) byte-identically; ROM guards fail immediately if `xa`, `z80asm`, or `uxnasm` is missing from `PATH`.
+- **Differential engine check**: `self() == QR.aj` byte-for-byte (`54,812 B` / `53.5 KiB` / `54.8 kB`, `sha256: 0c88b16fd93c05cc6d19af4b7d23abb2ca97eb622c3f01d933c57c0e1c92d778`), **Phase 1 `exact=224/224`, `fails=0`**, **Phase 2 Java chain `check()`s `224/224` passed** and Ruby-vs-Java parity (`QR.asy` = `710,423 B`).
+- **Generator determinism**: `cd src && rake` inside the Ubuntu 26.04 Docker image reproduces `QR.aj` (`54,812 B`, `0c88b16f...`) byte-identically; ROM guards fail immediately if `xa`, `z80asm`, or `uxnasm` is missing from `PATH`.
 - **16-bit `< 64,000 B` ROM limits (`src/gen-aj.rb` + `src/vm-exec.rb`)**:
-  - `6502 asm` (`xa` + `sim65`): `57,006 B / 65,012 B` (`guard < 64,000 B`, `spare = 8,006 B`, `exact=true`)
-  - `Z80 asm` (`z80asm` + `tnylpo`): `61,603 B / 64,991 B` (`guard < 64,000 B`, `spare = 3,388 B`, `exact=true`)
-  - `Uxntal` (`uxnasm` + `uxncli`): `55,661 B / 65,280 B` (`guard < 64,000 B`, `spare = 9,619 B`, `exact=true`)
+  - `6502 asm` (`xa` + `sim65`): `45,842 B / 65,012 B` (`guard < 64,000 B`, `spare = 19,170 B`, `0.02s`, `exact=true`)
+  - `Z80 asm` (`z80asm` + `tnylpo`): `50,152 B / 64,991 B` (`guard < 64,000 B`, `spare = 14,839 B`, `0.01s`, `exact=true`)
+  - `Uxntal` (`uxnasm` + `uxncli`): `45,626 B / 65,280 B` (`guard < 64,000 B`, `spare = 19,654 B`, `0.12s`, `exact=true`)
 
 ---
 
-## 3. Full Offline Proof, Harsh Mutation Canary, & `strace` Laps (`--network=none`, `USER qr`, `161.2 min` total)
+## 3. Full Offline Proof, Harsh Mutation Canary, & `strace` Laps (`--network=none`, `USER qr`, `187.3 min` total)
 
 1. **Lap A (`make all` + `SHA256SUMS` + UI checks, offline `--network=none`)**:
-   - **256 / 256 PASS** in **`2,284s` (`38.1 min`)** (total Lap A wrapper duration `2,298s`)
-   - `diff -s QR.aj QR2.aj` -> `Files QR.aj and QR2.aj are identical` (`133,101 B`)
-   - `SHA256SUMS` -> `256` entries generated (`sha256: 04d4aa5a07864d95a7b7b941d773659a40b76eab316a561dc50d843252bca1be`), verified **256 / 256 PASS** in Lap C
+   - **256 / 256 PASS** in **`2,772s` (`46.2 min`)** (wrapper duration `2,787s`; `433,041,032 B` / `413.0 MiB` total source bytes across all 256 steps)
+   - `diff -s QR.aj QR2.aj` -> `Files QR.aj and QR2.aj are identical` (`54,812 B`)
+   - `SHA256SUMS` -> `256` entries generated (`sha256: 4b8da55cac5c2c78def15b286288111f841582e6a062da4210dfa7312b20e241`), verified **256 / 256 PASS** in Lap C
    - Visualizer UI checks: `python3 tools/relay_ui.py < /dev/null` non-TTY fallback **PASS** (`NONTTY_RC=0`, running unmodified `make check` -> `Files QR.aj and QR2.aj are identical`); `script -qec "python3 tools/relay_ui.py --demo --fast" /dev/null` real PTY demo **PASS** (`PTY_DEMO_RC=0`)
-   - Supplemental artifact checks verified on v3.2 Lap C outputs (`qr-files.tar`):
-     - `QR.jsfuck` -> `19,881,169 B`, `0` characters outside `[]()!+\n`
-     - `Malbolge Unshackled` -> both `unshackled` (`Unshackled.c`) and `unshackled20` (`Unshackled-20.c`) produced byte-identical `QR.wl` (`192,900 B`, from `3,727,660 B` `QR.mb`) on both empty and non-empty stdin (`MALBOLGE_PARITY=OK`)
+   - Supplemental artifact checks verified on v3.3 Lap C outputs (`trace/qr-files.tar`):
+     - `QR.jsfuck` -> `16,740,100 B`, `0` characters outside `[]()!+\n`
+     - `Malbolge Unshackled` -> both `unshackled` (`Unshackled.c`) and `unshackled20` (`Unshackled-20.c`) produced byte-identical `QR.wl` (`161,404 B`, from `3,080,162 B` `QR.mb`) on both empty and non-empty stdin (`MALBOLGE_PARITY=OK`)
 2. **Lap B (In-image rebuild + harsh engine-mutation test: `"bad op "` -> `"Q'$@{( "` in `src/engine_body.java`)**:
-   - In-image rebuild (`cd src && rake`) produced byte-identical `QR.aj` (`REGEN_IDENTICAL=YES`, `sha256: 85ae8e2a...`).
-   - Mutated canary `QR.aj` (`133,101 B`, `sha256: 09e1ac7c543684609cba8127d3b05fd81bcc134a860159dc85406627295fea5a`, `CANARY_IN_QR_AJ=1`; ROM guards `56,994 B` / `61,695 B` / `55,743 B`, all `< 64,000 B`)
-   - Full `make` -> **PASS** in **`2,316s` (`38.6 min`)**, `CANARY_ROUNDTRIP=OK`, `QR2.aj` preserves the canary marker (`CANARY_QR2_HAS_MARK=1`)
+   - In-image rebuild (`cd src && rake`) produced byte-identical `QR.aj` (`REGEN_IDENTICAL=YES`, `sha256: 0c88b16f...`).
+   - Mutated canary `QR.aj` (`54,815 B`, `sha256: 8971e382122d7421cf94a29738b0594c8f581ad02f5c661a33a092854a4cba25`, `CANARY_IN_QR_AJ=1`; ROM guards `45,784 B` / `49,997 B` / `45,443 B`, all `< 64,000 B`)
+   - Full `make` -> **PASS** in **`2,783s` (`46.4 min`)**, `CANARY_ROUNDTRIP=OK`, `QR2.aj` preserves the canary marker (`CANARY_QR2_HAS_MARK=1`)
    - **256 / 256 intermediate step file SHA-256 hashes changed** (`STEP_HASH_CHANGED=256 UNCHANGED=0 MISSING=0`)
-3. **Lap C (Full-build `strace` audit on `qr256-v32-trace`)**:
-   - Full `make` -> **PASS** in **`5,013s` (`83.6 min`)**, `ROUNDTRIP=OK`, **256 / 256** `SHA256SUMS` match (`SUMS_OK=256 FAILED=0`)
-   - `2,474` `strace` audit entries across `256` steps (`256` Makefile rules; `READ-FOREIGN: 852`, `WRITE-ODD: 1060`, `RENAME: 562`): **`0` critical violations** (all `128 / 128` fork additions verified pure stdout with no CLI code or file reads; upstream tool invocation notes are listed in Section 4 below)
+3. **Lap C (Full-build `strace` audit on `qr256-v33-trace`)**:
+   - Full `make` -> **PASS** in **`5,620s` (`93.7 min`)**, `ROUNDTRIP=OK`, **256 / 256** `SHA256SUMS` match (`SUMS_OK=256 FAILED=0`)
+   - `2,472` `strace` audit entries across `256` steps (`256` Makefile rules; `READ-FOREIGN: 851`, `WRITE-ODD: 1059`, `RENAME: 562`): **`0` critical violations** (all `128 / 128` fork additions verified pure stdout with no CLI code or file reads; upstream tool invocation notes are listed in Section 4 below)
    - **`12` benign cross-step `QR*`/`qr*` accesses** (excluding Zig stdlib `std/*/sqrt.zig`):
      - Persistent `.NET` `VBCSCompiler` build server started during `C#` later compiling `Dafny`'s code (4 reads attributed to `C#`, 3 to `Dafny`)
      - `Scala` probing for a file named `QR`
@@ -80,4 +79,4 @@ Every step is listed openly in [LANGUAGES.md](../LANGUAGES.md) with full composi
   - **External echo or data decompression**: `Execline` (`foreground { echo -n ... }` here; upstream uses `echo "..."`), `Gzip` (`gzip -cd QR.gz`)
   - **Inherited exit-code note**: `dc` (`dc QR.dc > QR.dhall || true`, marked `XXX` upstream).
 - **11 stdlib zlib unpacker steps**: `C#`, `CoffeeScript`, `Elixir`, `F#`, `Go`, `Groovy`, `Mathics`, `PowerShell`, `Tcl`, `V`, `Zig`.
-- **Memory**: `Shakespeare` (`gcc -O0` on `QR.spl.c` compiled from `35,054,824 B` `QR.spl`) peaks near `~21 GB` RSS (`>= 24 GB` VM RAM required).
+- **Memory & peak file size**: `Piet` (`QR.ppm`) peaks at `165,899,154 B` (`158.21 MiB`); `Shakespeare` (`gcc -O0` on `QR.spl.c` compiled from `28,988,217 B` `QR.spl`) peaks near `~21 GB` RSS (`>= 24 GB` VM RAM required).

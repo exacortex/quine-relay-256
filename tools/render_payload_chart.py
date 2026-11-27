@@ -53,26 +53,26 @@ def main() -> int:
     ax.set_facecolor(bg)
 
     # Shaded <64 KiB 16-bit vintage ROM ceiling zone
-    ax.axhspan(30_000, 65_536, color="#E8DFCD", alpha=0.55, zorder=1)
+    ax.axhspan(22_000, 65_536, color="#E8DFCD", alpha=0.55, zorder=1)
     ax.axhline(65_536, color=brass, linestyle="--", linewidth=1.2, alpha=0.9, zorder=2)
-    ax.text(8, 52_000, "64 KiB vintage 8/16-bit ROM ceiling", color="#7A5D28", fontsize=9, fontweight="bold", va="center")
+    ax.text(44, 36_000, "64 KiB vintage 8/16-bit ROM ceiling", color="#7A5D28", fontsize=9, fontweight="bold", va="center")
 
     # Log-scale filled area + line
-    ax.fill_between(xs, 30_000, ys, color=rust, alpha=0.10, zorder=2)
+    ax.fill_between(xs, 22_000, ys, color=rust, alpha=0.10, zorder=2)
     ax.plot(xs, ys, color=ink, linewidth=1.6, zorder=3)
 
     # Highlight key milestones
     callouts = [
-        (1,   data["aj_bytes"],         "#1 QR.aj (130 KiB)",              (14, 20),   "left",   rust),
-        (16,  30_778_716,               "#16 Brainflak\n29.4 MiB",         (14, 12),   "left",   rust),
-        (105, 19_881_169,               "#105 JSFuck\n19.0 MiB",           (-12, 22),  "center", ink),
-        (127, 3_727_660,                "#127 Malbolge\nUnshackled 3.6 MiB", (-4, 30), "center", rust),
-        (167, 199_588_242,              "#167 Piet (PPM peak)\n190.3 MiB", (-16, -4),  "right",  ink),
-        (201, 35_054_824,               "#201 Shakespeare\n33.4 MiB play", (10, 16),   "left",   ink),
-        (222, runs[221]["bytes"],       "#222 Uxntal",                     (-12, -34), "right",  rust),
-        (240, runs[239]["bytes"],       "#240 Z80 <64K",                   (-2, -28),  "center", rust),
-        (244, runs[243]["bytes"],       "#244 6502",                       (2, 92),    "center", rust),
-        (257, data["aj_bytes"],         "#256 QR2.aj\n(130 KiB)",          (12, 2),    "left",   rust),
+        (1,   data["aj_bytes"],         "#1 QR.aj (53.5 KiB)",                  (16, 24),   "left",   rust),
+        (16,  runs[15]["bytes"],        "#16 Brain-Flak\n24.9 MiB",             (14, 12),   "left",   rust),
+        (105, runs[104]["bytes"],       "#105 JSFuck\n16.0 MiB",                (-12, 22),  "center", ink),
+        (127, runs[126]["bytes"],       "#127 Malbolge\nUnshackled 2.9 MiB",    (-4, 30),   "center", rust),
+        (167, runs[166]["bytes"],       "#167 Piet (PPM peak)\n158.2 MiB",      (-16, -4),  "right",  ink),
+        (201, runs[200]["bytes"],       "#201 Shakespeare\n27.6 MiB play",      (10, 16),   "left",   ink),
+        (222, runs[221]["bytes"],       "#222 Uxntal",                          (-16, -24), "right",  rust),
+        (240, runs[239]["bytes"],       "#240 Z80 <64K",                        (-2, -18),  "center", rust),
+        (244, runs[243]["bytes"],       "#244 6502",                            (2, 92),    "center", rust),
+        (257, data["aj_bytes"],         "#256 QR2.aj\n(53.5 KiB)",              (12, 2),    "left",   rust),
     ]
 
     for sx, sy, lbl, (dx, dy), ha, col in callouts:
@@ -94,7 +94,7 @@ def main() -> int:
 
     ax.set_yscale("log")
     ax.set_xlim(0, 282)
-    ax.set_ylim(30_000, 380_000_000)
+    ax.set_ylim(22_000, 380_000_000)
     ax.set_xticks([1, 32, 64, 96, 128, 160, 192, 224, 256])
     ax.set_xticklabels(["#1\nAspJ", "#32\nCoff", "#64\nGamb", "#96\nJ", "#128\nMaca", "#160\nPerl5", "#192\nRock", "#224\nVala", "#256\nAspC++"], fontsize=9, color=muted)
 
@@ -127,7 +127,7 @@ def main() -> int:
     fig.text(
         0.072,
         0.905,
-        "Intermediate source sizes from 130 KiB QR.aj -> 190.3 MiB Piet PPM & 33.4 MiB Shakespeare -> <64 KiB vintage ROMs -> identical 130 KiB QR2.aj",
+        "Intermediate source sizes from 53.5 KiB QR.aj -> 158.2 MiB Piet PPM & 27.6 MiB Shakespeare -> <64 KiB vintage ROMs -> identical 53.5 KiB QR2.aj",
         fontsize=9.5,
         color=muted,
     )

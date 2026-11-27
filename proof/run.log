@@ -801,7 +801,7 @@ lily QR.lily > qr.li
 lisaac -gcc -Wno-implicit-function-declaration qr.li > /dev/null
 Depending pass: .......... (10)
 Executing pass: *.......*.. (11)
- => 2 second(s).
+ => 1 second(s).
 ./qr > QR.ls
 
 ###################################
@@ -1099,7 +1099,7 @@ Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling QR.pas
 Linking QR
-1729 lines compiled, 0.2 sec
+1448 lines compiled, 0.2 sec
 ./QR > QR.pawn
 
 ###########################
@@ -1194,32 +1194,32 @@ spin -T QR.pr > QRP.purs
 ################################
 
 purs compile -o purs_out QRP.purs '/opt/purs/lib/*/src/**/*.purs'
-[ 3 of 57] Compiling Record.Unsafe
 [ 1 of 57] Compiling Type.Proxy
+[ 2 of 57] Compiling Record.Unsafe
 [ 4 of 57] Compiling Data.Unit
-[ 2 of 57] Compiling Data.Void
+[ 3 of 57] Compiling Data.Void
 [ 5 of 57] Compiling Data.NaturalTransformation
 [ 6 of 57] Compiling Data.Boolean
 [ 7 of 57] Compiling Control.Semigroupoid
 [ 8 of 57] Compiling Control.Category
 [ 9 of 57] Compiling Data.Symbol
-[11 of 57] Compiling Data.Semiring
-[10 of 57] Compiling Data.HeytingAlgebra
+[10 of 57] Compiling Data.Semiring
+[11 of 57] Compiling Data.HeytingAlgebra
 [12 of 57] Compiling Data.Semigroup
 [13 of 57] Compiling Data.Show
 [14 of 57] Compiling Data.Ring
-[15 of 57] Compiling Data.Eq
-[16 of 57] Compiling Data.BooleanAlgebra
-[17 of 57] Compiling Data.Generic.Rep
+[15 of 57] Compiling Data.Generic.Rep
+[17 of 57] Compiling Data.BooleanAlgebra
+[16 of 57] Compiling Data.Eq
 [18 of 57] Compiling Data.CommutativeRing
 [19 of 57] Compiling Data.Ordering
 [20 of 57] Compiling Data.EuclideanRing
 [21 of 57] Compiling Data.Ord
 [22 of 57] Compiling Data.DivisionRing
 [23 of 57] Compiling Data.Field
-[24 of 57] Compiling Data.Reflectable
-[25 of 57] Compiling Data.Function
-[26 of 57] Compiling Data.Bounded
+[25 of 57] Compiling Data.Bounded
+[24 of 57] Compiling Data.Function
+[26 of 57] Compiling Data.Reflectable
 [27 of 57] Compiling Data.Monoid
 [28 of 57] Compiling Data.Functor
 [29 of 57] Compiling Control.Apply
@@ -1229,28 +1229,28 @@ purs compile -o purs_out QRP.purs '/opt/purs/lib/*/src/**/*.purs'
 [33 of 57] Compiling Control.Bind
 [34 of 57] Compiling Control.Monad
 [35 of 57] Compiling Prelude
-[36 of 57] Compiling Data.HeytingAlgebra.Generic
-[37 of 57] Compiling Data.Monoid.Disj
-[38 of 57] Compiling Data.Monoid.Conj
+[36 of 57] Compiling Data.Semigroup.Generic
+[37 of 57] Compiling Data.Show.Generic
+[38 of 57] Compiling Effect
 [39 of 57] Compiling Data.Monoid.Endo
-[40 of 57] Compiling Data.Ord.Generic
-[41 of 57] Compiling Data.Semigroup.First
-[42 of 57] Compiling Data.Eq.Generic
-[43 of 57] Compiling Data.Monoid.Dual
-[44 of 57] Compiling Data.Show.Generic
-[45 of 57] Compiling Data.Semigroup.Generic
-[46 of 57] Compiling Data.Monoid.Additive
-[47 of 57] Compiling Data.Ring.Generic
-[49 of 57] Compiling Effect
-[48 of 57] Compiling Data.Monoid.Multiplicative
+[40 of 57] Compiling Data.Semiring.Generic
+[41 of 57] Compiling Data.HeytingAlgebra.Generic
+[42 of 57] Compiling Data.Monoid.Multiplicative
+[43 of 57] Compiling Data.Ord.Generic
+[44 of 57] Compiling Data.Ring.Generic
+[45 of 57] Compiling Data.Semigroup.First
+[46 of 57] Compiling Data.Monoid.Disj
+[47 of 57] Compiling Data.Monoid.Conj
+[48 of 57] Compiling Data.Monoid.Additive
+[49 of 57] Compiling Data.Eq.Generic
 [50 of 57] Compiling Data.Semigroup.Last
-[51 of 57] Compiling Data.Semiring.Generic
+[51 of 57] Compiling Data.Monoid.Dual
 [52 of 57] Compiling Effect.Uncurried
-[54 of 57] Compiling Effect.Unsafe
 [53 of 57] Compiling Effect.Console
-[55 of 57] Compiling Effect.Class
-[57 of 57] Compiling QRP
-[56 of 57] Compiling Effect.Class.Console
+[54 of 57] Compiling Effect.Class
+[55 of 57] Compiling Effect.Unsafe
+[56 of 57] Compiling QRP
+[57 of 57] Compiling Effect.Class.Console
 node purs_out/QRP/index.js > QR.arr
 rm -rf purs_out
 
@@ -1360,7 +1360,7 @@ rm -f QR
 ############################
 
 roc build --output qrroc QR.roc
-[1;32m0[0m errors and [1;32m0[0m warnings found in 481 ms while successfully building:
+[1;32m0[0m errors and [1;32m0[0m warnings found in 457 ms while successfully building:
 
     qrroc
 ./qrroc > QR.rock
@@ -1565,7 +1565,7 @@ ruby vendor/unlambda.rb QR.unl > QR.tal
 ########################
 
 uxnasm QR.tal QR.rom
-Assembled QR.rom in 54.36kb(85.66% used), 10 labels, 0 macros.
+Assembled QR.rom in 44.56kb(70.28% used), 10 labels, 0 macros.
 uxncli QR.rom > QR.vlang.v
 Loaded QR.rom
 rm -f QR.rom
@@ -1633,7 +1633,7 @@ DOTNET_NOLOGO=1 dotnet run --project qr_vb > QR.wasm
 #####################################################################
 
 node --experimental-wasi-unstable-preview1 vendor/wasi-runtime.js QR.wasm > QR.wat
-(node:5023) ExperimentalWarning: WASI is an experimental feature and might change at any time
+(node:5038) ExperimentalWarning: WASI is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 ####################################################
@@ -1642,7 +1642,7 @@ node --experimental-wasi-unstable-preview1 vendor/wasi-runtime.js QR.wasm > QR.w
 
 wat2wasm QR.wat -o QR.wat.wasm
 node --experimental-wasi-unstable-preview1 vendor/wasi-runtime.js QR.wat.wasm > QR.ws
-(node:5037) ExperimentalWarning: WASI is an experimental feature and might change at any time
+(node:5052) ExperimentalWarning: WASI is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 ###############################
@@ -1754,9 +1754,12 @@ ruby vendor/aheui.rb QR.aheui > QR.alg
 #################################
 
 marst QR.alg -o QR.alg.c
-QR.alg:175: warning: unlabelled dummy statement
-QR.alg:177: warning: unlabelled dummy statement
+QR.alg:80: warning: unlabelled dummy statement
+QR.alg:82: warning: unlabelled dummy statement
 gcc QR.alg.c -lalgol -lm -o QR
+QR.alg.c: In function 'p0_3':
+QR.alg.c:462:26: warning: trigraph '??-' ignored, use '-trigraphs' to enable [-Wtrigraphs]
+  462 |          "3h/q$D16.67.lx=??-u7Sj;F{)F<HwU>NZo?z@0PvoFw<Z7c#ktyC.]7}wPLj"
 ./QR > QR.a68
 rm -f QR QR.alg.c
 

@@ -27,14 +27,14 @@ DIM = (86, 82, 76)
 
 SNIPPETS = {
     1: ("QR.aj", "AspectJ -> Asymptote", "mame-128", [
-        "import java.io.*;import java.util.*;import java.util.regex.*;import java.util.zip.*;/*######*/",
-        '  "MnQKRd95DF(]2;|^74DY.ZXp0c@8}   03hh4l]!As9c   <?_QNKYvwS4W_%O<RkeMFL;"',
-        "aspect Q{static String[]B={...};before():execution(void QR.main(..)){init();}}",
+        "import java.io.*;import java.util.*;import java.util.regex.*;import java.util.zip.*;",
+        'static String[]B={"MnQKRd95DF(]2;|^h7DY.ZXp0c@8}03hh4l]!As9/B(v>zr4&}Xe5z#mY...',
+        "aspect Q{static byte[]D;static int P;before():execution(void QR.main(..)){init();}}",
     ]),
     24: ("QR.chpl", "Chapel -> Chef", "fork-128", [
         'use IO;proc main(){var s="""...',
         "write(s);}",
-        "# Emitting 2,885,589-byte Chef recipe payload...",
+        "# Emitting 2,442,046-byte Chef recipe payload...",
     ]),
     59: ("QR.flix", "Flix -> Forth", "fork-128", [
         "def main(): Unit \\ IO =",
@@ -44,15 +44,15 @@ SNIPPETS = {
     105: ("QR.jsfuck", "JSFuck -> Julia", "mame-128", [
         "[][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]][([][(![]+[])...",
         "+(+!+[]+[+!+[]]+(!![]+[])[!+[]+!+[]+!+[]]+[!+[]+!+[]]+[+[]])+[])[+!+[]]+...",
-        "(19,881,169 bytes strictly using []()!+)",
+        "(16,740,100 bytes strictly using []()!+)",
     ]),
-    127: ("QR.mb", "Malbolge Unshackled -> Maxima", "fork-128", [
+    127: ("QR.mb", "Malbolge Unshackled -> Mathics", "fork-128", [
         "(=<`#9]~6ZY327Uv4-QsqpMn&+Ij\"'E%e{Ab~w=_:]Kw%o44Uqp0/Q?xNvL:`H%c#DD2^WV>gY;Nj3?",
         "(&%$#\"!~}|{zyxwvutsrqponmlkjihgfedcba`_^]\\[ZYXWVUTSRQPONMLKJIHGFEDCBA@?>=<;:987",
-        "(3,727,660 bytes · zero '/' ops · dual CC0 parity)",
+        "(3,080,162 bytes · zero '/' ops · dual CC0 parity)",
     ]),
     167: ("QR.ppm", "Piet -> Pike", "mame-128", [
-        "P6  512 129940 255   [199,588,242 bytes raw RGB PPM codels]",
+        "P6  432029 128 255   [165,899,154 bytes raw RGB PPM codels]",
         "000000 ffffff 00c0ff c000ff ff0000 00ff00 c0c000 ...",
         "$ npiet QR.ppm > QR.pike",
     ]),
@@ -63,17 +63,17 @@ SNIPPETS = {
     ]),
     222: ("QR.tal", "Uxntal -> V", "fork-128", [
         "|0100 ;pre ;p JSR2 ;z @l DUP2 ;ze EQU2 ;d JCN2 LDAk #00 STZ INC2...",
-        "@t 41 42 43 44 45 46 47 48 ...   (ROM 55,661 B / 65,280 B)",
+        "@t 41 42 43 44 45 46 47 48 ...   (ROM 45,626 B / 65,280 B)",
         "$ uxnasm QR.tal QR.rom && uxncli QR.rom > QR.vlang.v",
     ]),
     240: ("QR.z80", "Z80 asm -> Zig", "fork-128", [
         " org 0100h / ld hl,msg / loop: ld a,(hl) / or a / jr z,done / call 5",
-        ' db "const s=@import(\\"std\\");pub fn main()!void{..." (COM 61,603 B / 64,991 B)',
+        ' db "const s=@import(\\"std\\");pub fn main()!void{..." (COM 50,152 B / 64,991 B)',
         "$ z80asm QR.z80 -o qr.com && tnylpo -b qr.com < /dev/null > QR.zig",
     ]),
     244: ("QR.s65", "6502 asm -> A+", "fork-128", [
         ' .byt "sim65",2,0,2,$00,$02,$00,$02  * = $0200  ldx #$ff  txs  jsr emit',
-        ' .byt ".global _start",".text",10,"_start:",10,...  (BIN 57,006 B / 65,012 B)',
+        ' .byt ".global _start",".text",10,"_start:",10,...  (BIN 45,842 B / 65,012 B)',
         "$ xa -o QR.o65 QR.s65 && sim65 QR.o65 > QR.aplus.a",
     ]),
     254: ("QR.arnoldc", "ArnoldC -> Arturo", "fork-128", [
@@ -91,7 +91,7 @@ SNIPPETS = {
 MILESTONES = [
     (105, "JSFuck"),
     (127, "Malbolge"),
-    (167, "Piet 190M"),
+    (167, "Piet 158M"),
     (201, "Shakespeare"),
     (222, "Uxntal <64K"),
     (240, "Z80 <64K"),
@@ -125,21 +125,7 @@ def slot_for(name: str) -> int:
     return 0
 
 
-def load_qr_matrix(aj_path: str) -> list[list[bool]]:
-    with open(aj_path, "r", encoding="utf-8", errors="replace") as fh:
-        raw_lines = [ln.rstrip("\r\n") for ln in fh]
-    n_mod = len(raw_lines) // 9
-    grid: list[list[bool]] = []
-    for mr in range(n_mod):
-        row = [
-            any(raw_lines[mr * 9 + dr][mc * 18 : (mc + 1) * 18].strip() for dr in range(9))
-            for mc in range(n_mod)
-        ]
-        grid.append(row)
-    return grid
-
-
-def render_frame(runs, tick: int, cur_step: int, f_m, f_b, f_s, f_vm, f_vb, qr_grid=None, victory: bool = False) -> Image.Image:
+def render_frame(runs, tick: int, cur_step: int, f_m, f_b, f_s, f_vm, f_vb, f_hero=None, victory: bool = False) -> Image.Image:
     W, H = 920, 520
     img = Image.new("RGB", (W, H), BG)
     dr = ImageDraw.Draw(img)
@@ -162,11 +148,11 @@ def render_frame(runs, tick: int, cur_step: int, f_m, f_b, f_s, f_vm, f_vb, qr_g
 
         lines = [
             ("Steps:",   "256 / 256 Strict A–Z (128 upstream + 128 fork)"),
-            ("Match:",   "diff -s QR.aj QR2.aj -> identical (133,101 B)"),
+            ("Match:",   "diff -s QR.aj QR2.aj -> identical (54,812 B)"),
             ("Hashes:",  "sha256sum --quiet -c SHA256SUMS -> 256/256 OK"),
-            ("Peak:",    "190.34 MiB (#167 Piet) · 33.4 MiB (Shakespeare)"),
-            ("16-bit:",  "6502 57,006 B · Z80 61,603 B · Uxntal 55,661 B"),
-            ("QR.aj:",   "sha256: 85ae8e2a... · Unicode QR -> GitHub"),
+            ("Peak:",    "158.21 MiB (#167 Piet) · 27.6 MiB (Shakespeare)"),
+            ("16-bit:",  "6502 45,842 B · Z80 50,152 B · Uxntal 45,626 B"),
+            ("QR.aj:",   "sha256: 0c88b16f... · lean 53.5 KiB pure seed"),
         ]
         y = by0 + 78
         for k, v in lines:
@@ -174,28 +160,27 @@ def render_frame(runs, tick: int, cur_step: int, f_m, f_b, f_s, f_vm, f_vb, qr_g
             dr.text((bx0 + 96, y), v, fill=BONE, font=f_vm)
             y += 46
 
-        # Right panel: live-extracted scannable QR code from QR.aj
+        # Right panel: ExaCortex Ring & Dot + bold '256' emblem
         qx0, qy0, qx1, qy1 = 624, 68, 894, 444
         dr.rounded_rectangle((qx0, qy0, qx1, qy1), radius=8, fill=(24, 23, 20), outline=BRASS, width=2)
-        if qr_grid:
-            quiet = 3
-            mod = 7
-            n_mod = len(qr_grid)
-            qr_px = (n_mod + 2 * quiet) * mod
-            qr_x = 637
-            qr_y = 82
-            dr.rectangle((qr_x, qr_y, qr_x + qr_px - 1, qr_y + qr_px - 1), fill=(255, 255, 255))
-            for r_i, row in enumerate(qr_grid):
-                for c_i, dark in enumerate(row):
-                    if dark:
-                        px = qr_x + (c_i + quiet) * mod
-                        py = qr_y + (r_i + quiet) * mod
-                        dr.rectangle((px, py, px + mod - 1, py + mod - 1), fill=(12, 12, 12))
-            qcx = (qx0 + qx1) / 2
-            cap1 = "QR.aj (522×261)"
-            cap2 = "Scan -> exacortex/quine-relay-256"
-            dr.text((qcx - dr.textlength(cap1, font=f_vb) / 2, 352), cap1, fill=BONE, font=f_vb)
-            dr.text((qcx - dr.textlength(cap2, font=f_s) / 2, 380), cap2, fill=MUTED, font=f_s)
+        qcx = (qx0 + qx1) / 2
+        rcy = 148
+        rr = 52
+        dr.ellipse((qcx - rr, rcy - rr, qcx + rr, rcy + rr), outline=BRASS, width=4)
+        dr.ellipse((qcx - 14, rcy - 14, qcx + 14, rcy + 14), fill=BONE)
+        dr.ellipse((qcx - 5, rcy - rr - 5, qcx + 5, rcy - rr + 5), fill=RUST)
+
+        if f_hero is not None:
+            bb = dr.textbbox((0, 0), "256", font=f_hero)
+            tw = bb[2] - bb[0]
+            dr.text((qcx - tw / 2 - bb[0], 222 - bb[1]), "256", fill=BONE, font=f_hero)
+
+        c1 = "STRICT A–Z CYCLE"
+        c2 = "128 upstream + 128 fork"
+        c3 = "54,812 B pure-code seed"
+        dr.text((qcx - dr.textlength(c1, font=f_vb) / 2, 314), c1, fill=BRASS, font=f_vb)
+        dr.text((qcx - dr.textlength(c2, font=f_s) / 2, 344), c2, fill=MUTED, font=f_s)
+        dr.text((qcx - dr.textlength(c3, font=f_s) / 2, 372), c3, fill=MUTED, font=f_s)
 
         dr.text((28, 466), "$ _", fill=MUTED, font=f_m)
         return img
@@ -315,12 +300,13 @@ def main() -> int:
 
     mono = [r"C:\Windows\Fonts\CascadiaMono.ttf", r"C:\Windows\Fonts\consola.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"]
     mono_b = [r"C:\Windows\Fonts\consolab.ttf", r"C:\Windows\Fonts\CascadiaMono.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"]
+    sans_b = [r"C:\Windows\Fonts\segoeuib.ttf", r"C:\Windows\Fonts\arialbd.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"]
     f_m = pick_font(mono, 14)
     f_b = pick_font(mono_b, 14)
     f_s = pick_font(mono, 12)
     f_vm = pick_font(mono, 13)
     f_vb = pick_font(mono_b, 13)
-    qr_grid = load_qr_matrix(os.path.join(ROOT, "QR.aj"))
+    f_hero = pick_font(sans_b, 68)
 
     timeline = [
         (1, 4), (24, 3), (59, 3), (105, 4), (127, 4),
@@ -333,7 +319,7 @@ def main() -> int:
     keyframe_saved = False
     for step, count in timeline:
         for _ in range(count):
-            fr = render_frame(runs, tick, step, f_m, f_b, f_s, f_vm, f_vb, qr_grid=qr_grid, victory=False)
+            fr = render_frame(runs, tick, step, f_m, f_b, f_s, f_vm, f_vb, victory=False)
             frames.append(fr)
             durations.append(160)
             if step == 167 and not keyframe_saved:
@@ -341,7 +327,7 @@ def main() -> int:
                 keyframe_saved = True
             tick += 1
 
-    v_fr = render_frame(runs, tick, 256, f_m, f_b, f_s, f_vm, f_vb, qr_grid=qr_grid, victory=True)
+    v_fr = render_frame(runs, tick, 256, f_m, f_b, f_s, f_vm, f_vb, f_hero=f_hero, victory=True)
     v_fr.save(r"D:\DrawnWithCode\_tmp\demo_victory.png")
     frames.append(v_fr)
     durations.append(3200)

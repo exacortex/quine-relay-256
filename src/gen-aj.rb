@@ -3,7 +3,6 @@
 require "zlib"
 require "base64"
 require "tmpdir"
-require_relative "qr_matrix"
 
 CODE_GEN_PATH = ARGV[0] || File.expand_path("code-gen.rb", __dir__)
 OUT_AJ_PATH   = ARGV[1] || File.expand_path("../QR.aj", __dir__)
@@ -685,8 +684,8 @@ def compile_step(buf, step)
   end
 end
 
-# Token-level Java minifier returning merged <=10-char chunks (strings intact) for QR layout
-def minify_chunks(src)
+# Token-level Java minifier (preserves strings, chars, semantics; wraps lines at ~180 chars)
+def minify_java(src)
   tokens = []
   i = 0
   n = src.length
@@ -725,148 +724,24 @@ def minify_chunks(src)
     end
   end
 
-  is_id = ->(ch) { ch =~ /\A[A-Za-z0-9_$]\z/ }
-  need_sp = ->(a, b) { (is_id[a] && is_id[b]) || (a == "+" && b == "+") || (a == "-" && b == "-") }
-
-  chunks = []
-  cur = nil
-  [[:sym, "}"], [:sym, ";"], *tokens].each do |kind, tok|
-    if kind == :str
-      chunks << cur if cur
-      cur = nil
-      chunks << tok
-    elsif cur.nil?
-      cur = tok.dup
-    else
-      sp = need_sp[cur[-1], tok[0]]
-      len = cur.length + (sp ? 1 : 0) + tok.length
-      if (cur[-1] == "/" || cur[-1] == "." || len <= 10) && !(cur[-1] == ":" && tok[0] == "}")
-        cur << " " if sp
-        cur << tok
-      else
-        chunks << cur
-        cur = tok.dup
+  out = +""
+  line_len = 0
+  tokens.each_with_index do |(kind, tok), idx|
+    if idx > 0
+      pk, pt = tokens[idx - 1]
+      need_sp = (pk == :id && kind == :id) || (pt == "+" && tok == "+") || (pt == "-" && tok == "-")
+      if need_sp
+        out << " "
+        line_len += 1
+      elsif line_len > 180 && ";{}".include?(pt) && kind != :sym
+        out << "\n"
+        line_len = 0
       end
     end
+    out << tok
+    line_len += tok.length
   end
-  chunks << cur if cur
-  raise "chunk ends with /" if chunks.any? { |c| c.end_with?("/") }
-  raise "chunk > 48 chars" if chunks.any? { |c| c.length > 48 }
-  chunks
-end
-
-def qr_pad(q, m)
-  raise "QR pad too short (#{m} < 4)" if m < 4
-  q << "/*" << ("#" * (m - 4)) << "*/"
-end
-
-def format_qr_aj(ab, ts, m_str)
-  is_id = ->(ch) { ch =~ /\A[A-Za-z0-9_$]\z/ }
-  q = +""
-  n = QR_N
-  mw = QR_MW
-  mh = QR_MH
-
-  mx = 0
-  while mx < n
-    if m_str[mx] == "1"
-      mx2 = mx
-      mx2 += 1 while mx2 < n && m_str[mx2] == "1"
-      len = (mx2 - mx) * mw
-      if mx == 0
-        h = "import java.io.*;import java.util.*;import java.util.regex.*;import java.util.zip.*;"
-        q << h
-        qr_pad(q, len - h.length)
-      elsif mx2 == n
-        r = "public class QR{public static void main(String[]a){}}aspect Q{static String[]B={"
-        q << r
-        qr_pad(q, len - r.length)
-      else
-        qr_pad(q, len)
-      end
-      mx = mx2
-    else
-      mx2 = mx
-      mx2 += 1 while mx2 < n && m_str[mx2] == "0"
-      q << (" " * ((mx2 - mx) * mw))
-      mx = mx2
-    end
-  end
-
-  bp = 0
-  bl = ab.length
-  r = 1
-  while r < n * mh && bp < bl
-    my = r / mh
-    row = m_str[my * n, n]
-    c0 = row.index("1")
-    c1 = row.rindex("1")
-    q << "\n" << (" " * (c0 * mw)) << '"'
-    ((c0 * mw + 1)..((c1 + 1) * mw - 3)).each do |x|
-      if m_str[my * n + x / mw] == "1"
-        if bp < bl
-          q << ab[bp]
-          bp += 1
-        else
-          q << ":"
-        end
-      else
-        q << " "
-      end
-    end
-    q << '",'
-    r += 1
-  end
-
-  ti = 0
-  while r < n * mh
-    my = r / mh
-    row = m_str[my * n, n]
-    c1 = row.rindex("1")
-    q << "\n"
-    mx = 0
-    while mx <= c1
-      if m_str[my * n + mx] == "1"
-        mx2 = mx
-        mx2 += 1 while mx2 <= c1 && m_str[my * n + mx2] == "1"
-        rl = (mx2 - mx) * mw
-        cur = 0
-        prev = nil
-        while ti < ts.length
-          tok = ts[ti]
-          sp = false
-          if cur > 0
-            a = prev[-1]
-            z = tok[0]
-            sp = (is_id[a] && is_id[z]) || (a == "+" && z == "+") || (a == "-" && z == "-")
-          end
-          need = (sp ? 1 : 0) + tok.length
-          rem = rl - cur
-          if need == rem || need <= rem - 4
-            q << " " if sp
-            q << tok
-            cur += need
-            prev = tok
-            ti += 1
-          else
-            break
-          end
-        end
-        rem = rl - cur
-        qr_pad(q, rem) if rem > 0
-        mx = mx2
-      else
-        mx2 = mx
-        mx2 += 1 while mx2 <= c1 && m_str[my * n + mx2] == "0"
-        q << (" " * ((mx2 - mx) * mw))
-        mx = mx2
-      end
-    end
-    r += 1
-  end
-
-  raise "QR fit failed: bp=#{bp}/#{bl}, ti=#{ti}/#{ts.length}" if bp < bl || ti < ts.length
-  q << "\n"
+  out << "\n"
 end
 
 # Determine step order: AspectJ is the entry point; run all other steps in GenSteps order starting after AspectJ
@@ -881,19 +756,25 @@ buf.varint(ordered.size)
 ordered.each { |st| compile_step(buf, st) }
 
 raw_eng = File.read(ENGINE_PATH, encoding: "UTF-8")
-chunks  = minify_chunks(raw_eng)
-e_str   = chunks.join("\n")
-m_str   = qr_matrix_str
+min_eng = minify_java(raw_eng)
 
-# Pack [E, M, step_count, step_specs...] into a single zlib level-9 Base91 blob.
+# Pack [min_eng, step_count, step_specs...] into a single zlib level-9 Base91 blob.
 full_buf = BinBuf.new
-full_buf.str(e_str)
-full_buf.str(m_str)
+full_buf.str(min_eng)
 raw_blob = full_buf.bytes + buf.bytes
 z_blob   = Zlib::Deflate.deflate(raw_blob, 9)
 b91_blob = b91_encode(z_blob)
 
-aj_src = format_qr_aj(b91_blob, chunks, m_str)
+b_chunks = b91_blob.scan(/.{1,12000}/)
+
+aj_src = +""
+aj_src << "import java.io.*;import java.util.*;import java.util.regex.*;import java.util.zip.*;\n"
+aj_src << "public class QR{public static void main(String[]a){}}\n"
+aj_src << "aspect Q{\n"
+aj_src << "static String[]B={\n"
+aj_src << b_chunks.map { |c| %("#{c}") }.join(",\n")
+aj_src << "\n};\n"
+aj_src << min_eng
 
 raise "QR.aj contains forbidden ':}' for Arturo!" if aj_src.include?(":}")
 raise "QR.aj contains non-printable byte!" if aj_src =~ /[^\n\x20-\x7e]/
@@ -901,8 +782,8 @@ raise "QR.aj contains non-printable byte!" if aj_src =~ /[^\n\x20-\x7e]/
 File.binwrite(OUT_AJ_PATH, aj_src)
 z_aj = Zlib::Deflate.deflate(aj_src.b, 9)
 $stderr.puts format(
-  "Wrote %s: total=%d B, zlib(QR.aj)=%d B (blob raw=%d B -> b91=%d B; eng chunks=%d / %d B)",
-  OUT_AJ_PATH, aj_src.bytesize, z_aj.bytesize, raw_blob.bytesize, b91_blob.bytesize, chunks.size, e_str.bytesize
+  "Wrote %s: total=%d B, zlib(QR.aj)=%d B (blob raw=%d B -> b91=%d B; eng min=%d B)",
+  OUT_AJ_PATH, aj_src.bytesize, z_aj.bytesize, raw_blob.bytesize, b91_blob.bytesize, min_eng.bytesize
 )
 
 # Hard < 64,000 B ROM guard for the three 16-bit 64 KiB VM targets (Asm6502, Z80Asm, Uxntal)

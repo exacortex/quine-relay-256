@@ -3,7 +3,6 @@ static final java.nio.charset.Charset U = java.nio.charset.StandardCharsets.UTF_
 static byte[] D;
 static int P;
 static String E;
-static String M;
 
 static int ri() {
   int v = 0, k = 0, b;
@@ -1007,9 +1006,7 @@ static void init() throws Exception {
   ByteArrayOutputStream bo = new ByteArrayOutputStream();
   int v = -1, b = 0, nb = 0;
   for (String x : B) for (int i = 0; i < x.length(); i++) {
-    char h = x.charAt(i);
-    if (h == ' ' || h == ':') continue;
-    int c = t[h];
+    int c = t[x.charAt(i)];
     if (v < 0) v = c;
     else {
       v += c * 91; b |= v << nb; nb += (v & 8191) > 88 ? 13 : 14;
@@ -1026,106 +1023,17 @@ static void init() throws Exception {
   D = out.toByteArray();
   P = 0;
   E = rs();
-  M = rs();
-}
-
-static boolean isId(char c) {
-  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '$';
-}
-
-static void pad(StringBuilder q, int m) {
-  q.append("/*");
-  for (int k = 0; k < m - 4; k++) q.append('#');
-  q.append("*/");
 }
 
 static String self() {
-  StringBuilder ab = sb();
-  for (String x : B) for (int i = 0; i < x.length(); i++) {
-    char h = x.charAt(i);
-    if (h != ' ' && h != ':') ab.append(h);
-  }
   StringBuilder q = sb();
-  int n = 29, mw = 18, mh = 9;
-  for (int mx = 0; mx < n; ) {
-    if (M.charAt(mx) == '1') {
-      int mx2 = mx;
-      while (mx2 < n && M.charAt(mx2) == '1') mx2++;
-      int len = (mx2 - mx) * mw;
-      if (mx == 0) {
-        String h1 = "import java.io.*;import java.util.*;";
-        String h2 = "import java.util.regex.*;import ";
-        String h3 = "java.util.zip.*;";
-        q.append(h1).append(h2).append(h3);
-        pad(q, len - h1.length() - h2.length() - h3.length());
-      } else if (mx2 == n) {
-        String r1 = "public class QR{public static ";
-        String r2 = "void main(String[]a){}}aspect Q{";
-        String r3 = "static String[]B={";
-        q.append(r1).append(r2).append(r3);
-        pad(q, len - r1.length() - r2.length() - r3.length());
-      } else pad(q, len);
-      mx = mx2;
-    } else {
-      int mx2 = mx;
-      while (mx2 < n && M.charAt(mx2) == '0') mx2++;
-      for (int k = 0; k < (mx2 - mx) * mw; k++) q.append(' ');
-      mx = mx2;
-    }
+  q.append("import java.io.*;import java.util.*;import java.util.regex.*;import java.util.zip.*;\npublic class QR{public static void main(String[]a){}}\naspect Q{\nstatic String[]B={\n");
+  for (int i = 0; i < B.length; i++) {
+    if (i > 0) q.append(",\n");
+    q.append('"').append(B[i]).append('"');
   }
-  int bp = 0, bl = ab.length(), r = 1;
-  for (; r < n * mh && bp < bl; r++) {
-    int my = r / mh, c0 = -1, c1 = -1;
-    for (int mx = 0; mx < n; mx++) if (M.charAt(my * n + mx) == '1') { if (c0 < 0) c0 = mx; c1 = mx; }
-    q.append('\n');
-    for (int i = 0; i < c0 * mw; i++) q.append(' ');
-    q.append('"');
-    for (int x = c0 * mw + 1; x <= (c1 + 1) * mw - 3; x++) {
-      q.append(M.charAt(my * n + x / mw) == '1' ? (bp < bl ? ab.charAt(bp++) : ':') : ' ');
-    }
-    q.append("\",");
-  }
-  String[] ts = E.split("\n", -1);
-  int ti = 0;
-  for (; r < n * mh; r++) {
-    int my = r / mh, c1 = -1;
-    for (int mx = 0; mx < n; mx++) if (M.charAt(my * n + mx) == '1') c1 = mx;
-    q.append('\n');
-    for (int mx = 0; mx <= c1; ) {
-      if (M.charAt(my * n + mx) == '1') {
-        int mx2 = mx;
-        while (mx2 <= c1 && M.charAt(my * n + mx2) == '1') mx2++;
-        int rl = (mx2 - mx) * mw, cur = 0;
-        String prev = null;
-        while (ti < ts.length) {
-          String tok = ts[ti];
-          boolean sp = false;
-          if (cur > 0) {
-            char a = prev.charAt(prev.length() - 1), z = tok.charAt(0);
-            sp = (isId(a) && isId(z)) || (a == '+' && z == '+') || (a == '-' && z == '-');
-          }
-          int need = (sp ? 1 : 0) + tok.length(), rem = rl - cur;
-          if (need == rem || need <= rem - 4) {
-            if (sp) q.append(' ');
-            q.append(tok);
-            cur += need;
-            prev = tok;
-            ti++;
-          } else break;
-        }
-        int rem = rl - cur;
-        if (rem > 0) pad(q, rem);
-        mx = mx2;
-      } else {
-        int mx2 = mx;
-        while (mx2 <= c1 && M.charAt(my * n + mx2) == '0') mx2++;
-        for (int k = 0; k < (mx2 - mx) * mw; k++) q.append(' ');
-        mx = mx2;
-      }
-    }
-  }
-  if (bp < bl || ti < ts.length) throw new RuntimeException("qr fit");
-  return q.append('\n').toString();
+  q.append("\n};\n").append(E);
+  return q.toString();
 }
 
 before():execution(void QR.main(..)){

@@ -49,7 +49,7 @@ file "wasm-tmpl.dat" => "wasm-tmpl.dat.gen.rb" do
   ruby "wasm-tmpl.dat.gen.rb"
 end
 
-file "../QR.aj" => ["gen-aj.rb", "qr_matrix.rb", "engine_body.java", *LIBS] do
+file "../QR.aj" => ["gen-aj.rb", "engine_body.java", *LIBS] do
   ruby "gen-aj.rb"
 end
 

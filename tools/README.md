@@ -2,9 +2,8 @@
 
 Small standalone utilities used alongside `src/`:
 
-- `relay_ui.py` — Live ANSI terminal visualizer (`CMD` entrypoint in `Dockerfile` and `make watch` target). Renders an animated ExaCortex ring-and-dot mark, spinning 256-step A–Z dial, log-scale payload sparkline, milestone badges, live generated-source peek, and persistent victory card when interactive (`-it`); hands off cleanly via `os.execvp` to unmodified `make check -j 10000` in non-TTY / `CI=true` / `NO_COLOR` / `--plain` mode. Supports `--demo` for a fast preview.
+- `relay_ui.py` — Live ANSI terminal visualizer (`CMD` entrypoint in `Dockerfile` and `make watch` target). Renders an animated ExaCortex ring-and-dot mark, spinning 256-step A–Z dial, log-scale payload sparkline, milestone badges, live generated-source peek, and bold `256` completion card when interactive (`-it`); hands off cleanly via `os.execvp` to unmodified `make check -j 10000` (detaching interactive TTY stdin to `/dev/null`) in non-TTY / `CI=true` / `NO_COLOR` / `--plain` mode. Supports `--demo` for a fast preview.
 - `langs_png.py` — Renders `langs.png` (`256-Language Strict A–Z Uroboros Wheel`) from `LANGUAGES.md` using pure Python `PIL` (`mame/quine-relay` in near-black, additions in this fork in rust, centered on the ExaCortex mark).
-- `render_qr_thumb.py` — Renders `thumbnail.png` verbatim from the real scannable QR-code `QR.aj` with a 4.5-module quiet zone and ExaCortex caption footer.
 - `render_payload_chart.py` — Renders `assets/payload-curve.png` from measured 256-step byte sizes (log scale, `< 64 KiB` ROM ceiling shaded).
 - `render_demo_gif.py` — Renders `assets/terminal-demo.gif` previewing the live terminal visualizer across key A–Z milestones.
 - `dupcheck.rb` — Static check on `src/code-gen.rb` verifying that every `CodeGen` class has a unique class name and unique intermediate source filename (`QR.*`, never colliding with `QR.rb`/`QR2.rb`) so `make` never silently drops a dependency.
